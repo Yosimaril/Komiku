@@ -39,7 +39,7 @@ class _SearchScreenState extends State<SearchScreen> {
     });
 
     try {
-      // use api search comics by title
+      // use api buat search comics by title
       final res = await _api.searchComicsByTitle(q);
       setState(() {
         _results = res;
