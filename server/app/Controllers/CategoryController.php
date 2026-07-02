@@ -60,14 +60,10 @@ class CategoryController
     /**
      * Create a new category.
      *
-     * Required payload:
+     * Payload:
      * category[
-     *      name
-     * ]
-     *
-     * Optional:
-     * category[
-     *      description
+     *      name,
+     *      description (optional)
      * ]
      *
      * @return void
@@ -124,15 +120,11 @@ class CategoryController
     /**
      * Update an existing category.
      *
-     * Required payload:
+     * Payload:
      * category[
      *      id,
-     *      name
-     * ]
-     *
-     * Optional:
-     * category[
-     *      description
+     *      name,
+     *      description (optional)
      * ]
      *
      * @return void

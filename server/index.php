@@ -10,9 +10,6 @@ use App\Router;
 $action = RequestMiddleware::getAction();
 Router::dispatch($action);
 
-
-
-//// For debugging purpose
-//echo "<pre>";
-//print_r(scandir(__DIR__));
-//echo "</pre>";
+echo "<pre>";
+print_r(scandir(__DIR__));
+echo "</pre>";

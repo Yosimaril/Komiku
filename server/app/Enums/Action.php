@@ -10,6 +10,12 @@ enum Action: string
     case LOGIN = 'LOGIN';
     case REGISTER = 'REGISTER';
 
+    // Category
+    case GET_CATEGORIES = 'GET_CATEGORIES';
+    case INSERT_CATEGORY = 'INSERT_CATEGORY';
+    case UPDATE_CATEGORY = 'UPDATE_CATEGORY';
+    case DELETE_CATEGORY = 'DELETE_CATEGORY';
+
     // Comic
     case GET_COMICS = 'GET_COMICS';
     case GET_COMIC_DETAIL = 'GET_COMIC_DETAIL';
@@ -17,20 +23,18 @@ enum Action: string
     case UPDATE_COMIC = 'UPDATE_COMIC';
     case DELETE_COMIC = 'DELETE_COMIC';
 
-    // Comic chapter
-    case GET_COMIC_CHAPTERS = 'GET_COMIC_CHAPTERS';
-    case INSERT_COMIC_CHAPTER = 'INSERT_COMIC_CHAPTER';
-    case UPDATE_COMIC_CHAPTER = 'UPDATE_COMIC_CHAPTER';
-    case DELETE_COMIC_CHAPTER = 'DELETE_COMIC_CHAPTER';
-
-    // Category
-    case GET_CATEGORIES = 'GET_CATEGORIES';
-    case INSERT_CATEGORY = 'INSERT_CATEGORY';
-    case UPDATE_CATEGORY = 'UPDATE_CATEGORY';
-    case DELETE_CATEGORY = 'DELETE_CATEGORY';
-
-    // Other things
+    // Rating
     case INSERT_RATING = 'INSERT_RATING';
+    case UPDATE_RATING = 'UPDATE_RATING';
+    case DELETE_RATING = 'DELETE_RATING';
+
+    // Comment
     case INSERT_COMMENT = 'INSERT_COMMENT';
+    case UPDATE_COMMENT = 'UPDATE_COMMENT';
+    case DELETE_COMMENT = 'DELETE_COMMENT';
+
+    // Reply
     case INSERT_REPLY = 'INSERT_REPLY';
+    case UPDATE_REPLY = 'UPDATE_REPLY';
+    case DELETE_REPLY = 'DELETE_REPLY';
 }

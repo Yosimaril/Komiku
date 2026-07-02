@@ -31,6 +31,19 @@ class ApiDocumentation
                 ]
             ],
 
+            Action::REGISTER->value => [
+                'description' => 'Register user.',
+                'payload' => [
+                    'username' => 'required',
+                    'password' => 'required',
+                ],
+                'response' => [
+                    'STATUS',
+                    'DATA',
+                    'ERROR_MESSAGE'
+                ]
+            ],
+
             Action::GET_CATEGORIES->value => [
                 'description' => 'Retrieve all categories.',
                 'payload' => [
@@ -84,8 +97,6 @@ class ApiDocumentation
                     'deleted'
                 ]
             ],
-
-
         ];
     }
 }
