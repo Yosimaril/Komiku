@@ -25,6 +25,9 @@ enum Action: string
 
     // Category
     case GET_CATEGORIES = 'GET_CATEGORIES';
+    case INSERT_CATEGORY = 'INSERT_CATEGORY';
+    case UPDATE_CATEGORY = 'UPDATE_CATEGORY';
+    case DELETE_CATEGORY = 'DELETE_CATEGORY';
 
     // Other things
     case INSERT_RATING = 'INSERT_RATING';

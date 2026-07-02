@@ -3,6 +3,7 @@
 namespace App\Middleware;
 
 use App\Enums\Action;
+use App\Response;
 
 class RequestMiddleware
 {
@@ -13,21 +14,11 @@ class RequestMiddleware
         $enum = Action::tryFrom($action);
 
         if (!$enum) {
-            self::error($action, ['Invalid action.']);
+            Response::error([
+                'Invalid action payload.',
+            ]);
         }
 
         return $enum;
-    }
-
-    private static function error(string $action, array $errors): never
-    {
-        echo json_encode([
-            'ACTION' => $action,
-            'STATUS' => 'ERROR',
-            'DATA' => [],
-            'ERROR_MESSAGE' => $errors
-        ]);
-
-        exit;
     }
 }

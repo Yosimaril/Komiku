@@ -2,8 +2,10 @@
 
 namespace App\Database;
 
-use mysqli;
+use App\Response;
 use Exception;
+use mysqli;
+use mysqli_stmt;
 
 class Database
 {
@@ -11,25 +13,56 @@ class Database
 
     public static function getConnection(): mysqli
     {
-        if (self::$connection === null) {
-
-            self::$connection = new mysqli(
-                DB_HOST,
-                DB_USERNAME,
-                DB_PASSWORD,
-                DB_DATABASE
-            );
-
-            if (self::$connection->connect_errno) {
-                throw new Exception(
-                    "Database connection failed : "
-                    . self::$connection->connect_error
+        try {
+            if (self::$connection === null) {
+                self::$connection = new mysqli(
+                    DB_HOST,
+                    DB_USERNAME,
+                    DB_PASSWORD,
+                    DB_DATABASE
                 );
+
+                if (self::$connection->connect_errno) {
+                    throw new Exception(self::$connection->connect_error);
+                }
+
+                self::$connection->set_charset("utf8mb4");
             }
 
-            self::$connection->set_charset("utf8mb4");
+            return self::$connection;
+
+        } catch (Exception $e) {
+            Response::error([
+                $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Prepare a SQL statement.
+     *
+     * @throws Exception
+     */
+    public static function prepare(string $query): mysqli_stmt
+    {
+        $statement = self::getConnection()->prepare($query);
+
+        if (!$statement) {
+            throw new Exception(self::getConnection()->error);
         }
 
-        return self::$connection;
+        return $statement;
+    }
+
+    /**
+     * Execute a prepared statement.
+     *
+     * @throws Exception
+     */
+    public static function execute(mysqli_stmt $statement): void
+    {
+        if (!$statement->execute()) {
+            throw new Exception($statement->error);
+        }
     }
 }
