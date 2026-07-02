@@ -10,45 +10,57 @@ use Exception;
 class UserController
 {
     /**
-     * Retrieve all categories.
+     * Login.
      *
-     * Optional payload:
-     * - keyword
+     * Payload:
+     * - username
+     * - password
      *
      * @return void
      */
-    public static function get(): void
+    public static function login(): void
     {
         try {
-            $keyword = trim($_POST['keyword'] ?? '');
+            Validator::required($_POST, ['username', 'password']);
 
-            $query = "
-                SELECT *
-                FROM categories
-            ";
+            $statement = Database::prepare("
+                SELECT
+                    id,
+                    username,
+                    password,
+                    created_at,
+                    updated_at
+                FROM users
+                WHERE username = ?
+                LIMIT 1
+            ");
 
-            if ($keyword !== '') {
-                $query .= " WHERE name LIKE ?";
-            }
-
-            $query .= " ORDER BY name ASC";
-
-            $statement = Database::prepare($query);
-
-            if ($keyword !== '') {
-                $keyword = "%{$keyword}%";
-                $statement->bind_param(
-                    "s",
-                    $keyword
-                );
-            }
+            $statement->bind_param(
+                "s",
+                $_POST['username']
+            );
 
             Database::execute($statement);
-            Response::success(
-                $statement
-                    ->get_result()
-                    ->fetch_all(MYSQLI_ASSOC)
-            );
+
+            $user = $statement
+                ->get_result()
+                ->fetch_assoc();
+
+            if (
+                !$user ||
+                !password_verify(
+                    $_POST['password'],
+                    $user['password']
+                )
+            ) {
+                Response::error([
+                    "Invalid username or password."
+                ], 401);
+            }
+
+            unset($user['password']);
+
+            Response::success($user);
 
         } catch (Exception $e) {
             Response::error([
@@ -58,56 +70,62 @@ class UserController
     }
 
     /**
-     * Create a new category.
+     * Register.
      *
      * Payload:
-     * category[
-     *      name,
-     *      description (optional)
-     * ]
+     * - username
+     * - password
      *
      * @return void
      */
-    public static function insert(): void
+    public static function register(): void
     {
         try {
-            $db = Database::getConnection();
+            Validator::required($_POST, ['username', 'password']);
 
-            $category = Validator::payload(
-                $_POST,
-                'category'
+            $statement = Database::prepare("
+                SELECT id
+                FROM users
+                WHERE username = ?
+            ");
+
+            $statement->bind_param(
+                "s",
+                $_POST['username']
             );
 
-            Validator::required($category, ['name']);
-            Validator::string($category, ['name']);
+            Database::execute($statement);
 
-            $description = Validator::nullableString(
-                $category,
-                'description'
+            if ($statement->get_result()->num_rows > 0) {
+                Response::error([
+                    "Username already exists."
+                ], 409);
+            }
+
+            $password = password_hash(
+                $_POST['password'],
+                PASSWORD_DEFAULT
             );
 
-            $statement = $db->prepare("
-                INSERT INTO categories
+            $statement = Database::prepare("
+                INSERT INTO users
                 (
-                    name,
-                    description
+                    username,
+                    password
                 )
                 VALUES (?, ?)
             ");
 
             $statement->bind_param(
                 "ss",
-                $category['name'],
-                $description
+                $_POST['username'],
+                $password
             );
 
-            $statement->execute();
+            Database::execute($statement);
             Response::success([
-                'category' => [
-                    'id' => $db->insert_id,
-                    'name' => $category['name'],
-                    'description' => $description
-                ]
+                "id" => Database::getConnection()->insert_id,
+                "username" => $_POST['username']
             ], 201);
 
         } catch (Exception $e) {
@@ -118,52 +136,77 @@ class UserController
     }
 
     /**
-     * Update an existing category.
+     * Update user.
      *
      * Payload:
-     * category[
+     * user[
      *      id,
-     *      name,
-     *      description (optional)
+     *      username,
+     *      password
      * ]
+     *
+     * password is used to confirm identity.
      *
      * @return void
      */
     public static function update(): void
     {
         try {
-            $category = Validator::payload(
+            $user = Validator::payload(
                 $_POST,
-                'category'
+                "user"
             );
 
-            Validator::required($category, ['id', 'name']);
-            Validator::integer($category, ['id']);
-            Validator::positive($category, ['id']);
-
-            $description = Validator::nullableString(
-                $category,
-                'description'
-            );
+            Validator::required($user, ["id", "username", "password"]);
+            Validator::integer($user, ["id"]);
+            Validator::positive($user, ["id"]);
 
             $statement = Database::prepare("
-                UPDATE categories
-                SET
-                    name = ?,
-                    description = ?
+                SELECT password
+                FROM users
                 WHERE id = ?
             ");
 
             $statement->bind_param(
-                "ssi",
-                $category['name'],
-                $description,
-                $category['id']
+                "i",
+                $user["id"]
+            );
+
+            Database::execute($statement);
+
+            $databaseUser = $statement
+                ->get_result()
+                ->fetch_assoc();
+
+            if (
+                !$databaseUser ||
+                !password_verify(
+                    $user["password"],
+                    $databaseUser["password"]
+                )
+            ) {
+                Response::error([
+                    "Invalid password."
+                ], 401);
+            }
+
+            $statement = Database::prepare("
+                UPDATE users
+                SET
+                    username = ?
+                WHERE id = ?
+            ");
+
+            $statement->bind_param(
+                "si",
+                $user["username"],
+                $user["id"]
             );
 
             Database::execute($statement);
             Response::success([
-                'updated' => $statement->affected_rows > 0
+                "updated" =>
+                    $statement->affected_rows > 0
             ]);
 
         } catch (Exception $e) {
@@ -174,33 +217,64 @@ class UserController
     }
 
     /**
-     * Delete a category.
+     * Delete user.
      *
-     * Required payload:
+     * Payload:
      * - id
+     * - password
      *
      * @return void
      */
     public static function delete(): void
     {
         try {
-            Validator::required($_POST, ['id']);
-            Validator::integer($_POST, ['id']);
-            Validator::positive($_POST, ['id']);
+            Validator::required($_POST, ["id", "password"]);
+            Validator::integer($_POST, ["id"]);
+            Validator::positive($_POST, ["id"]);
 
             $statement = Database::prepare("
-                DELETE FROM categories
+                SELECT password
+                FROM users
                 WHERE id = ?
             ");
 
             $statement->bind_param(
                 "i",
-                $_POST['id']
+                $_POST["id"]
+            );
+
+            Database::execute($statement);
+
+            $user = $statement
+                ->get_result()
+                ->fetch_assoc();
+
+            if (
+                !$user ||
+                !password_verify(
+                    $_POST["password"],
+                    $user["password"]
+                )
+            ) {
+                Response::error([
+                    "Invalid password."
+                ], 401);
+            }
+
+            $statement = Database::prepare("
+                DELETE FROM users
+                WHERE id = ?
+            ");
+
+            $statement->bind_param(
+                "i",
+                $_POST["id"]
             );
 
             Database::execute($statement);
             Response::success([
-                'deleted' => $statement->affected_rows > 0
+                "deleted" =>
+                    $statement->affected_rows > 0
             ]);
 
         } catch (Exception $e) {

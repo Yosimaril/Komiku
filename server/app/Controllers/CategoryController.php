@@ -71,8 +71,6 @@ class CategoryController
     public static function insert(): void
     {
         try {
-            $db = Database::getConnection();
-
             $category = Validator::payload(
                 $_POST,
                 'category'
@@ -86,7 +84,7 @@ class CategoryController
                 'description'
             );
 
-            $statement = $db->prepare("
+            $statement = Database::prepare("
                 INSERT INTO categories
                 (
                     name,
@@ -101,10 +99,10 @@ class CategoryController
                 $description
             );
 
-            $statement->execute();
+            Database::execute($statement);
             Response::success([
                 'category' => [
-                    'id' => $db->insert_id,
+                    'id' => Database::getConnection()->insert_id,
                     'name' => $category['name'],
                     'description' => $description
                 ]

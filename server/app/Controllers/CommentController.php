@@ -10,10 +10,10 @@ use Exception;
 class CommentController
 {
     /**
-     * Retrieve all categories.
+     * Retrieve all comments for a particular comic.
      *
-     * Optional payload:
-     * - keyword
+     * Payload:
+     * - keyword (optional)
      *
      * @return void
      */
@@ -176,7 +176,7 @@ class CommentController
     /**
      * Delete a category.
      *
-     * Required payload:
+     * Payload:
      * - id
      *
      * @return void
