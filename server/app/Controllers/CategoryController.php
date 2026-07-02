@@ -12,8 +12,8 @@ class CategoryController
     /**
      * Retrieve all categories.
      *
-     * Optional payload:
-     * - keyword
+     * Payload:
+     * - keyword (optional)
      *
      * @return void
      */
@@ -176,7 +176,7 @@ class CategoryController
     /**
      * Delete a category.
      *
-     * Required payload:
+     * Payload:
      * - id
      *
      * @return void
