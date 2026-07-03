@@ -13,35 +13,32 @@ class CommentController
      * Retrieve all comments for a particular comic.
      *
      * Payload:
-     * - keyword (optional)
+     * - comic_id
      *
      * @return void
      */
     public static function get(): void
     {
         try {
-            $keyword = trim($_POST['keyword'] ?? '');
+            Validator::required($_POST, ["comic_id"]);
+            Validator::integer($_POST, ["comic_id"]);
+            Validator::positive($_POST, ["comic_id"]);
 
-            $query = "
-                SELECT *
-                FROM categories
-            ";
+            $comic_id = $_POST['comic_id'];
 
-            if ($keyword !== '') {
-                $query .= " WHERE name LIKE ?";
-            }
+            $statement = Database::prepare("
+                SELECT c.*, u.username
+                FROM comments c
+                JOIN users u
+                    ON u.id = c.user_id
+                WHERE c.comic_id = ?
+                ORDER BY c.created_at
+            ");
 
-            $query .= " ORDER BY name ASC";
-
-            $statement = Database::prepare($query);
-
-            if ($keyword !== '') {
-                $keyword = "%{$keyword}%";
-                $statement->bind_param(
-                    "s",
-                    $keyword
-                );
-            }
+            $statement->bind_param(
+                "i",
+                $comic_id
+            );
 
             Database::execute($statement);
             Response::success(
@@ -58,12 +55,13 @@ class CommentController
     }
 
     /**
-     * Create a new category.
+     * Create a new comment.
      *
      * Payload:
-     * category[
-     *      name,
-     *      description (optional)
+     * comment[
+     *      comic_id,
+     *      user_id,
+     *      content
      * ]
      *
      * @return void
@@ -73,40 +71,40 @@ class CommentController
         try {
             $db = Database::getConnection();
 
-            $category = Validator::payload(
+            $comment = Validator::payload(
                 $_POST,
-                'category'
+                'comment'
             );
 
-            Validator::required($category, ['name']);
-            Validator::string($category, ['name']);
-
-            $description = Validator::nullableString(
-                $category,
-                'description'
-            );
+            Validator::required($comment, ['user_id', 'comic_id', 'content']);
+            Validator::integer($comment, ['user_id', 'comic_id']);
+            Validator::positive($comment, ['user_id', 'comic_id']);
+            Validator::string($comment, ['content']);
 
             $statement = $db->prepare("
-                INSERT INTO categories
+                INSERT INTO comments
                 (
-                    name,
-                    description
+                    comic_id,
+                    user_id,
+                    content
                 )
-                VALUES (?, ?)
+                VALUES (?, ?, ?)
             ");
 
             $statement->bind_param(
-                "ss",
-                $category['name'],
-                $description
+                "iis",
+                $comment['comic_id'],
+                $comment['user_id'],
+                $comment['content']
             );
 
             $statement->execute();
             Response::success([
-                'category' => [
+                'comment' => [
                     'id' => $db->insert_id,
-                    'name' => $category['name'],
-                    'description' => $description
+                    'comic_id' => $comment['comic_id'],
+                    'user_id' => $comment['user_id'],
+                    'content' => $comment['content']
                 ]
             ], 201);
 
@@ -118,13 +116,12 @@ class CommentController
     }
 
     /**
-     * Update an existing category.
+     * Update an existing comment.
      *
      * Payload:
-     * category[
+     * comment[
      *      id,
-     *      name,
-     *      description (optional)
+     *      content
      * ]
      *
      * @return void
@@ -132,33 +129,27 @@ class CommentController
     public static function update(): void
     {
         try {
-            $category = Validator::payload(
+            $comment = Validator::payload(
                 $_POST,
-                'category'
+                '$comment'
             );
 
-            Validator::required($category, ['id', 'name']);
-            Validator::integer($category, ['id']);
-            Validator::positive($category, ['id']);
-
-            $description = Validator::nullableString(
-                $category,
-                'description'
-            );
+            Validator::required($comment, ['id', 'content']);
+            Validator::integer($comment, ['id']);
+            Validator::positive($comment, ['id']);
+            Validator::string($comment, ['content']);
 
             $statement = Database::prepare("
-                UPDATE categories
+                UPDATE comments
                 SET
-                    name = ?,
-                    description = ?
+                    content = ?
                 WHERE id = ?
             ");
 
             $statement->bind_param(
-                "ssi",
-                $category['name'],
-                $description,
-                $category['id']
+                "si",
+                $comment['content'],
+                $comment['id']
             );
 
             Database::execute($statement);
@@ -174,7 +165,7 @@ class CommentController
     }
 
     /**
-     * Delete a category.
+     * Delete a comment.
      *
      * Payload:
      * - id
@@ -189,7 +180,7 @@ class CommentController
             Validator::positive($_POST, ['id']);
 
             $statement = Database::prepare("
-                DELETE FROM categories
+                DELETE FROM comments
                 WHERE id = ?
             ");
 
@@ -202,6 +193,71 @@ class CommentController
             Response::success([
                 'deleted' => $statement->affected_rows > 0
             ]);
+
+        } catch (Exception $e) {
+            Response::error([
+                $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Create a new reply.
+     *
+     * Payload:
+     * comment[
+     *      comic_id,
+     *      user_id,
+     *      parent_comment_id,
+     *      content
+     * ]
+     *
+     * @return void
+     */
+    public static function reply(): void
+    {
+        try {
+            $db = Database::getConnection();
+
+            $comment = Validator::payload(
+                $_POST,
+                'comment'
+            );
+
+            Validator::required($comment, ['user_id', 'comic_id', 'parent_comment_id', 'content']);
+            Validator::integer($comment, ['user_id', 'comic_id', 'parent_comment_id']);
+            Validator::positive($comment, ['user_id', 'comic_id', 'parent_comment_id']);
+            Validator::string($comment, ['content']);
+
+            $statement = $db->prepare(
+                "INSERT INTO comments
+                (
+                    comic_id,
+                    user_id,
+                    parent_comment_id,
+                    content
+                )
+                VALUES (?, ?, ?, ?)"
+            );
+
+            $statement->bind_param(
+                "iiis",
+                $comment['comic_id'],
+                $comment['user_id'],
+                $comment['parent_comment_id'],
+                $comment['content']
+            );
+
+            $statement->execute();
+            Response::success([
+                'comment' => [
+                    'id' => $db->insert_id,
+                    'comic_id' => $comment['comic_id'],
+                    'user_id' => $comment['user_id'],
+                    'parent_comment_id' => $comment['parent_comment_id'],
+                    'content' => $comment['content']
+                ]
+            ], 201);
 
         } catch (Exception $e) {
             Response::error([

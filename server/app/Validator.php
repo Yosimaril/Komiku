@@ -160,11 +160,9 @@ class Validator
     ): void
     {
         if (!isset($payload[$field])) {
-
             Response::error([
                 "$field is required."
             ]);
-
         }
     }
 
