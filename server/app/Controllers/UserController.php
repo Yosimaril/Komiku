@@ -3,7 +3,9 @@
 namespace App\Controllers;
 
 use App\Database\Database;
+use App\Middleware\AuthMiddleware;
 use App\Response;
+use App\Service\JwtService;
 use App\Validator;
 use Exception;
 
@@ -13,15 +15,20 @@ class UserController
      * Login.
      *
      * Payload:
-     * - username
-     * - password
+     * user[
+     *      username,
+     *      password
+     * ]
      *
      * @return void
      */
     public static function login(): void
     {
         try {
-            Validator::required($_POST, ['username', 'password']);
+            $user = Validator::payload($_POST, 'user');
+
+            Validator::required($user, ['username', 'password']);
+            Validator::string($user, ['username', 'password']);
 
             $statement = Database::prepare("
                 SELECT
@@ -37,20 +44,20 @@ class UserController
 
             $statement->bind_param(
                 "s",
-                $_POST['username']
+                $user['username']
             );
 
             Database::execute($statement);
 
-            $user = $statement
+            $databaseUser = $statement
                 ->get_result()
                 ->fetch_assoc();
 
             if (
-                !$user ||
+                !$databaseUser ||
                 !password_verify(
-                    $_POST['password'],
-                    $user['password']
+                    $user['password'],
+                    $databaseUser['password']
                 )
             ) {
                 Response::error([
@@ -58,9 +65,16 @@ class UserController
                 ], 401);
             }
 
-            unset($user['password']);
+            unset($databaseUser['password']);
 
-            Response::success($user);
+            $token = JwtService::generate(
+                $databaseUser['id'],
+            );
+
+            Response::success([
+                "user" => $databaseUser,
+                "token" => $token
+            ]);
 
         } catch (Exception $e) {
             Response::error([
@@ -73,15 +87,20 @@ class UserController
      * Register.
      *
      * Payload:
-     * - username
-     * - password (unhashed)
-     *
+     * user[
+     * *      username,
+     * *      password
+     * * ]
+     * *
      * @return void
      */
     public static function register(): void
     {
         try {
-            Validator::required($_POST, ['username', 'password']);
+            $user = Validator::payload($_POST, 'user');
+
+            Validator::required($user, ['username', 'password']);
+            Validator::string($user, ['username', 'password']);
 
             $statement = Database::prepare("
                 SELECT id
@@ -91,7 +110,7 @@ class UserController
 
             $statement->bind_param(
                 "s",
-                $_POST['username']
+                $user['username']
             );
 
             Database::execute($statement);
@@ -103,7 +122,7 @@ class UserController
             }
 
             $password = password_hash(
-                $_POST['password'],
+                $user['password'],
                 PASSWORD_DEFAULT
             );
 
@@ -118,16 +137,25 @@ class UserController
 
             $statement->bind_param(
                 "ss",
-                $_POST['username'],
+                $user['username'],
                 $password
             );
 
             Database::execute($statement);
-            Response::success([
-                "id" => Database::getConnection()->insert_id,
-                "username" => $_POST['username']
-            ], 201);
 
+            $id = Database::getConnection()->insert_id;
+
+            $token = JwtService::generate(
+                $id,
+            );
+
+            Response::success([
+                "user" => [
+                    "id" => $id,
+                    "username" => $user['username']
+                ],
+                "token" => $token
+            ], 201);
         } catch (Exception $e) {
             Response::error([
                 $e->getMessage()
@@ -140,7 +168,6 @@ class UserController
      *
      * Payload:
      * user[
-     *      id,
      *      username,
      *      password
      * ]
@@ -150,14 +177,12 @@ class UserController
     public static function update(): void
     {
         try {
-            $user = Validator::payload(
-                $_POST,
-                "user"
-            );
+            $user = Validator::payload($_POST, "user");
 
-            Validator::required($user, ["id", "username", "password"]);
-            Validator::integer($user, ["id"]);
-            Validator::positive($user, ["id"]);
+            Validator::required($user, ["username", "password"]);
+            Validator::string($user, ["username", "password"]);
+
+            $id = AuthMiddleware::getUser()["sub"];
 
             $statement = Database::prepare("
                 SELECT password
@@ -167,7 +192,7 @@ class UserController
 
             $statement->bind_param(
                 "i",
-                $user["id"]
+                $id
             );
 
             Database::execute($statement);
@@ -198,13 +223,13 @@ class UserController
             $statement->bind_param(
                 "si",
                 $user["username"],
-                $user["id"]
+                $id
             );
 
             Database::execute($statement);
+
             Response::success([
-                "updated" =>
-                    $statement->affected_rows > 0
+                "updated" => $statement->affected_rows > 0
             ]);
 
         } catch (Exception $e) {
@@ -218,17 +243,20 @@ class UserController
      * Delete user.
      *
      * Payload:
-     * - id
-     * - password (unhashed)
-     *
+     * user[
+     *      password
+     * ]
      * @return void
      */
     public static function delete(): void
     {
         try {
-            Validator::required($_POST, ["id", "password"]);
-            Validator::integer($_POST, ["id"]);
-            Validator::positive($_POST, ["id"]);
+            $user = Validator::payload($_POST, "user");
+
+            Validator::required($user, ["password"]);
+            Validator::string($user, ["password"]);
+
+            $id = AuthMiddleware::getUser()["sub"];
 
             $statement = Database::prepare("
                 SELECT password
@@ -238,20 +266,20 @@ class UserController
 
             $statement->bind_param(
                 "i",
-                $_POST["id"]
+                $id
             );
 
             Database::execute($statement);
 
-            $user = $statement
+            $databaseUser = $statement
                 ->get_result()
                 ->fetch_assoc();
 
             if (
-                !$user ||
+                !$databaseUser ||
                 !password_verify(
-                    $_POST["password"],
-                    $user["password"]
+                    $user["password"],
+                    $databaseUser["password"]
                 )
             ) {
                 Response::error([
@@ -266,13 +294,13 @@ class UserController
 
             $statement->bind_param(
                 "i",
-                $_POST["id"]
+                $id
             );
 
             Database::execute($statement);
+
             Response::success([
-                "deleted" =>
-                    $statement->affected_rows > 0
+                "deleted" => $statement->affected_rows > 0
             ]);
 
         } catch (Exception $e) {

@@ -20,3 +20,4 @@ const DB_HOST = "127.0.0.1";
 const DB_DATABASE = "komiku";
 const DB_USERNAME = "root";
 const DB_PASSWORD = "";
+const JWT_SECRET = "1234567890";

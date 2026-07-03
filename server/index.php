@@ -6,7 +6,6 @@ require_once "autoload.php";
 use App\Middleware\RequestMiddleware;
 use App\Router;
 
-
 $action = RequestMiddleware::getAction();
 Router::dispatch($action);
 
