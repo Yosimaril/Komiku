@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Database\Database;
+use App\Middleware\AuthMiddleware;
 use App\Response;
 use App\Validator;
 use Exception;
@@ -34,15 +35,13 @@ class ComicController
                 FROM comics c
                 JOIN users u
                     ON u.id = c.creator_id
-                WHERE c.title LIKE ?
-                ORDER BY c.created_at DESC
             ";
 
             if ($keyword !== '') {
-                $query .= " WHERE title LIKE ?";
+                $query .= " WHERE c.title LIKE ?";
             }
 
-            $query .= " ORDER BY title ASC";
+            $query .= " ORDER BY c.title";
 
             $statement = Database::prepare($query);
 
@@ -234,14 +233,84 @@ class ComicController
     }
 
     /**
+     * Insert a new comic.
+     *
+     * Payload:
+     * comic[
+     *      title,
+     *      poster (optional),
+     *      description (optional)
+     * ]
+     *
+     * @return void
+     */
+    public static function insert(): void
+    {
+        try {
+            $comic = Validator::payload(
+                $_POST,
+                "comic"
+            );
+
+            Validator::required($comic, ["title"]);
+            Validator::string($comic, ["title"]);
+
+            $creatorId = AuthMiddleware::getUser()["sub"];
+
+            $poster = Validator::nullableString(
+                $comic,
+                "poster"
+            );
+
+            $description = Validator::nullableString(
+                $comic,
+                "description"
+            );
+
+            $statement = Database::prepare("
+                INSERT INTO comics
+                (
+                    creator_id,
+                    title,
+                    poster,
+                    description
+                )
+                VALUES (?, ?, ?, ?)
+            ");
+
+            $statement->bind_param(
+                "isss",
+                $creatorId,
+                $comic["title"],
+                $poster,
+                $description
+            );
+
+            Database::execute($statement);
+
+            Response::success([
+                "id" => Database::getConnection()->insert_id,
+                "creator_id" => $creatorId,
+                "title" => $comic["title"],
+                "poster" => $poster,
+                "description" => $description
+            ], 201);
+
+        } catch (Exception $e) {
+            Response::error([
+                $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
      * Update an existing comic.
      *
      * Payload:
      * comic[
      *      id,
-     *      creator_id,
      *      title,
-     *      poster (optional)
+     *      poster (optional),
      *      description (optional)
      * ]
      *
@@ -252,44 +321,68 @@ class ComicController
         try {
             $comic = Validator::payload(
                 $_POST,
-                'comic'
+                "comic"
             );
 
-            Validator::required($comic, ['id', 'creator_id', 'title']);
-            Validator::integer($comic, ['id', 'creator_id']);
-            Validator::positive($comic, ['id', 'creator_id']);
+            Validator::required($comic, ["id", "title"]);
+            Validator::integer($comic, ["id"]);
+            Validator::positive($comic, ["id"]);
+            Validator::string($comic, ["title"]);
 
-            $poster = Validator::nullableString(
-                $comic,
-                'poster'
-            );
-
-            $description = Validator::nullableString(
-                $comic,
-                'description'
-            );
+            $creatorId = AuthMiddleware::getUser()["sub"];
 
             $statement = Database::prepare("
-                UPDATE categories
-                SET
-                    title = ?,
-                    poster = ?,
-                    description = ?
+                SELECT id
+                FROM comics
                 WHERE id = ?
                 AND creator_id = ?
             ");
 
             $statement->bind_param(
-                "sssii",
-                $comic['title'],
-                $poster,
-                $description,
-                $comic['id'],
+                "ii",
+                $comic["id"],
+                $creatorId
             );
 
             Database::execute($statement);
+
+            if ($statement->get_result()->num_rows === 0) {
+                Response::error([
+                    "Comic not found or permission denied."
+                ], 403);
+            }
+
+            $poster = Validator::nullableString(
+                $comic,
+                "poster"
+            );
+
+            $description = Validator::nullableString(
+                $comic,
+                "description"
+            );
+
+            $statement = Database::prepare("
+                UPDATE comics
+                SET
+                    title = ?,
+                    poster = ?,
+                    description = ?
+                WHERE id = ?
+            ");
+
+            $statement->bind_param(
+                "sssi",
+                $comic["title"],
+                $poster,
+                $description,
+                $comic["id"]
+            );
+
+            Database::execute($statement);
+
             Response::success([
-                'updated' => $statement->affected_rows > 0
+                "updated" => $statement->affected_rows > 0
             ]);
 
         } catch (Exception $e) {
@@ -303,7 +396,6 @@ class ComicController
      * Delete a comic.
      *
      * Payload:
-     * - creator_id
      * - id
      *
      * @return void
@@ -311,28 +403,47 @@ class ComicController
     public static function delete(): void
     {
         try {
-            Validator::required($_POST, ['creator_id']);
-            Validator::integer($_POST, ['creator_id']);
-            Validator::positive($_POST, ['creator_id']);
+            Validator::required($_POST, ["id"]);
+            Validator::integer($_POST, ["id"]);
+            Validator::positive($_POST, ["id"]);
 
-            Validator::required($_POST, ['id']);
-            Validator::integer($_POST, ['id']);
-            Validator::positive($_POST, ['id']);
+            $creatorId = AuthMiddleware::getUser()["sub"];
 
             $statement = Database::prepare("
-                DELETE FROM comics
-                WHERE id = ? 
+                SELECT id
+                FROM comics
+                WHERE id = ?
                 AND creator_id = ?
             ");
 
             $statement->bind_param(
-                "i",
-                $_POST['id']
+                "ii",
+                $_POST["id"],
+                $creatorId
             );
 
             Database::execute($statement);
+
+            if ($statement->get_result()->num_rows === 0) {
+                Response::error([
+                    "Comic not found or permission denied."
+                ], 403);
+            }
+
+            $statement = Database::prepare("
+                DELETE FROM comics
+                WHERE id = ?
+            ");
+
+            $statement->bind_param(
+                "i",
+                $_POST["id"]
+            );
+
+            Database::execute($statement);
+
             Response::success([
-                'deleted' => $statement->affected_rows > 0
+                "deleted" => $statement->affected_rows > 0
             ]);
 
         } catch (Exception $e) {
