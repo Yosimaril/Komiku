@@ -10,37 +10,43 @@ use Exception;
 class ReplyController
 {
     /**
-     * Retrieve all comments for a particular comic.
+     * Retrieve all replies of a comment.
      *
      * Payload:
-     * - comic_id
+     * - parent_comment_id
      *
      * @return void
      */
     public static function get(): void
     {
         try {
-            Validator::required($_POST, ["comic_id"]);
-            Validator::integer($_POST, ["comic_id"]);
-            Validator::positive($_POST, ["comic_id"]);
-
-            $comic_id = $_POST['comic_id'];
+            Validator::required($_POST, ["parent_comment_id"]);
+            Validator::integer($_POST, ["parent_comment_id"]);
+            Validator::positive($_POST, ["parent_comment_id"]);
 
             $statement = Database::prepare("
-                SELECT c.*, u.username
+                SELECT
+                    c.id,
+                    c.content,
+                    c.created_at,
+                    c.updated_at,
+                    u.id AS user_id,
+                    u.username
                 FROM comments c
-                JOIN users u
+                LEFT JOIN users u
                     ON u.id = c.user_id
-                WHERE c.comic_id = ?
-                ORDER BY c.created_at
+                WHERE
+                    c.parent_comment_id = ?
+                ORDER BY c.created_at ASC
             ");
 
             $statement->bind_param(
                 "i",
-                $comic_id
+                $_POST["parent_comment_id"]
             );
 
             Database::execute($statement);
+
             Response::success(
                 $statement
                     ->get_result()
@@ -55,12 +61,10 @@ class ReplyController
     }
 
     /**
-     * Create a new reply.
+     * Insert a reply.
      *
      * Payload:
-     * comment[
-     *      comic_id,
-     *      user_id,
+     * reply[
      *      parent_comment_id,
      *      content
      * ]
@@ -70,46 +74,69 @@ class ReplyController
     public static function insert(): void
     {
         try {
-            $db = Database::getConnection();
-
-            $comment = Validator::payload(
+            $reply = Validator::payload(
                 $_POST,
-                'comment'
+                "reply"
             );
 
-            Validator::required($comment, ['user_id', 'comic_id', 'parent_comment_id', 'content']);
-            Validator::integer($comment, ['user_id', 'comic_id', 'parent_comment_id']);
-            Validator::positive($comment, ['user_id', 'comic_id', 'parent_comment_id']);
-            Validator::string($comment, ['content']);
+            Validator::required($reply, ["parent_comment_id", "content"]);
+            Validator::integer($reply, ["parent_comment_id"]);
+            Validator::positive($reply, ["parent_comment_id"]);
+            Validator::string($reply, ["content"]);
 
-            $statement = $db->prepare(
-                "INSERT INTO comments
+            $userId = AuthMiddleware::getUser()["sub"];
+
+            $statement = Database::prepare("
+                SELECT comic_id
+                FROM comments
+                WHERE id = ?
+                AND parent_comment_id IS NULL
+            ");
+
+            $statement->bind_param(
+                "i",
+                $reply["parent_comment_id"]
+            );
+
+            Database::execute($statement);
+
+            $comment = $statement
+                ->get_result()
+                ->fetch_assoc();
+
+            if (!$comment) {
+                Response::error([
+                    "Parent comment not found."
+                ], 404);
+            }
+
+            $statement = Database::prepare("
+                INSERT INTO comments
                 (
                     comic_id,
                     user_id,
                     parent_comment_id,
                     content
                 )
-                VALUES (?, ?, ?, ?)"
-            );
+                VALUES (?, ?, ?, ?)
+            ");
 
             $statement->bind_param(
                 "iiis",
-                $comment['comic_id'],
-                $comment['user_id'],
-                $comment['parent_comment_id'],
-                $comment['content']
+                $comment["comic_id"],
+                $userId,
+                $reply["parent_comment_id"],
+                $reply["content"]
             );
 
-            $statement->execute();
+            Database::execute($statement);
+
             Response::success([
-                'comment' => [
-                    'id' => $db->insert_id,
-                    'comic_id' => $comment['comic_id'],
-                    'user_id' => $comment['user_id'],
-                    'parent_comment_id' => $comment['parent_comment_id'],
-                    'content' => $comment['content']
-                ]
+                "id" => Database::getConnection()->insert_id,
+                "comic_id" => $comment["comic_id"],
+                "parent_comment_id" => $reply["parent_comment_id"],
+                "user_id" => $userId,
+                "content" => $reply["content"]
             ], 201);
 
         } catch (Exception $e) {
@@ -120,10 +147,10 @@ class ReplyController
     }
 
     /**
-     * Update an existing comment.
+     * Update a reply.
      *
      * Payload:
-     * comment[
+     * reply[
      *      id,
      *      content
      * ]
@@ -133,15 +160,40 @@ class ReplyController
     public static function update(): void
     {
         try {
-            $comment = Validator::payload(
+            $reply = Validator::payload(
                 $_POST,
-                '$comment'
+                "reply"
             );
 
-            Validator::required($comment, ['id', 'content']);
-            Validator::integer($comment, ['id']);
-            Validator::positive($comment, ['id']);
-            Validator::string($comment, ['content']);
+            Validator::required($reply, ["id", "content"]);
+            Validator::integer($reply, ["id"]);
+            Validator::positive($reply, ["id"]);
+            Validator::string($reply, ["content"]);
+
+            $userId = AuthMiddleware::getUser()["sub"];
+
+            $statement = Database::prepare("
+                SELECT id
+                FROM comments
+                WHERE
+                    id = ?
+                    AND user_id = ?
+                    AND parent_comment_id IS NOT NULL
+            ");
+
+            $statement->bind_param(
+                "ii",
+                $reply["id"],
+                $userId
+            );
+
+            Database::execute($statement);
+
+            if ($statement->get_result()->num_rows === 0) {
+                Response::error([
+                    "Reply not found or permission denied."
+                ], 403);
+            }
 
             $statement = Database::prepare("
                 UPDATE comments
@@ -152,13 +204,14 @@ class ReplyController
 
             $statement->bind_param(
                 "si",
-                $comment['content'],
-                $comment['id']
+                $reply["content"],
+                $reply["id"]
             );
 
             Database::execute($statement);
+
             Response::success([
-                'updated' => $statement->affected_rows > 0
+                "updated" => $statement->affected_rows > 0
             ]);
 
         } catch (Exception $e) {
@@ -169,7 +222,7 @@ class ReplyController
     }
 
     /**
-     * Delete a comment.
+     * Delete a reply.
      *
      * Payload:
      * - id
@@ -179,9 +232,34 @@ class ReplyController
     public static function delete(): void
     {
         try {
-            Validator::required($_POST, ['id']);
-            Validator::integer($_POST, ['id']);
-            Validator::positive($_POST, ['id']);
+            Validator::required($_POST, ["id"]);
+            Validator::integer($_POST, ["id"]);
+            Validator::positive($_POST, ["id"]);
+
+            $userId = AuthMiddleware::getUser()["sub"];
+
+            $statement = Database::prepare("
+                SELECT id
+                FROM comments
+                WHERE
+                    id = ?
+                    AND user_id = ?
+                    AND parent_comment_id IS NOT NULL
+            ");
+
+            $statement->bind_param(
+                "ii",
+                $_POST["id"],
+                $userId
+            );
+
+            Database::execute($statement);
+
+            if ($statement->get_result()->num_rows === 0) {
+                Response::error([
+                    "Reply not found or permission denied."
+                ], 403);
+            }
 
             $statement = Database::prepare("
                 DELETE FROM comments
@@ -190,12 +268,13 @@ class ReplyController
 
             $statement->bind_param(
                 "i",
-                $_POST['id']
+                $_POST["id"]
             );
 
             Database::execute($statement);
+
             Response::success([
-                'deleted' => $statement->affected_rows > 0
+                "deleted" => $statement->affected_rows > 0
             ]);
 
         } catch (Exception $e) {
