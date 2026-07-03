@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Database\Database;
+use App\Middleware\AuthMiddleware;
 use App\Response;
 use App\Validator;
 use Exception;

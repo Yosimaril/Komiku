@@ -44,11 +44,13 @@ enum Action: string
     case DELETE_RATING = 'DELETE_RATING';
 
     // Comment
+    case GET_COMMENTS = 'GET_COMMENTS';
     case INSERT_COMMENT = 'INSERT_COMMENT';
     case UPDATE_COMMENT = 'UPDATE_COMMENT';
     case DELETE_COMMENT = 'DELETE_COMMENT';
 
     // Reply
+    case GET_REPLIES = 'GET_REPLIES';
     case INSERT_REPLY = 'INSERT_REPLY';
     case UPDATE_REPLY = 'UPDATE_REPLY';
     case DELETE_REPLY = 'DELETE_REPLY';

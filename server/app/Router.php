@@ -78,10 +78,12 @@ class Router
         Action::UPDATE_RATING->value => [RatingController::class, 'update'],
         Action::DELETE_RATING->value => [RatingController::class, 'delete'],
 
+        Action::GET_COMMENTS->value => [CommentController::class, 'get'],
         Action::INSERT_COMMENT->value => [CommentController::class, 'insert'],
         Action::UPDATE_COMMENT->value => [CommentController::class, 'update'],
         Action::DELETE_COMMENT->value => [CommentController::class, 'delete'],
 
+        Action::GET_REPLIES->value => [ReplyController::class, 'get'],
         Action::INSERT_REPLY->value => [ReplyController::class, 'insert'],
         Action::UPDATE_REPLY->value => [ReplyController::class, 'update'],
         Action::DELETE_REPLY->value => [ReplyController::class, 'delete'],
