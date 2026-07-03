@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Database\Database;
+use App\Middleware\AuthMiddleware;
 use App\Response;
 use App\Validator;
 use Exception;
@@ -10,7 +11,7 @@ use Exception;
 class RatingController
 {
     /**
-     * Create a new rating.
+     * Insert a rating.
      *
      * Payload:
      * rating[
@@ -23,41 +24,41 @@ class RatingController
     public static function insert(): void
     {
         try {
-            $db = Database::getConnection();
-
             $rating = Validator::payload(
                 $_POST,
-                'rating'
+                "rating"
             );
 
-            Validator::required($rating, ['comic_id', 'rating']);
-            Validator::integer($rating, ['comic_id', 'rating']);
-            Validator::positive($rating, ['comic_id', 'rating']);
-            Validator::between($rating, 'rating', 1, 5);
+            Validator::required($rating, ["comic_id", "rating"]);
+            Validator::integer($rating, ["comic_id", "rating"]);
+            Validator::positive($rating, ["comic_id"]);
+            Validator::between($rating, "rating", 1, 5);
 
-            $statement = $db->prepare("
+            $userId = AuthMiddleware::getUser()["sub"];
+
+            $statement = Database::prepare("
                 INSERT INTO comic_rated_by_user
                 (
                     comic_id,
-                    
+                    user_id,
                     rating
                 )
-                VALUES (?, ?)
+                VALUES (?, ?, ?)
             ");
 
             $statement->bind_param(
-                "ss",
-                $category['name'],
-                $description
+                "iii",
+                $rating["comic_id"],
+                $userId,
+                $rating["rating"]
             );
 
-            $statement->execute();
+            Database::execute($statement);
+
             Response::success([
-                'category' => [
-                    'id' => $db->insert_id,
-                    'name' => $category['name'],
-                    'description' => $description
-                ]
+                "comic_id" => $rating["comic_id"],
+                "user_id" => $userId,
+                "rating" => $rating["rating"]
             ], 201);
 
         } catch (Exception $e) {
@@ -68,11 +69,10 @@ class RatingController
     }
 
     /**
-     * Update an existing rating.
+     * Update a rating.
      *
      * Payload:
      * rating[
-     *      id,
      *      comic_id,
      *      rating
      * ]
@@ -84,32 +84,36 @@ class RatingController
         try {
             $rating = Validator::payload(
                 $_POST,
-                'rating'
+                "rating"
             );
 
-            Validator::required($rating, ['id', 'comic_id', 'rating']);
-            Validator::integer($rating, ['id', 'comic_id', 'rating']);
-            Validator::positive($rating, ['id', 'comic_id', 'rating']);
-            Validator::between($rating, 'rating', 1, 5);
+            Validator::required($rating, ["comic_id", "rating"]);
+            Validator::integer($rating, ["comic_id", "rating"]);
+            Validator::positive($rating, ["comic_id"]);
+            Validator::between($rating, "rating", 1, 5);
+
+            $userId = AuthMiddleware::getUser()["sub"];
 
             $statement = Database::prepare("
                 UPDATE comic_rated_by_user
                 SET
-                    comic_id = ?,
                     rating = ?
-                WHERE id = ?
+                WHERE
+                    comic_id = ?
+                    AND user_id = ?
             ");
 
             $statement->bind_param(
                 "iii",
-                $rating['comic_id'],
-                $rating['rating'],
-                $rating['id']
+                $rating["rating"],
+                $rating["comic_id"],
+                $userId
             );
 
             Database::execute($statement);
+
             Response::success([
-                'updated' => $statement->affected_rows > 0
+                "updated" => $statement->affected_rows > 0
             ]);
 
         } catch (Exception $e) {
@@ -122,7 +126,7 @@ class RatingController
     /**
      * Delete a rating.
      *
-     * Required payload:
+     * Payload:
      * - comic_id
      *
      * @return void
@@ -130,23 +134,29 @@ class RatingController
     public static function delete(): void
     {
         try {
-            Validator::required($_POST, ['id']);
-            Validator::integer($_POST, ['id']);
-            Validator::positive($_POST, ['id']);
+            Validator::required($_POST, ["comic_id"]);
+            Validator::integer($_POST, ["comic_id"]);
+            Validator::positive($_POST, ["comic_id"]);
+
+            $userId = AuthMiddleware::getUser()["sub"];
 
             $statement = Database::prepare("
                 DELETE FROM comic_rated_by_user
-                WHERE comic_id = ?
+                WHERE
+                    comic_id = ?
+                    AND user_id = ?
             ");
 
             $statement->bind_param(
-                "i",
-                $_POST['id']
+                "ii",
+                $_POST["comic_id"],
+                $userId
             );
 
             Database::execute($statement);
+
             Response::success([
-                'deleted' => $statement->affected_rows > 0
+                "deleted" => $statement->affected_rows > 0
             ]);
 
         } catch (Exception $e) {
