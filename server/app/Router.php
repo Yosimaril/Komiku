@@ -20,19 +20,15 @@ class Router
         Action::UPDATE_USER,
         Action::DELETE_USER,
 
-        Action::INSERT_CATEGORY,
-        Action::UPDATE_CATEGORY,
-        Action::DELETE_CATEGORY,
-
         Action::INSERT_COMIC,
         Action::UPDATE_COMIC,
         Action::DELETE_COMIC,
 
-        Action::INSERT_COMIC_CHAPTER,
+        Action::INSERT_COMIC_CHAPTERS,
         Action::UPDATE_COMIC_CHAPTER,
         Action::DELETE_COMIC_CHAPTER,
 
-        Action::INSERT_COMIC_CHAPTER_PAGE,
+        Action::INSERT_COMIC_CHAPTER_PAGES,
         Action::UPDATE_COMIC_CHAPTER_PAGE,
         Action::DELETE_COMIC_CHAPTER_PAGE,
 
@@ -69,12 +65,12 @@ class Router
         Action::DELETE_COMIC->value => [ComicController::class, 'delete'],
 
         Action::GET_CHAPTERS->value => [ChapterController::class, 'get'],
-        Action::INSERT_COMIC_CHAPTER->value => [ChapterController::class, 'insert'],
+        Action::INSERT_COMIC_CHAPTERS->value => [ChapterController::class, 'insert'],
         Action::UPDATE_COMIC_CHAPTER->value => [ChapterController::class, 'update'],
         Action::DELETE_COMIC_CHAPTER->value => [ChapterController::class, 'delete'],
 
         Action::GET_CHAPTER_PAGES->value => [ChapterPageController::class, 'get'],
-        Action::INSERT_COMIC_CHAPTER_PAGE->value => [ChapterPageController::class, 'insert'],
+        Action::INSERT_COMIC_CHAPTER_PAGES->value => [ChapterPageController::class, 'insert'],
         Action::UPDATE_COMIC_CHAPTER_PAGE->value => [ChapterPageController::class, 'update'],
         Action::DELETE_COMIC_CHAPTER_PAGE->value => [ChapterPageController::class, 'delete'],
 

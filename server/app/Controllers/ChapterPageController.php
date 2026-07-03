@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Database\Database;
+use App\Middleware\AuthMiddleware;
 use App\Response;
 use App\Validator;
 use Exception;
@@ -10,37 +11,44 @@ use Exception;
 class ChapterPageController
 {
     /**
-     * Retrieve all comments for a particular comic.
+     * Retrieve all pages of a chapter.
      *
      * Payload:
-     * - comic_id
+     * - chapter_id
      *
      * @return void
      */
     public static function get(): void
     {
         try {
-            Validator::required($_POST, ["comic_id"]);
-            Validator::integer($_POST, ["comic_id"]);
-            Validator::positive($_POST, ["comic_id"]);
+            Validator::required($_POST, ['chapter_id']);
+            Validator::integer($_POST, ['chapter_id']);
+            Validator::positive($_POST, ['chapter_id']);
 
-            $comic_id = $_POST['comic_id'];
+            $chapterId = (int)$_POST['chapter_id'];
 
             $statement = Database::prepare("
-                SELECT c.*, u.username
-                FROM comments c
-                JOIN users u
-                    ON u.id = c.user_id
-                WHERE c.comic_id = ?
-                ORDER BY c.created_at
+                SELECT
+                    p.id,
+                    ch.title AS chapter_title,
+                    p.page_number,
+                    p.image,
+                    p.created_at,
+                    p.updated_at
+                FROM chapter_pages p
+                JOIN chapters ch
+                    ON ch.id = p.chapter_id
+                WHERE p.chapter_id = ?
+                ORDER BY p.page_number ASC
             ");
 
             $statement->bind_param(
                 "i",
-                $comic_id
+                $chapterId
             );
 
             Database::execute($statement);
+
             Response::success(
                 $statement
                     ->get_result()
@@ -55,13 +63,16 @@ class ChapterPageController
     }
 
     /**
-     * Create a new comment.
+     * Insert new page(s) for a chapter.
      *
      * Payload:
-     * comment[
-     *      comic_id,
-     *      user_id,
-     *      content
+     * - chapter_id
+     * - pages[
+     *      [
+     *          page_number,
+     *          image
+     *      ],
+     *      ...
      * ]
      *
      * @return void
@@ -69,46 +80,103 @@ class ChapterPageController
     public static function insert(): void
     {
         try {
-            $db = Database::getConnection();
+            Validator::required($_POST, ["chapter_id", "pages"]);
+            Validator::integer($_POST, ["chapter_id"]);
+            Validator::positive($_POST, ["chapter_id"]);
 
-            $comment = Validator::payload(
-                $_POST,
-                'comment'
+            if (
+                !is_array($_POST["pages"]) ||
+                empty($_POST["pages"])
+            ) {
+                Response::error([
+                    "pages must be a non-empty array."
+                ]);
+            }
+
+            $chapterId = (int)$_POST["chapter_id"];
+            $creatorId = AuthMiddleware::getUser()["sub"];
+
+            $statement = Database::prepare("
+                SELECT c.creator_id
+                FROM chapters ch
+                JOIN comics c
+                    ON c.id = ch.comic_id
+                WHERE ch.id = ?
+            ");
+
+            $statement->bind_param(
+                "i",
+                $chapterId
             );
 
-            Validator::required($comment, ['user_id', 'comic_id', 'content']);
-            Validator::integer($comment, ['user_id', 'comic_id']);
-            Validator::positive($comment, ['user_id', 'comic_id']);
-            Validator::string($comment, ['content']);
+            Database::execute($statement);
 
-            $statement = $db->prepare("
-                INSERT INTO comments
+            $chapter = $statement
+                ->get_result()
+                ->fetch_assoc();
+
+            if (!$chapter) {
+                Response::error([
+                    "Chapter not found."
+                ], 404);
+            }
+
+            if (
+                (int)$chapter["creator_id"] !== $creatorId
+            ) {
+                Response::error([
+                    "Permission denied."
+                ], 403);
+            }
+
+            $db = Database::getConnection();
+
+            $db->begin_transaction();
+
+            $statement = Database::prepare("
+                INSERT INTO chapter_pages
                 (
-                    comic_id,
-                    user_id,
-                    content
+                    chapter_id,
+                    page_number,
+                    image
                 )
                 VALUES (?, ?, ?)
             ");
 
-            $statement->bind_param(
-                "iis",
-                $comment['comic_id'],
-                $comment['user_id'],
-                $comment['content']
-            );
+            $inserted = [];
 
-            $statement->execute();
+            foreach ($_POST["pages"] as $page) {
+                Validator::required($page, ["page_number", "image"]);
+                Validator::integer($page, ["page_number"]);
+                Validator::positive($page, ["page_number"]);
+                Validator::string($page, ["image"]);
+
+                $statement->bind_param(
+                    "iis",
+                    $chapterId,
+                    $page["page_number"],
+                    $page["image"]
+                );
+
+                Database::execute($statement);
+
+                $inserted[] = [
+                    "id" => $db->insert_id,
+                    "page_number" => $page["page_number"],
+                    "image" => $page["image"]
+                ];
+            }
+
+            $db->commit();
+
             Response::success([
-                'comment' => [
-                    'id' => $db->insert_id,
-                    'comic_id' => $comment['comic_id'],
-                    'user_id' => $comment['user_id'],
-                    'content' => $comment['content']
-                ]
+                "chapter_id" => $chapterId,
+                "pages" => $inserted
             ], 201);
 
         } catch (Exception $e) {
+            Database::getConnection()->rollback();
+
             Response::error([
                 $e->getMessage()
             ], 500);
@@ -116,12 +184,13 @@ class ChapterPageController
     }
 
     /**
-     * Update an existing comment.
+     * Update an existing page.
      *
      * Payload:
-     * comment[
+     * page[
      *      id,
-     *      content
+     *      page_number,
+     *      image
      * ]
      *
      * @return void
@@ -129,32 +198,63 @@ class ChapterPageController
     public static function update(): void
     {
         try {
-            $comment = Validator::payload(
+            $page = Validator::payload(
                 $_POST,
-                '$comment'
+                "page"
             );
 
-            Validator::required($comment, ['id', 'content']);
-            Validator::integer($comment, ['id']);
-            Validator::positive($comment, ['id']);
-            Validator::string($comment, ['content']);
+            Validator::required($page, ["id", "page_number", "image"]);
+            Validator::integer($page, ["id", "page_number"]);
+            Validator::positive($page, ["id", "page_number"]);
+            Validator::string($page, ["image"]);
+
+            $creatorId = AuthMiddleware::getUser()["sub"];
 
             $statement = Database::prepare("
-                UPDATE comments
+                SELECT p.id
+                FROM comics c
+                JOIN chapters ch
+                    ON ch.comic_id = c.id
+                JOIN chapter_pages p
+                    ON p.chapter_id = ch.id
+                WHERE
+                    p.id = ?
+                    AND c.creator_id = ?
+            ");
+
+            $statement->bind_param(
+                "ii",
+                $page["id"],
+                $creatorId
+            );
+
+            Database::execute($statement);
+
+            if ($statement->get_result()->num_rows === 0) {
+                Response::error([
+                    "Page not found or permission denied."
+                ], 403);
+            }
+
+            $statement = Database::prepare("
+                UPDATE chapter_pages
                 SET
-                    content = ?
+                    page_number = ?,
+                    image = ?
                 WHERE id = ?
             ");
 
             $statement->bind_param(
-                "si",
-                $comment['content'],
-                $comment['id']
+                "isi",
+                $page["page_number"],
+                $page["image"],
+                $page["id"]
             );
 
             Database::execute($statement);
+
             Response::success([
-                'updated' => $statement->affected_rows > 0
+                "updated" => $statement->affected_rows > 0
             ]);
 
         } catch (Exception $e) {
@@ -165,7 +265,7 @@ class ChapterPageController
     }
 
     /**
-     * Delete a comment.
+     * Delete a page.
      *
      * Payload:
      * - id
@@ -175,23 +275,52 @@ class ChapterPageController
     public static function delete(): void
     {
         try {
-            Validator::required($_POST, ['id']);
-            Validator::integer($_POST, ['id']);
-            Validator::positive($_POST, ['id']);
+            Validator::required($_POST, ["id"]);
+            Validator::integer($_POST, ["id"]);
+            Validator::positive($_POST, ["id"]);
+
+            $creatorId = AuthMiddleware::getUser()["sub"];
 
             $statement = Database::prepare("
-                DELETE FROM comments
+                SELECT p.id
+                FROM chapter_pages p
+                JOIN chapters ch
+                    ON ch.id = p.chapter_id
+                JOIN comics c
+                    ON c.id = ch.comic_id
+                WHERE
+                    p.id = ?
+                    AND c.creator_id = ?
+            ");
+
+            $statement->bind_param(
+                "ii",
+                $_POST["id"],
+                $creatorId
+            );
+
+            Database::execute($statement);
+
+            if ($statement->get_result()->num_rows === 0) {
+                Response::error([
+                    "Page not found or permission denied."
+                ], 403);
+            }
+
+            $statement = Database::prepare("
+                DELETE FROM chapter_pages
                 WHERE id = ?
             ");
 
             $statement->bind_param(
                 "i",
-                $_POST['id']
+                $_POST["id"]
             );
 
             Database::execute($statement);
+
             Response::success([
-                'deleted' => $statement->affected_rows > 0
+                "deleted" => $statement->affected_rows > 0
             ]);
 
         } catch (Exception $e) {
