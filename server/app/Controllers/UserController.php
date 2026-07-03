@@ -74,7 +74,7 @@ class UserController
      *
      * Payload:
      * - username
-     * - password
+     * - password (unhashed)
      *
      * @return void
      */
@@ -144,8 +144,6 @@ class UserController
      *      username,
      *      password
      * ]
-     *
-     * password is used to confirm identity.
      *
      * @return void
      */
@@ -221,7 +219,7 @@ class UserController
      *
      * Payload:
      * - id
-     * - password
+     * - password (unhashed)
      *
      * @return void
      */

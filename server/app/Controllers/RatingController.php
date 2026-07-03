@@ -10,60 +10,12 @@ use Exception;
 class RatingController
 {
     /**
-     * Retrieve all categories.
-     *
-     * Optional payload:
-     * - keyword
-     *
-     * @return void
-     */
-    public static function get(): void
-    {
-        try {
-            $keyword = trim($_POST['keyword'] ?? '');
-
-            $query = "
-                SELECT *
-                FROM categories
-            ";
-
-            if ($keyword !== '') {
-                $query .= " WHERE name LIKE ?";
-            }
-
-            $query .= " ORDER BY name ASC";
-
-            $statement = Database::prepare($query);
-
-            if ($keyword !== '') {
-                $keyword = "%{$keyword}%";
-                $statement->bind_param(
-                    "s",
-                    $keyword
-                );
-            }
-
-            Database::execute($statement);
-            Response::success(
-                $statement
-                    ->get_result()
-                    ->fetch_all(MYSQLI_ASSOC)
-            );
-
-        } catch (Exception $e) {
-            Response::error([
-                $e->getMessage()
-            ], 500);
-        }
-    }
-
-    /**
-     * Create a new category.
+     * Create a new rating.
      *
      * Payload:
-     * category[
-     *      name,
-     *      description (optional)
+     * rating[
+     *      comic_id,
+     *      rating
      * ]
      *
      * @return void
@@ -73,24 +25,22 @@ class RatingController
         try {
             $db = Database::getConnection();
 
-            $category = Validator::payload(
+            $rating = Validator::payload(
                 $_POST,
-                'category'
+                'rating'
             );
 
-            Validator::required($category, ['name']);
-            Validator::string($category, ['name']);
-
-            $description = Validator::nullableString(
-                $category,
-                'description'
-            );
+            Validator::required($rating, ['comic_id', 'rating']);
+            Validator::integer($rating, ['comic_id', 'rating']);
+            Validator::positive($rating, ['comic_id', 'rating']);
+            Validator::between($rating, 'rating', 1, 5);
 
             $statement = $db->prepare("
-                INSERT INTO categories
+                INSERT INTO comic_rated_by_user
                 (
-                    name,
-                    description
+                    comic_id,
+                    
+                    rating
                 )
                 VALUES (?, ?)
             ");
@@ -118,13 +68,13 @@ class RatingController
     }
 
     /**
-     * Update an existing category.
+     * Update an existing rating.
      *
      * Payload:
-     * category[
+     * rating[
      *      id,
-     *      name,
-     *      description (optional)
+     *      comic_id,
+     *      rating
      * ]
      *
      * @return void
@@ -132,33 +82,29 @@ class RatingController
     public static function update(): void
     {
         try {
-            $category = Validator::payload(
+            $rating = Validator::payload(
                 $_POST,
-                'category'
+                'rating'
             );
 
-            Validator::required($category, ['id', 'name']);
-            Validator::integer($category, ['id']);
-            Validator::positive($category, ['id']);
-
-            $description = Validator::nullableString(
-                $category,
-                'description'
-            );
+            Validator::required($rating, ['id', 'comic_id', 'rating']);
+            Validator::integer($rating, ['id', 'comic_id', 'rating']);
+            Validator::positive($rating, ['id', 'comic_id', 'rating']);
+            Validator::between($rating, 'rating', 1, 5);
 
             $statement = Database::prepare("
-                UPDATE categories
+                UPDATE comic_rated_by_user
                 SET
-                    name = ?,
-                    description = ?
+                    comic_id = ?,
+                    rating = ?
                 WHERE id = ?
             ");
 
             $statement->bind_param(
-                "ssi",
-                $category['name'],
-                $description,
-                $category['id']
+                "iii",
+                $rating['comic_id'],
+                $rating['rating'],
+                $rating['id']
             );
 
             Database::execute($statement);
@@ -174,10 +120,10 @@ class RatingController
     }
 
     /**
-     * Delete a category.
+     * Delete a rating.
      *
      * Required payload:
-     * - id
+     * - comic_id
      *
      * @return void
      */
@@ -189,8 +135,8 @@ class RatingController
             Validator::positive($_POST, ['id']);
 
             $statement = Database::prepare("
-                DELETE FROM categories
-                WHERE id = ?
+                DELETE FROM comic_rated_by_user
+                WHERE comic_id = ?
             ");
 
             $statement->bind_param(

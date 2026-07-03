@@ -7,7 +7,7 @@ use App\Response;
 use App\Validator;
 use Exception;
 
-class CommentController
+class ReplyController
 {
     /**
      * Retrieve all comments for a particular comic.
@@ -55,12 +55,13 @@ class CommentController
     }
 
     /**
-     * Create a new comment.
+     * Create a new reply.
      *
      * Payload:
      * comment[
      *      comic_id,
      *      user_id,
+     *      parent_comment_id,
      *      content
      * ]
      *
@@ -76,25 +77,27 @@ class CommentController
                 'comment'
             );
 
-            Validator::required($comment, ['user_id', 'comic_id', 'content']);
-            Validator::integer($comment, ['user_id', 'comic_id']);
-            Validator::positive($comment, ['user_id', 'comic_id']);
+            Validator::required($comment, ['user_id', 'comic_id', 'parent_comment_id', 'content']);
+            Validator::integer($comment, ['user_id', 'comic_id', 'parent_comment_id']);
+            Validator::positive($comment, ['user_id', 'comic_id', 'parent_comment_id']);
             Validator::string($comment, ['content']);
 
-            $statement = $db->prepare("
-                INSERT INTO comments
+            $statement = $db->prepare(
+                "INSERT INTO comments
                 (
                     comic_id,
                     user_id,
+                    parent_comment_id,
                     content
                 )
-                VALUES (?, ?, ?)
-            ");
+                VALUES (?, ?, ?, ?)"
+            );
 
             $statement->bind_param(
-                "iis",
+                "iiis",
                 $comment['comic_id'],
                 $comment['user_id'],
+                $comment['parent_comment_id'],
                 $comment['content']
             );
 
@@ -104,6 +107,7 @@ class CommentController
                     'id' => $db->insert_id,
                     'comic_id' => $comment['comic_id'],
                     'user_id' => $comment['user_id'],
+                    'parent_comment_id' => $comment['parent_comment_id'],
                     'content' => $comment['content']
                 ]
             ], 201);
