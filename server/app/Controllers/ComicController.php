@@ -335,7 +335,7 @@ class ComicController
                 SELECT id
                 FROM comics
                 WHERE id = ?
-                AND creator_id = ?
+                    AND creator_id = ?
             ");
 
             $statement->bind_param(
@@ -413,7 +413,7 @@ class ComicController
                 SELECT id
                 FROM comics
                 WHERE id = ?
-                AND creator_id = ?
+                    AND creator_id = ?
             ");
 
             $statement->bind_param(
