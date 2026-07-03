@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Database\Database;
+use App\Middleware\AuthMiddleware;
 use App\Response;
 use App\Validator;
 use Exception;
@@ -10,7 +11,7 @@ use Exception;
 class CommentController
 {
     /**
-     * Retrieve all comments for a particular comic.
+     * Retrieve all comments of a comic.
      *
      * Payload:
      * - comic_id
@@ -20,27 +21,36 @@ class CommentController
     public static function get(): void
     {
         try {
-            Validator::required($_POST, ["comic_id"]);
-            Validator::integer($_POST, ["comic_id"]);
-            Validator::positive($_POST, ["comic_id"]);
+            Validator::required($_POST, ['comic_id']);
+            Validator::integer($_POST, ['comic_id']);
+            Validator::positive($_POST, ['comic_id']);
 
-            $comic_id = $_POST['comic_id'];
+            $comicId = (int)$_POST['comic_id'];
 
             $statement = Database::prepare("
-                SELECT c.*, u.username
+                SELECT
+                    c.id,
+                    c.content,
+                    c.created_at,
+                    c.updated_at,
+                    u.id AS user_id,
+                    u.username
                 FROM comments c
-                JOIN users u
+                LEFT JOIN users u
                     ON u.id = c.user_id
-                WHERE c.comic_id = ?
-                ORDER BY c.created_at
+                WHERE
+                    c.comic_id = ?
+                    AND c.parent_comment_id IS NULL
+                ORDER BY c.created_at DESC
             ");
 
             $statement->bind_param(
                 "i",
-                $comic_id
+                $comicId
             );
 
             Database::execute($statement);
+
             Response::success(
                 $statement
                     ->get_result()
@@ -55,12 +65,11 @@ class CommentController
     }
 
     /**
-     * Create a new comment.
+     * Insert a new comment.
      *
      * Payload:
      * comment[
      *      comic_id,
-     *      user_id,
      *      content
      * ]
      *
@@ -69,19 +78,19 @@ class CommentController
     public static function insert(): void
     {
         try {
-            $db = Database::getConnection();
-
             $comment = Validator::payload(
                 $_POST,
-                'comment'
+                "comment"
             );
 
-            Validator::required($comment, ['user_id', 'comic_id', 'content']);
-            Validator::integer($comment, ['user_id', 'comic_id']);
-            Validator::positive($comment, ['user_id', 'comic_id']);
-            Validator::string($comment, ['content']);
+            Validator::required($comment, ["comic_id", "content"]);
+            Validator::integer($comment, ["comic_id"]);
+            Validator::positive($comment, ["comic_id"]);
+            Validator::string($comment, ["content"]);
 
-            $statement = $db->prepare("
+            $userId = AuthMiddleware::getUser()["sub"];
+
+            $statement = Database::prepare("
                 INSERT INTO comments
                 (
                     comic_id,
@@ -93,19 +102,18 @@ class CommentController
 
             $statement->bind_param(
                 "iis",
-                $comment['comic_id'],
-                $comment['user_id'],
-                $comment['content']
+                $comment["comic_id"],
+                $userId,
+                $comment["content"]
             );
 
-            $statement->execute();
+            Database::execute($statement);
+
             Response::success([
-                'comment' => [
-                    'id' => $db->insert_id,
-                    'comic_id' => $comment['comic_id'],
-                    'user_id' => $comment['user_id'],
-                    'content' => $comment['content']
-                ]
+                "id" => Database::getConnection()->insert_id,
+                "comic_id" => $comment["comic_id"],
+                "user_id" => $userId,
+                "content" => $comment["content"]
             ], 201);
 
         } catch (Exception $e) {
@@ -116,7 +124,7 @@ class CommentController
     }
 
     /**
-     * Update an existing comment.
+     * Update a comment.
      *
      * Payload:
      * comment[
@@ -131,13 +139,38 @@ class CommentController
         try {
             $comment = Validator::payload(
                 $_POST,
-                '$comment'
+                "comment"
             );
 
-            Validator::required($comment, ['id', 'content']);
-            Validator::integer($comment, ['id']);
-            Validator::positive($comment, ['id']);
-            Validator::string($comment, ['content']);
+            Validator::required($comment, ["id", "content"]);
+            Validator::integer($comment, ["id"]);
+            Validator::positive($comment, ["id"]);
+            Validator::string($comment, ["content"]);
+
+            $userId = AuthMiddleware::getUser()["sub"];
+
+            $statement = Database::prepare("
+                SELECT id
+                FROM comments
+                WHERE
+                    id = ?
+                    AND user_id = ?
+                    AND parent_comment_id IS NULL
+            ");
+
+            $statement->bind_param(
+                "ii",
+                $comment["id"],
+                $userId
+            );
+
+            Database::execute($statement);
+
+            if ($statement->get_result()->num_rows === 0) {
+                Response::error([
+                    "Comment not found or permission denied."
+                ], 403);
+            }
 
             $statement = Database::prepare("
                 UPDATE comments
@@ -148,13 +181,14 @@ class CommentController
 
             $statement->bind_param(
                 "si",
-                $comment['content'],
-                $comment['id']
+                $comment["content"],
+                $comment["id"]
             );
 
             Database::execute($statement);
+
             Response::success([
-                'updated' => $statement->affected_rows > 0
+                "updated" => $statement->affected_rows > 0
             ]);
 
         } catch (Exception $e) {
@@ -175,9 +209,34 @@ class CommentController
     public static function delete(): void
     {
         try {
-            Validator::required($_POST, ['id']);
-            Validator::integer($_POST, ['id']);
-            Validator::positive($_POST, ['id']);
+            Validator::required($_POST, ["id"]);
+            Validator::integer($_POST, ["id"]);
+            Validator::positive($_POST, ["id"]);
+
+            $userId = AuthMiddleware::getUser()["sub"];
+
+            $statement = Database::prepare("
+                SELECT id
+                FROM comments
+                WHERE
+                    id = ?
+                    AND user_id = ?
+                    AND parent_comment_id IS NULL
+            ");
+
+            $statement->bind_param(
+                "ii",
+                $_POST["id"],
+                $userId
+            );
+
+            Database::execute($statement);
+
+            if ($statement->get_result()->num_rows === 0) {
+                Response::error([
+                    "Comment not found or permission denied."
+                ], 403);
+            }
 
             $statement = Database::prepare("
                 DELETE FROM comments
@@ -186,12 +245,13 @@ class CommentController
 
             $statement->bind_param(
                 "i",
-                $_POST['id']
+                $_POST["id"]
             );
 
             Database::execute($statement);
+
             Response::success([
-                'deleted' => $statement->affected_rows > 0
+                "deleted" => $statement->affected_rows > 0
             ]);
 
         } catch (Exception $e) {
