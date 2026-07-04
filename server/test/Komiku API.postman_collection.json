@@ -1,0 +1,3125 @@
+{
+  "info": {
+    "_postman_id": "2022866c-5971-4486-8d6f-84028f6d0fba",
+    "name": "Komiku API",
+    "description": "This collection contains the API endpoints for the Komiku application. It is organized around the main resources of the system, including users, categories, comics, chapters, chapter pages, comments, replies, and ratings.\n\nThe collection supports common application workflows such as user registration and login, content management, comic browsing, chapter and page retrieval, and community interactions through comments, replies, and ratings. It also includes a dedicated end-to-end section for testing complete multi-step scenarios across the API.\n\nOverall, this collection is intended to help with development, manual testing, and validation of the full Komiku backend workflow from authentication to content and interaction management.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "54755098",
+    "_collection_link": "https://go.postman.co/collection/54755098-2022866c-5971-4486-8d6f-84028f6d0fba?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Web",
+      "item": [
+        {
+          "name": "API Page",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://ubaya.cloud/flutter/160423120/",
+              "protocol": "https",
+              "host": [
+                "ubaya",
+                "cloud"
+              ],
+              "path": [
+                "flutter",
+                "160423120",
+                ""
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "User",
+      "item": [
+        {
+          "name": "Register",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();\r",
+                  "\r",
+                  "const username = json.data.user.username;\r",
+                  "pm.environment.set(\r",
+                  "    \"USERNAME\",\r",
+                  "    username\r",
+                  ");\r",
+                  "\r",
+                  "const token = json.data.token;\r",
+                  "pm.environment.set(\r",
+                  "    \"TOKEN\",\r",
+                  "    token\r",
+                  ");"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "action",
+                  "value": "REGISTER",
+                  "type": "text",
+                  "uuid": "46939248-cf87-4f79-9a92-51bd05a672f5"
+                },
+                {
+                  "key": "user[username]",
+                  "value": "{{$timestamp}}",
+                  "type": "text",
+                  "uuid": "21cc69da-8b57-4b62-8743-d62966446a84"
+                },
+                {
+                  "key": "user[password]",
+                  "value": "1234567890",
+                  "type": "text",
+                  "uuid": "0f979b0b-797f-4250-a5e3-c29b6d5afc8a"
+                }
+              ]
+            },
+            "url": {
+              "raw": "https://ubaya.cloud/flutter/160423120/",
+              "protocol": "https",
+              "host": [
+                "ubaya",
+                "cloud"
+              ],
+              "path": [
+                "flutter",
+                "160423120",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();\r",
+                  "\r",
+                  "const token = json.data.token;\r",
+                  "pm.environment.set(\r",
+                  "    \"TOKEN\",\r",
+                  "    token\r",
+                  ");"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "action",
+                  "value": "LOGIN",
+                  "type": "text",
+                  "uuid": "46939248-cf87-4f79-9a92-51bd05a672f5"
+                },
+                {
+                  "key": "user[username]",
+                  "value": "{{USERNAME}}",
+                  "type": "text",
+                  "uuid": "21cc69da-8b57-4b62-8743-d62966446a84"
+                },
+                {
+                  "key": "user[password]",
+                  "value": "1234567890",
+                  "type": "text",
+                  "uuid": "0f979b0b-797f-4250-a5e3-c29b6d5afc8a"
+                }
+              ]
+            },
+            "url": {
+              "raw": "https://ubaya.cloud/flutter/160423120/",
+              "protocol": "https",
+              "host": [
+                "ubaya",
+                "cloud"
+              ],
+              "path": [
+                "flutter",
+                "160423120",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "action",
+                  "value": "UPDATE_USER",
+                  "type": "text",
+                  "uuid": "46939248-cf87-4f79-9a92-51bd05a672f5"
+                },
+                {
+                  "key": "user[username]",
+                  "value": "{{$timestamp}}",
+                  "type": "text",
+                  "uuid": "b21dc723-a2ab-4fe7-9859-7ce197b43804"
+                },
+                {
+                  "key": "user[password]",
+                  "value": "1234567890",
+                  "type": "text",
+                  "uuid": "0f979b0b-797f-4250-a5e3-c29b6d5afc8a"
+                }
+              ]
+            },
+            "url": {
+              "raw": "https://ubaya.cloud/flutter/160423120/",
+              "protocol": "https",
+              "host": [
+                "ubaya",
+                "cloud"
+              ],
+              "path": [
+                "flutter",
+                "160423120",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "action",
+                  "value": "DELETE_USER",
+                  "type": "text",
+                  "uuid": "46939248-cf87-4f79-9a92-51bd05a672f5"
+                },
+                {
+                  "key": "user[password]",
+                  "value": "1234567890",
+                  "type": "text",
+                  "uuid": "0f979b0b-797f-4250-a5e3-c29b6d5afc8a"
+                }
+              ]
+            },
+            "url": {
+              "raw": "https://ubaya.cloud/flutter/160423120/",
+              "protocol": "https",
+              "host": [
+                "ubaya",
+                "cloud"
+              ],
+              "path": [
+                "flutter",
+                "160423120",
+                ""
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Category",
+      "item": [
+        {
+          "name": "Get Categories",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "action",
+                  "value": "GET_CATEGORIES",
+                  "type": "text",
+                  "uuid": "b2d3e537-b6b5-4223-8c63-d7faaf9ec6ef"
+                }
+              ]
+            },
+            "url": {
+              "raw": "https://ubaya.cloud/flutter/160423120/",
+              "protocol": "https",
+              "host": [
+                "ubaya",
+                "cloud"
+              ],
+              "path": [
+                "flutter",
+                "160423120",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Insert Category",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "action",
+                  "value": "INSERT_CATEGORY",
+                  "type": "text",
+                  "uuid": "a4bb1ce8-6a3a-424e-aea4-0f45af35586d"
+                },
+                {
+                  "key": "category[name]",
+                  "value": "TEST_INSERT_CATEGORY_NAME",
+                  "type": "text",
+                  "uuid": "7380d0b2-a159-47cf-a6d1-b1ecf73d6f52"
+                },
+                {
+                  "key": "category[description]",
+                  "value": "TEST_INSERT_CATEGORY_DESCRIPTION",
+                  "type": "text",
+                  "uuid": "c339d0f6-8191-4a21-9866-6043fc0573af"
+                }
+              ]
+            },
+            "url": {
+              "raw": "https://ubaya.cloud/flutter/160423120/",
+              "protocol": "https",
+              "host": [
+                "ubaya",
+                "cloud"
+              ],
+              "path": [
+                "flutter",
+                "160423120",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Category",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "action",
+                  "value": "UPDATE_CATEGORY",
+                  "type": "text",
+                  "uuid": "a4bb1ce8-6a3a-424e-aea4-0f45af35586d"
+                },
+                {
+                  "key": "category[id]",
+                  "value": "1",
+                  "type": "text",
+                  "uuid": "05da88e0-7eb4-4846-aa62-4bc996ea88d6"
+                },
+                {
+                  "key": "category[name]",
+                  "value": "TEST_UPDATE_CATEGORY_NAME",
+                  "type": "text",
+                  "uuid": "7380d0b2-a159-47cf-a6d1-b1ecf73d6f52"
+                },
+                {
+                  "key": "category[description]",
+                  "value": "TEST_UPDATE_CATEGORY_DESCRIPTION",
+                  "type": "text",
+                  "uuid": "c339d0f6-8191-4a21-9866-6043fc0573af"
+                }
+              ]
+            },
+            "url": {
+              "raw": "https://ubaya.cloud/flutter/160423120/",
+              "protocol": "https",
+              "host": [
+                "ubaya",
+                "cloud"
+              ],
+              "path": [
+                "flutter",
+                "160423120",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Category",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "action",
+                  "value": "DELETE_CATEGORY",
+                  "type": "text",
+                  "uuid": "a4bb1ce8-6a3a-424e-aea4-0f45af35586d"
+                },
+                {
+                  "key": "id",
+                  "value": "1",
+                  "type": "text",
+                  "uuid": "05da88e0-7eb4-4846-aa62-4bc996ea88d6"
+                }
+              ]
+            },
+            "url": {
+              "raw": "https://ubaya.cloud/flutter/160423120/",
+              "protocol": "https",
+              "host": [
+                "ubaya",
+                "cloud"
+              ],
+              "path": [
+                "flutter",
+                "160423120",
+                ""
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Comic",
+      "item": [
+        {
+          "name": "Get Comics",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "action",
+                  "value": "GET_COMICS",
+                  "type": "text",
+                  "uuid": "b2d3e537-b6b5-4223-8c63-d7faaf9ec6ef"
+                }
+              ]
+            },
+            "url": {
+              "raw": "https://ubaya.cloud/flutter/160423120/",
+              "protocol": "https",
+              "host": [
+                "ubaya",
+                "cloud"
+              ],
+              "path": [
+                "flutter",
+                "160423120",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Comic Detail",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "action",
+                  "value": "GET_COMIC_DETAIL",
+                  "type": "text",
+                  "uuid": "b2d3e537-b6b5-4223-8c63-d7faaf9ec6ef"
+                },
+                {
+                  "key": "id",
+                  "value": "1",
+                  "type": "text",
+                  "uuid": "e94358df-24e3-46e1-923e-075f972625a9"
+                }
+              ]
+            },
+            "url": {
+              "raw": "https://ubaya.cloud/flutter/160423120/",
+              "protocol": "https",
+              "host": [
+                "ubaya",
+                "cloud"
+              ],
+              "path": [
+                "flutter",
+                "160423120",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Insert Comic",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "action",
+                  "value": "INSERT_COMIC",
+                  "type": "text",
+                  "uuid": "b2d3e537-b6b5-4223-8c63-d7faaf9ec6ef"
+                },
+                {
+                  "key": "comic[title]",
+                  "value": "TEST_INSERT_COMIC_TITLE",
+                  "type": "text",
+                  "uuid": "1dfb452c-8da0-425f-8f3a-41d60edc8d50"
+                },
+                {
+                  "key": "comic[poster]",
+                  "value": "TEST_INSERT_COMIC_POSTER",
+                  "type": "text",
+                  "uuid": "9abf6164-0152-4310-98e5-1ba3887a0153"
+                },
+                {
+                  "key": "comic[description]",
+                  "value": "TEST_INSERT_COMIC_DESCRIPTION",
+                  "type": "text",
+                  "uuid": "803c8601-e9ba-4cd3-a632-0c39bb266654"
+                }
+              ]
+            },
+            "url": {
+              "raw": "https://ubaya.cloud/flutter/160423120/",
+              "protocol": "https",
+              "host": [
+                "ubaya",
+                "cloud"
+              ],
+              "path": [
+                "flutter",
+                "160423120",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Comic",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "action",
+                  "value": "UPDATE_COMIC",
+                  "type": "text",
+                  "uuid": "b2d3e537-b6b5-4223-8c63-d7faaf9ec6ef"
+                },
+                {
+                  "key": "comic[id]",
+                  "value": "1",
+                  "type": "text",
+                  "uuid": "299ac32f-a68a-4c6d-8631-dfb6e5323d7e"
+                },
+                {
+                  "key": "comic[title]",
+                  "value": "TEST_UPDATE_COMIC_TITLE",
+                  "type": "text",
+                  "uuid": "1dfb452c-8da0-425f-8f3a-41d60edc8d50"
+                },
+                {
+                  "key": "comic[poster]",
+                  "value": "TEST_UPDATE_COMIC_POSTER",
+                  "type": "text",
+                  "uuid": "9abf6164-0152-4310-98e5-1ba3887a0153"
+                },
+                {
+                  "key": "comic[description]",
+                  "value": "TEST_UPDATE_COMIC_DESCRIPTION",
+                  "type": "text",
+                  "uuid": "803c8601-e9ba-4cd3-a632-0c39bb266654"
+                }
+              ]
+            },
+            "url": {
+              "raw": "https://ubaya.cloud/flutter/160423120/",
+              "protocol": "https",
+              "host": [
+                "ubaya",
+                "cloud"
+              ],
+              "path": [
+                "flutter",
+                "160423120",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Comic",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "action",
+                  "value": "DELETE_COMIC",
+                  "type": "text",
+                  "uuid": "b2d3e537-b6b5-4223-8c63-d7faaf9ec6ef"
+                },
+                {
+                  "key": "id",
+                  "value": "1",
+                  "type": "text",
+                  "uuid": "299ac32f-a68a-4c6d-8631-dfb6e5323d7e"
+                }
+              ]
+            },
+            "url": {
+              "raw": "https://ubaya.cloud/flutter/160423120/",
+              "protocol": "https",
+              "host": [
+                "ubaya",
+                "cloud"
+              ],
+              "path": [
+                "flutter",
+                "160423120",
+                ""
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Chapter",
+      "item": [
+        {
+          "name": "Get Comic Chapters",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "action",
+                  "value": "GET_COMIC_CHAPTERS",
+                  "type": "text",
+                  "uuid": "b2d3e537-b6b5-4223-8c63-d7faaf9ec6ef"
+                },
+                {
+                  "key": "comic_id",
+                  "value": "1",
+                  "type": "text",
+                  "uuid": "aa2a10b6-4778-4be4-8903-8b59dab943ec"
+                }
+              ]
+            },
+            "url": {
+              "raw": "https://ubaya.cloud/flutter/160423120/",
+              "protocol": "https",
+              "host": [
+                "ubaya",
+                "cloud"
+              ],
+              "path": [
+                "flutter",
+                "160423120",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Insert Comic Chapters",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "action",
+                  "value": "INSERT_COMIC_CHAPTERS",
+                  "type": "text",
+                  "uuid": "b2d3e537-b6b5-4223-8c63-d7faaf9ec6ef"
+                },
+                {
+                  "key": "comic_id",
+                  "value": "1",
+                  "type": "text",
+                  "uuid": "9296ca4f-af0a-48ed-867a-711cdaf6750f"
+                },
+                {
+                  "key": "chapters[0][chapter_number]",
+                  "value": "1",
+                  "type": "text",
+                  "uuid": "1dfb452c-8da0-425f-8f3a-41d60edc8d50"
+                },
+                {
+                  "key": "chapters[0][title]",
+                  "value": "TEST_INSERT_COMIC_CHAPTER_1_TITLE",
+                  "type": "text",
+                  "uuid": "9abf6164-0152-4310-98e5-1ba3887a0153"
+                },
+                {
+                  "key": "chapters[1][chapter_number]",
+                  "value": "2",
+                  "type": "text",
+                  "uuid": "803c8601-e9ba-4cd3-a632-0c39bb266654"
+                },
+                {
+                  "key": "chapters[1][title]",
+                  "value": "TEST_INSERT_COMIC_CHAPTER_2_TITLE",
+                  "type": "text",
+                  "uuid": "dec4ed7e-959c-4a91-9a14-ba8d52074901"
+                }
+              ]
+            },
+            "url": {
+              "raw": "https://ubaya.cloud/flutter/160423120/",
+              "protocol": "https",
+              "host": [
+                "ubaya",
+                "cloud"
+              ],
+              "path": [
+                "flutter",
+                "160423120",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Comic Chapter",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "action",
+                  "value": "UPDATE_COMIC_CHAPTER",
+                  "type": "text",
+                  "uuid": "b2d3e537-b6b5-4223-8c63-d7faaf9ec6ef"
+                },
+                {
+                  "key": "chapter[id]",
+                  "value": "1",
+                  "type": "text",
+                  "uuid": "299ac32f-a68a-4c6d-8631-dfb6e5323d7e"
+                },
+                {
+                  "key": "chapter[chapter_number]",
+                  "value": "1",
+                  "type": "text",
+                  "uuid": "1dfb452c-8da0-425f-8f3a-41d60edc8d50"
+                },
+                {
+                  "key": "chapter[title]",
+                  "value": "TEST_UPDATE_COMIC_CHAPTER",
+                  "type": "text",
+                  "uuid": "9abf6164-0152-4310-98e5-1ba3887a0153"
+                }
+              ]
+            },
+            "url": {
+              "raw": "https://ubaya.cloud/flutter/160423120/",
+              "protocol": "https",
+              "host": [
+                "ubaya",
+                "cloud"
+              ],
+              "path": [
+                "flutter",
+                "160423120",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Comic Chapter",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "action",
+                  "value": "DELETE_COMIC_CHAPTER",
+                  "type": "text",
+                  "uuid": "b2d3e537-b6b5-4223-8c63-d7faaf9ec6ef"
+                },
+                {
+                  "key": "id",
+                  "value": "1",
+                  "type": "text",
+                  "uuid": "299ac32f-a68a-4c6d-8631-dfb6e5323d7e"
+                }
+              ]
+            },
+            "url": {
+              "raw": "https://ubaya.cloud/flutter/160423120/",
+              "protocol": "https",
+              "host": [
+                "ubaya",
+                "cloud"
+              ],
+              "path": [
+                "flutter",
+                "160423120",
+                ""
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Chapter Page",
+      "item": [
+        {
+          "name": "Get Comic Chapter Pages",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "action",
+                  "value": "GET_COMIC_CHAPTER_PAGES",
+                  "type": "text",
+                  "uuid": "b2d3e537-b6b5-4223-8c63-d7faaf9ec6ef"
+                },
+                {
+                  "key": "chapter_id",
+                  "value": "1",
+                  "type": "text",
+                  "uuid": "aa2a10b6-4778-4be4-8903-8b59dab943ec"
+                }
+              ]
+            },
+            "url": {
+              "raw": "https://ubaya.cloud/flutter/160423120/",
+              "protocol": "https",
+              "host": [
+                "ubaya",
+                "cloud"
+              ],
+              "path": [
+                "flutter",
+                "160423120",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Insert Comic Chapter Pages",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "action",
+                  "value": "INSERT_COMIC_CHAPTER_PAGES",
+                  "type": "text",
+                  "uuid": "b2d3e537-b6b5-4223-8c63-d7faaf9ec6ef"
+                },
+                {
+                  "key": "chapter_id",
+                  "value": "1",
+                  "type": "text",
+                  "uuid": "9296ca4f-af0a-48ed-867a-711cdaf6750f"
+                },
+                {
+                  "key": "pages[0][page_number]",
+                  "value": "1",
+                  "type": "text",
+                  "uuid": "1dfb452c-8da0-425f-8f3a-41d60edc8d50"
+                },
+                {
+                  "key": "pages[0][image]",
+                  "value": "TEST_INSERT_COMIC_CHAPTER_PAGE_1_IMAGE",
+                  "type": "text",
+                  "uuid": "9abf6164-0152-4310-98e5-1ba3887a0153"
+                },
+                {
+                  "key": "pages[1][page_number]",
+                  "value": "2",
+                  "type": "text",
+                  "uuid": "803c8601-e9ba-4cd3-a632-0c39bb266654"
+                },
+                {
+                  "key": "pages[1][image]",
+                  "value": "TEST_INSERT_COMIC_CHAPTER_PAGE_2_IMAGE",
+                  "type": "text",
+                  "uuid": "dec4ed7e-959c-4a91-9a14-ba8d52074901"
+                }
+              ]
+            },
+            "url": {
+              "raw": "https://ubaya.cloud/flutter/160423120/",
+              "protocol": "https",
+              "host": [
+                "ubaya",
+                "cloud"
+              ],
+              "path": [
+                "flutter",
+                "160423120",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Comic Chapter Page",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "action",
+                  "value": "UPDATE_COMIC_CHAPTER_PAGE",
+                  "type": "text",
+                  "uuid": "b2d3e537-b6b5-4223-8c63-d7faaf9ec6ef"
+                },
+                {
+                  "key": "page[id]",
+                  "value": "1",
+                  "type": "text",
+                  "uuid": "299ac32f-a68a-4c6d-8631-dfb6e5323d7e"
+                },
+                {
+                  "key": "page[page_number]",
+                  "value": "1",
+                  "type": "text",
+                  "uuid": "1dfb452c-8da0-425f-8f3a-41d60edc8d50"
+                },
+                {
+                  "key": "page[image]",
+                  "value": "TEST_UPDATE_COMIC_CHAPTER_PAGE",
+                  "type": "text",
+                  "uuid": "9abf6164-0152-4310-98e5-1ba3887a0153"
+                }
+              ]
+            },
+            "url": {
+              "raw": "https://ubaya.cloud/flutter/160423120/",
+              "protocol": "https",
+              "host": [
+                "ubaya",
+                "cloud"
+              ],
+              "path": [
+                "flutter",
+                "160423120",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Comic Chapter Page",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "action",
+                  "value": "DELETE_COMIC_CHAPTER_PAGE",
+                  "type": "text",
+                  "uuid": "b2d3e537-b6b5-4223-8c63-d7faaf9ec6ef"
+                },
+                {
+                  "key": "id",
+                  "value": "1",
+                  "type": "text",
+                  "uuid": "299ac32f-a68a-4c6d-8631-dfb6e5323d7e"
+                }
+              ]
+            },
+            "url": {
+              "raw": "https://ubaya.cloud/flutter/160423120/",
+              "protocol": "https",
+              "host": [
+                "ubaya",
+                "cloud"
+              ],
+              "path": [
+                "flutter",
+                "160423120",
+                ""
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Comment",
+      "item": [
+        {
+          "name": "Get Comments",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "action",
+                  "value": "GET_COMMENTS",
+                  "type": "text",
+                  "uuid": "b2d3e537-b6b5-4223-8c63-d7faaf9ec6ef"
+                },
+                {
+                  "key": "comic_id",
+                  "value": "1",
+                  "type": "text",
+                  "uuid": "aa2a10b6-4778-4be4-8903-8b59dab943ec"
+                }
+              ]
+            },
+            "url": {
+              "raw": "https://ubaya.cloud/flutter/160423120/",
+              "protocol": "https",
+              "host": [
+                "ubaya",
+                "cloud"
+              ],
+              "path": [
+                "flutter",
+                "160423120",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Insert Comment",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "action",
+                  "value": "INSERT_COMMENT",
+                  "type": "text",
+                  "uuid": "b2d3e537-b6b5-4223-8c63-d7faaf9ec6ef"
+                },
+                {
+                  "key": "comment[comic_id]",
+                  "value": "1",
+                  "type": "text",
+                  "uuid": "1dfb452c-8da0-425f-8f3a-41d60edc8d50"
+                },
+                {
+                  "key": "comment[content]",
+                  "value": "TEST_INSERT_COMMENT_CONTENT",
+                  "type": "text",
+                  "uuid": "9abf6164-0152-4310-98e5-1ba3887a0153"
+                }
+              ]
+            },
+            "url": {
+              "raw": "https://ubaya.cloud/flutter/160423120/",
+              "protocol": "https",
+              "host": [
+                "ubaya",
+                "cloud"
+              ],
+              "path": [
+                "flutter",
+                "160423120",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Comment",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "action",
+                  "value": "UPDATE_COMMENT",
+                  "type": "text",
+                  "uuid": "b2d3e537-b6b5-4223-8c63-d7faaf9ec6ef"
+                },
+                {
+                  "key": "comment[id]",
+                  "value": "1",
+                  "type": "text",
+                  "uuid": "299ac32f-a68a-4c6d-8631-dfb6e5323d7e"
+                },
+                {
+                  "key": "comment[content]",
+                  "value": "TEST_UPDATE_COMMENT_CONTENT",
+                  "type": "text",
+                  "uuid": "1dfb452c-8da0-425f-8f3a-41d60edc8d50"
+                }
+              ]
+            },
+            "url": {
+              "raw": "https://ubaya.cloud/flutter/160423120/",
+              "protocol": "https",
+              "host": [
+                "ubaya",
+                "cloud"
+              ],
+              "path": [
+                "flutter",
+                "160423120",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Comment",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "action",
+                  "value": "DELETE_COMMENT",
+                  "type": "text",
+                  "uuid": "b2d3e537-b6b5-4223-8c63-d7faaf9ec6ef"
+                },
+                {
+                  "key": "id",
+                  "value": "1",
+                  "type": "text",
+                  "uuid": "299ac32f-a68a-4c6d-8631-dfb6e5323d7e"
+                }
+              ]
+            },
+            "url": {
+              "raw": "https://ubaya.cloud/flutter/160423120/",
+              "protocol": "https",
+              "host": [
+                "ubaya",
+                "cloud"
+              ],
+              "path": [
+                "flutter",
+                "160423120",
+                ""
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Reply",
+      "item": [
+        {
+          "name": "Get Replies",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "action",
+                  "value": "GET_REPLIES",
+                  "type": "text",
+                  "uuid": "b2d3e537-b6b5-4223-8c63-d7faaf9ec6ef"
+                },
+                {
+                  "key": "parent_comment_id",
+                  "value": "1",
+                  "type": "text",
+                  "uuid": "aa2a10b6-4778-4be4-8903-8b59dab943ec"
+                }
+              ]
+            },
+            "url": {
+              "raw": "https://ubaya.cloud/flutter/160423120/",
+              "protocol": "https",
+              "host": [
+                "ubaya",
+                "cloud"
+              ],
+              "path": [
+                "flutter",
+                "160423120",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Insert Reply",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "action",
+                  "value": "INSERT_REPLY",
+                  "type": "text",
+                  "uuid": "b2d3e537-b6b5-4223-8c63-d7faaf9ec6ef"
+                },
+                {
+                  "key": "reply[parent_comment_id]",
+                  "value": "1",
+                  "type": "text",
+                  "uuid": "1dfb452c-8da0-425f-8f3a-41d60edc8d50"
+                },
+                {
+                  "key": "reply[content]",
+                  "value": "TEST_INSERT_REPLY_CONTENT",
+                  "type": "text",
+                  "uuid": "9abf6164-0152-4310-98e5-1ba3887a0153"
+                }
+              ]
+            },
+            "url": {
+              "raw": "https://ubaya.cloud/flutter/160423120/",
+              "protocol": "https",
+              "host": [
+                "ubaya",
+                "cloud"
+              ],
+              "path": [
+                "flutter",
+                "160423120",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Reply",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "action",
+                  "value": "UPDATE_REPLY",
+                  "type": "text",
+                  "uuid": "b2d3e537-b6b5-4223-8c63-d7faaf9ec6ef"
+                },
+                {
+                  "key": "reply[id]",
+                  "value": "1",
+                  "type": "text",
+                  "uuid": "299ac32f-a68a-4c6d-8631-dfb6e5323d7e"
+                },
+                {
+                  "key": "reply[content]",
+                  "value": "TEST_UPDATE_REPLY_CONTENT",
+                  "type": "text",
+                  "uuid": "1dfb452c-8da0-425f-8f3a-41d60edc8d50"
+                }
+              ]
+            },
+            "url": {
+              "raw": "https://ubaya.cloud/flutter/160423120/",
+              "protocol": "https",
+              "host": [
+                "ubaya",
+                "cloud"
+              ],
+              "path": [
+                "flutter",
+                "160423120",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Reply",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "action",
+                  "value": "DELETE_REPLY",
+                  "type": "text",
+                  "uuid": "b2d3e537-b6b5-4223-8c63-d7faaf9ec6ef"
+                },
+                {
+                  "key": "id",
+                  "value": "1",
+                  "type": "text",
+                  "uuid": "299ac32f-a68a-4c6d-8631-dfb6e5323d7e"
+                }
+              ]
+            },
+            "url": {
+              "raw": "https://ubaya.cloud/flutter/160423120/",
+              "protocol": "https",
+              "host": [
+                "ubaya",
+                "cloud"
+              ],
+              "path": [
+                "flutter",
+                "160423120",
+                ""
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Rating",
+      "item": [
+        {
+          "name": "Save Rating",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "action",
+                  "value": "SAVE_RATING",
+                  "type": "text",
+                  "uuid": "b2d3e537-b6b5-4223-8c63-d7faaf9ec6ef"
+                },
+                {
+                  "key": "rating[comic_id]",
+                  "value": "1",
+                  "type": "text",
+                  "uuid": "1dfb452c-8da0-425f-8f3a-41d60edc8d50"
+                },
+                {
+                  "key": "rating[rating]",
+                  "value": "5",
+                  "type": "text",
+                  "uuid": "9abf6164-0152-4310-98e5-1ba3887a0153"
+                }
+              ]
+            },
+            "url": {
+              "raw": "https://ubaya.cloud/flutter/160423120/",
+              "protocol": "https",
+              "host": [
+                "ubaya",
+                "cloud"
+              ],
+              "path": [
+                "flutter",
+                "160423120",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Rating",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "action",
+                  "value": "DELETE_RATING",
+                  "type": "text",
+                  "uuid": "b2d3e537-b6b5-4223-8c63-d7faaf9ec6ef"
+                },
+                {
+                  "key": "comic_id",
+                  "value": "1",
+                  "type": "text",
+                  "uuid": "1dfb452c-8da0-425f-8f3a-41d60edc8d50"
+                }
+              ]
+            },
+            "url": {
+              "raw": "https://ubaya.cloud/flutter/160423120/",
+              "protocol": "https",
+              "host": [
+                "ubaya",
+                "cloud"
+              ],
+              "path": [
+                "flutter",
+                "160423120",
+                ""
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "End-to-End",
+      "item": [
+        {
+          "name": "API Page",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://ubaya.cloud/flutter/160423120/",
+              "protocol": "https",
+              "host": [
+                "ubaya",
+                "cloud"
+              ],
+              "path": [
+                "flutter",
+                "160423120",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Register",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();\r",
+                  "\r",
+                  "const username = json.data.user.username;\r",
+                  "pm.environment.set(\r",
+                  "    \"USERNAME\",\r",
+                  "    username\r",
+                  ");\r",
+                  "\r",
+                  "const token = json.data.token;\r",
+                  "pm.environment.set(\r",
+                  "    \"TOKEN\",\r",
+                  "    token\r",
+                  ");"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "action",
+                  "value": "REGISTER",
+                  "type": "text",
+                  "uuid": "46939248-cf87-4f79-9a92-51bd05a672f5"
+                },
+                {
+                  "key": "user[username]",
+                  "value": "{{$timestamp}}",
+                  "type": "text",
+                  "uuid": "21cc69da-8b57-4b62-8743-d62966446a84"
+                },
+                {
+                  "key": "user[password]",
+                  "value": "1234567890",
+                  "type": "text",
+                  "uuid": "0f979b0b-797f-4250-a5e3-c29b6d5afc8a"
+                }
+              ]
+            },
+            "url": {
+              "raw": "https://ubaya.cloud/flutter/160423120/",
+              "protocol": "https",
+              "host": [
+                "ubaya",
+                "cloud"
+              ],
+              "path": [
+                "flutter",
+                "160423120",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();\r",
+                  "\r",
+                  "const token = json.data.token;\r",
+                  "pm.environment.set(\r",
+                  "    \"TOKEN\",\r",
+                  "    token\r",
+                  ");"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "action",
+                  "value": "LOGIN",
+                  "type": "text",
+                  "uuid": "46939248-cf87-4f79-9a92-51bd05a672f5"
+                },
+                {
+                  "key": "user[username]",
+                  "value": "{{USERNAME}}",
+                  "type": "text",
+                  "uuid": "21cc69da-8b57-4b62-8743-d62966446a84"
+                },
+                {
+                  "key": "user[password]",
+                  "value": "1234567890",
+                  "type": "text",
+                  "uuid": "0f979b0b-797f-4250-a5e3-c29b6d5afc8a"
+                }
+              ]
+            },
+            "url": {
+              "raw": "https://ubaya.cloud/flutter/160423120/",
+              "protocol": "https",
+              "host": [
+                "ubaya",
+                "cloud"
+              ],
+              "path": [
+                "flutter",
+                "160423120",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "action",
+                  "value": "UPDATE_USER",
+                  "type": "text",
+                  "uuid": "46939248-cf87-4f79-9a92-51bd05a672f5"
+                },
+                {
+                  "key": "user[username]",
+                  "value": "{{$timestamp}}",
+                  "type": "text",
+                  "uuid": "b21dc723-a2ab-4fe7-9859-7ce197b43804"
+                },
+                {
+                  "key": "user[password]",
+                  "value": "1234567890",
+                  "type": "text",
+                  "uuid": "0f979b0b-797f-4250-a5e3-c29b6d5afc8a"
+                }
+              ]
+            },
+            "url": {
+              "raw": "https://ubaya.cloud/flutter/160423120/",
+              "protocol": "https",
+              "host": [
+                "ubaya",
+                "cloud"
+              ],
+              "path": [
+                "flutter",
+                "160423120",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Categories",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "action",
+                  "value": "GET_CATEGORIES",
+                  "type": "text",
+                  "uuid": "b2d3e537-b6b5-4223-8c63-d7faaf9ec6ef"
+                }
+              ]
+            },
+            "url": {
+              "raw": "https://ubaya.cloud/flutter/160423120/",
+              "protocol": "https",
+              "host": [
+                "ubaya",
+                "cloud"
+              ],
+              "path": [
+                "flutter",
+                "160423120",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Insert Category",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();\r",
+                  "\r",
+                  "const categoryId = json.data.category.id;\r",
+                  "pm.environment.set(\r",
+                  "    \"RECENT_CATEGORY_ID\",\r",
+                  "    categoryId\r",
+                  ");"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "action",
+                  "value": "INSERT_CATEGORY",
+                  "type": "text",
+                  "uuid": "a4bb1ce8-6a3a-424e-aea4-0f45af35586d"
+                },
+                {
+                  "key": "category[name]",
+                  "value": "TEST_INSERT_CATEGORY_NAME",
+                  "type": "text",
+                  "uuid": "7380d0b2-a159-47cf-a6d1-b1ecf73d6f52"
+                },
+                {
+                  "key": "category[description]",
+                  "value": "TEST_INSERT_CATEGORY_DESCRIPTION",
+                  "type": "text",
+                  "uuid": "c339d0f6-8191-4a21-9866-6043fc0573af"
+                }
+              ]
+            },
+            "url": {
+              "raw": "https://ubaya.cloud/flutter/160423120/",
+              "protocol": "https",
+              "host": [
+                "ubaya",
+                "cloud"
+              ],
+              "path": [
+                "flutter",
+                "160423120",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Category",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "action",
+                  "value": "UPDATE_CATEGORY",
+                  "type": "text",
+                  "uuid": "a4bb1ce8-6a3a-424e-aea4-0f45af35586d"
+                },
+                {
+                  "key": "category[id]",
+                  "value": "{{RECENT_CATEGORY_ID}}",
+                  "type": "text",
+                  "uuid": "05da88e0-7eb4-4846-aa62-4bc996ea88d6"
+                },
+                {
+                  "key": "category[name]",
+                  "value": "TEST_UPDATE_CATEGORY_NAME",
+                  "type": "text",
+                  "uuid": "7380d0b2-a159-47cf-a6d1-b1ecf73d6f52"
+                },
+                {
+                  "key": "category[description]",
+                  "value": "TEST_UPDATE_CATEGORY_DESCRIPTION",
+                  "type": "text",
+                  "uuid": "c339d0f6-8191-4a21-9866-6043fc0573af"
+                }
+              ]
+            },
+            "url": {
+              "raw": "https://ubaya.cloud/flutter/160423120/",
+              "protocol": "https",
+              "host": [
+                "ubaya",
+                "cloud"
+              ],
+              "path": [
+                "flutter",
+                "160423120",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Comics",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "action",
+                  "value": "GET_COMICS",
+                  "type": "text",
+                  "uuid": "b2d3e537-b6b5-4223-8c63-d7faaf9ec6ef"
+                }
+              ]
+            },
+            "url": {
+              "raw": "https://ubaya.cloud/flutter/160423120/",
+              "protocol": "https",
+              "host": [
+                "ubaya",
+                "cloud"
+              ],
+              "path": [
+                "flutter",
+                "160423120",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Comic Detail",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "action",
+                  "value": "GET_COMIC_DETAIL",
+                  "type": "text",
+                  "uuid": "b2d3e537-b6b5-4223-8c63-d7faaf9ec6ef"
+                },
+                {
+                  "key": "id",
+                  "value": "1",
+                  "type": "text",
+                  "uuid": "e94358df-24e3-46e1-923e-075f972625a9"
+                }
+              ]
+            },
+            "url": {
+              "raw": "https://ubaya.cloud/flutter/160423120/",
+              "protocol": "https",
+              "host": [
+                "ubaya",
+                "cloud"
+              ],
+              "path": [
+                "flutter",
+                "160423120",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Insert Comic",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();\r",
+                  "\r",
+                  "const comicId = json.data.comic.id;\r",
+                  "pm.environment.set(\r",
+                  "    \"RECENT_COMIC_ID\",\r",
+                  "    comicId\r",
+                  ");"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "action",
+                  "value": "INSERT_COMIC",
+                  "type": "text",
+                  "uuid": "b2d3e537-b6b5-4223-8c63-d7faaf9ec6ef"
+                },
+                {
+                  "key": "comic[title]",
+                  "value": "TEST_INSERT_COMIC_TITLE",
+                  "type": "text",
+                  "uuid": "1dfb452c-8da0-425f-8f3a-41d60edc8d50"
+                },
+                {
+                  "key": "comic[poster]",
+                  "value": "TEST_INSERT_COMIC_POSTER",
+                  "type": "text",
+                  "uuid": "9abf6164-0152-4310-98e5-1ba3887a0153"
+                },
+                {
+                  "key": "comic[description]",
+                  "value": "TEST_INSERT_COMIC_DESCRIPTION",
+                  "type": "text",
+                  "uuid": "803c8601-e9ba-4cd3-a632-0c39bb266654"
+                }
+              ]
+            },
+            "url": {
+              "raw": "https://ubaya.cloud/flutter/160423120/",
+              "protocol": "https",
+              "host": [
+                "ubaya",
+                "cloud"
+              ],
+              "path": [
+                "flutter",
+                "160423120",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Comic",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "action",
+                  "value": "UPDATE_COMIC",
+                  "type": "text",
+                  "uuid": "b2d3e537-b6b5-4223-8c63-d7faaf9ec6ef"
+                },
+                {
+                  "key": "comic[id]",
+                  "value": "{{RECENT_COMIC_ID}}",
+                  "type": "text",
+                  "uuid": "299ac32f-a68a-4c6d-8631-dfb6e5323d7e"
+                },
+                {
+                  "key": "comic[title]",
+                  "value": "TEST_UPDATE_COMIC_TITLE",
+                  "type": "text",
+                  "uuid": "1dfb452c-8da0-425f-8f3a-41d60edc8d50"
+                },
+                {
+                  "key": "comic[poster]",
+                  "value": "TEST_UPDATE_COMIC_POSTER",
+                  "type": "text",
+                  "uuid": "9abf6164-0152-4310-98e5-1ba3887a0153"
+                },
+                {
+                  "key": "comic[description]",
+                  "value": "TEST_UPDATE_COMIC_DESCRIPTION",
+                  "type": "text",
+                  "uuid": "803c8601-e9ba-4cd3-a632-0c39bb266654"
+                }
+              ]
+            },
+            "url": {
+              "raw": "https://ubaya.cloud/flutter/160423120/",
+              "protocol": "https",
+              "host": [
+                "ubaya",
+                "cloud"
+              ],
+              "path": [
+                "flutter",
+                "160423120",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Comic Chapters",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "action",
+                  "value": "GET_COMIC_CHAPTERS",
+                  "type": "text",
+                  "uuid": "b2d3e537-b6b5-4223-8c63-d7faaf9ec6ef"
+                },
+                {
+                  "key": "comic_id",
+                  "value": "1",
+                  "type": "text",
+                  "uuid": "aa2a10b6-4778-4be4-8903-8b59dab943ec"
+                }
+              ]
+            },
+            "url": {
+              "raw": "https://ubaya.cloud/flutter/160423120/",
+              "protocol": "https",
+              "host": [
+                "ubaya",
+                "cloud"
+              ],
+              "path": [
+                "flutter",
+                "160423120",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Insert Comic Chapter",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();\r",
+                  "\r",
+                  "const comicChapterId = json.data.chapters[0].id;\r",
+                  "pm.environment.set(\r",
+                  "    \"RECENT_COMIC_CHAPTER_ID\",\r",
+                  "    comicChapterId\r",
+                  ");"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "action",
+                  "value": "INSERT_COMIC_CHAPTERS",
+                  "type": "text",
+                  "uuid": "b2d3e537-b6b5-4223-8c63-d7faaf9ec6ef"
+                },
+                {
+                  "key": "comic_id",
+                  "value": "{{RECENT_COMIC_ID}}",
+                  "type": "text",
+                  "uuid": "9296ca4f-af0a-48ed-867a-711cdaf6750f"
+                },
+                {
+                  "key": "chapters[0][chapter_number]",
+                  "value": "1",
+                  "type": "text",
+                  "uuid": "1dfb452c-8da0-425f-8f3a-41d60edc8d50"
+                },
+                {
+                  "key": "chapters[0][title]",
+                  "value": "TEST_INSERT_COMIC_CHAPTER_1_TITLE",
+                  "type": "text",
+                  "uuid": "9abf6164-0152-4310-98e5-1ba3887a0153"
+                },
+                {
+                  "key": "chapters[1][chapter_number]",
+                  "value": "2",
+                  "type": "text",
+                  "uuid": "803c8601-e9ba-4cd3-a632-0c39bb266654"
+                },
+                {
+                  "key": "chapters[1][title]",
+                  "value": "TEST_INSERT_COMIC_CHAPTER_2_TITLE",
+                  "type": "text",
+                  "uuid": "dec4ed7e-959c-4a91-9a14-ba8d52074901"
+                }
+              ]
+            },
+            "url": {
+              "raw": "https://ubaya.cloud/flutter/160423120/",
+              "protocol": "https",
+              "host": [
+                "ubaya",
+                "cloud"
+              ],
+              "path": [
+                "flutter",
+                "160423120",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Comic Chapter",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "action",
+                  "value": "UPDATE_COMIC_CHAPTER",
+                  "type": "text",
+                  "uuid": "b2d3e537-b6b5-4223-8c63-d7faaf9ec6ef"
+                },
+                {
+                  "key": "chapter[id]",
+                  "value": "{{RECENT_COMIC_CHAPTER_ID}}",
+                  "type": "text",
+                  "uuid": "299ac32f-a68a-4c6d-8631-dfb6e5323d7e"
+                },
+                {
+                  "key": "chapter[chapter_number]",
+                  "value": "1",
+                  "type": "text",
+                  "uuid": "1dfb452c-8da0-425f-8f3a-41d60edc8d50"
+                },
+                {
+                  "key": "chapter[title]",
+                  "value": "TEST_UPDATE_COMIC_CHAPTER",
+                  "type": "text",
+                  "uuid": "9abf6164-0152-4310-98e5-1ba3887a0153"
+                }
+              ]
+            },
+            "url": {
+              "raw": "https://ubaya.cloud/flutter/160423120/",
+              "protocol": "https",
+              "host": [
+                "ubaya",
+                "cloud"
+              ],
+              "path": [
+                "flutter",
+                "160423120",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Comic Chapter Pages",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "action",
+                  "value": "GET_COMIC_CHAPTER_PAGES",
+                  "type": "text",
+                  "uuid": "b2d3e537-b6b5-4223-8c63-d7faaf9ec6ef"
+                },
+                {
+                  "key": "chapter_id",
+                  "value": "1",
+                  "type": "text",
+                  "uuid": "aa2a10b6-4778-4be4-8903-8b59dab943ec"
+                }
+              ]
+            },
+            "url": {
+              "raw": "https://ubaya.cloud/flutter/160423120/",
+              "protocol": "https",
+              "host": [
+                "ubaya",
+                "cloud"
+              ],
+              "path": [
+                "flutter",
+                "160423120",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Insert Comic Chapter Pages",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();\r",
+                  "\r",
+                  "const comicChapterPageId = json.data.pages[0].id;\r",
+                  "pm.environment.set(\r",
+                  "    \"RECENT_COMIC_CHAPTER_PAGE_ID\",\r",
+                  "    comicChapterPageId\r",
+                  ");"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "action",
+                  "value": "INSERT_COMIC_CHAPTER_PAGES",
+                  "type": "text",
+                  "uuid": "b2d3e537-b6b5-4223-8c63-d7faaf9ec6ef"
+                },
+                {
+                  "key": "chapter_id",
+                  "value": "{{RECENT_COMIC_CHAPTER_ID}}",
+                  "type": "text",
+                  "uuid": "9296ca4f-af0a-48ed-867a-711cdaf6750f"
+                },
+                {
+                  "key": "pages[0][page_number]",
+                  "value": "1",
+                  "type": "text",
+                  "uuid": "1dfb452c-8da0-425f-8f3a-41d60edc8d50"
+                },
+                {
+                  "key": "pages[0][image]",
+                  "value": "TEST_INSERT_COMIC_CHAPTER_PAGE_1_IMAGE",
+                  "type": "text",
+                  "uuid": "9abf6164-0152-4310-98e5-1ba3887a0153"
+                },
+                {
+                  "key": "pages[1][page_number]",
+                  "value": "2",
+                  "type": "text",
+                  "uuid": "803c8601-e9ba-4cd3-a632-0c39bb266654"
+                },
+                {
+                  "key": "pages[1][image]",
+                  "value": "TEST_INSERT_COMIC_CHAPTER_PAGE_2_IMAGE",
+                  "type": "text",
+                  "uuid": "dec4ed7e-959c-4a91-9a14-ba8d52074901"
+                }
+              ]
+            },
+            "url": {
+              "raw": "https://ubaya.cloud/flutter/160423120/",
+              "protocol": "https",
+              "host": [
+                "ubaya",
+                "cloud"
+              ],
+              "path": [
+                "flutter",
+                "160423120",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Comic Chapter Page",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "action",
+                  "value": "UPDATE_COMIC_CHAPTER_PAGE",
+                  "type": "text",
+                  "uuid": "b2d3e537-b6b5-4223-8c63-d7faaf9ec6ef"
+                },
+                {
+                  "key": "page[id]",
+                  "value": "{{RECENT_COMIC_CHAPTER_PAGE_ID}}",
+                  "type": "text",
+                  "uuid": "299ac32f-a68a-4c6d-8631-dfb6e5323d7e"
+                },
+                {
+                  "key": "page[page_number]",
+                  "value": "1",
+                  "type": "text",
+                  "uuid": "1dfb452c-8da0-425f-8f3a-41d60edc8d50"
+                },
+                {
+                  "key": "page[image]",
+                  "value": "TEST_UPDATE_COMIC_CHAPTER_PAGE",
+                  "type": "text",
+                  "uuid": "9abf6164-0152-4310-98e5-1ba3887a0153"
+                }
+              ]
+            },
+            "url": {
+              "raw": "https://ubaya.cloud/flutter/160423120/",
+              "protocol": "https",
+              "host": [
+                "ubaya",
+                "cloud"
+              ],
+              "path": [
+                "flutter",
+                "160423120",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Comments",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "action",
+                  "value": "GET_COMMENTS",
+                  "type": "text",
+                  "uuid": "b2d3e537-b6b5-4223-8c63-d7faaf9ec6ef"
+                },
+                {
+                  "key": "comic_id",
+                  "value": "1",
+                  "type": "text",
+                  "uuid": "aa2a10b6-4778-4be4-8903-8b59dab943ec"
+                }
+              ]
+            },
+            "url": {
+              "raw": "https://ubaya.cloud/flutter/160423120/",
+              "protocol": "https",
+              "host": [
+                "ubaya",
+                "cloud"
+              ],
+              "path": [
+                "flutter",
+                "160423120",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Insert Comment",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();\r",
+                  "\r",
+                  "const commentId = json.data.comment.id;\r",
+                  "pm.environment.set(\r",
+                  "    \"RECENT_COMMENT_ID\",\r",
+                  "    commentId\r",
+                  ");"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "action",
+                  "value": "INSERT_COMMENT",
+                  "type": "text",
+                  "uuid": "b2d3e537-b6b5-4223-8c63-d7faaf9ec6ef"
+                },
+                {
+                  "key": "comment[comic_id]",
+                  "value": "{{RECENT_COMIC_ID}}",
+                  "type": "text",
+                  "uuid": "1dfb452c-8da0-425f-8f3a-41d60edc8d50"
+                },
+                {
+                  "key": "comment[content]",
+                  "value": "TEST_INSERT_COMMENT_CONTENT",
+                  "type": "text",
+                  "uuid": "9abf6164-0152-4310-98e5-1ba3887a0153"
+                }
+              ]
+            },
+            "url": {
+              "raw": "https://ubaya.cloud/flutter/160423120/",
+              "protocol": "https",
+              "host": [
+                "ubaya",
+                "cloud"
+              ],
+              "path": [
+                "flutter",
+                "160423120",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Comment",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "action",
+                  "value": "UPDATE_COMMENT",
+                  "type": "text",
+                  "uuid": "b2d3e537-b6b5-4223-8c63-d7faaf9ec6ef"
+                },
+                {
+                  "key": "comment[id]",
+                  "value": "{{RECENT_COMMENT_ID}}",
+                  "type": "text",
+                  "uuid": "299ac32f-a68a-4c6d-8631-dfb6e5323d7e"
+                },
+                {
+                  "key": "comment[content]",
+                  "value": "TEST_UPDATE_COMMENT_CONTENT",
+                  "type": "text",
+                  "uuid": "1dfb452c-8da0-425f-8f3a-41d60edc8d50"
+                }
+              ]
+            },
+            "url": {
+              "raw": "https://ubaya.cloud/flutter/160423120/",
+              "protocol": "https",
+              "host": [
+                "ubaya",
+                "cloud"
+              ],
+              "path": [
+                "flutter",
+                "160423120",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Replies",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "action",
+                  "value": "GET_REPLIES",
+                  "type": "text",
+                  "uuid": "b2d3e537-b6b5-4223-8c63-d7faaf9ec6ef"
+                },
+                {
+                  "key": "parent_comment_id",
+                  "value": "1",
+                  "type": "text",
+                  "uuid": "aa2a10b6-4778-4be4-8903-8b59dab943ec"
+                }
+              ]
+            },
+            "url": {
+              "raw": "https://ubaya.cloud/flutter/160423120/",
+              "protocol": "https",
+              "host": [
+                "ubaya",
+                "cloud"
+              ],
+              "path": [
+                "flutter",
+                "160423120",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Insert Reply",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();\r",
+                  "\r",
+                  "const replyId = json.data.reply.id;\r",
+                  "pm.environment.set(\r",
+                  "    \"RECENT_REPLY_ID\",\r",
+                  "    replyId\r",
+                  ");"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "action",
+                  "value": "INSERT_REPLY",
+                  "type": "text",
+                  "uuid": "b2d3e537-b6b5-4223-8c63-d7faaf9ec6ef"
+                },
+                {
+                  "key": "reply[parent_comment_id]",
+                  "value": "{{RECENT_COMMENT_ID}}",
+                  "type": "text",
+                  "uuid": "1dfb452c-8da0-425f-8f3a-41d60edc8d50"
+                },
+                {
+                  "key": "reply[content]",
+                  "value": "TEST_INSERT_REPLY_CONTENT",
+                  "type": "text",
+                  "uuid": "9abf6164-0152-4310-98e5-1ba3887a0153"
+                }
+              ]
+            },
+            "url": {
+              "raw": "https://ubaya.cloud/flutter/160423120/",
+              "protocol": "https",
+              "host": [
+                "ubaya",
+                "cloud"
+              ],
+              "path": [
+                "flutter",
+                "160423120",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Reply",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "action",
+                  "value": "UPDATE_REPLY",
+                  "type": "text",
+                  "uuid": "b2d3e537-b6b5-4223-8c63-d7faaf9ec6ef"
+                },
+                {
+                  "key": "reply[id]",
+                  "value": "{{RECENT_REPLY_ID}}",
+                  "type": "text",
+                  "uuid": "299ac32f-a68a-4c6d-8631-dfb6e5323d7e"
+                },
+                {
+                  "key": "reply[content]",
+                  "value": "TEST_UPDATE_REPLY_CONTENT",
+                  "type": "text",
+                  "uuid": "1dfb452c-8da0-425f-8f3a-41d60edc8d50"
+                }
+              ]
+            },
+            "url": {
+              "raw": "https://ubaya.cloud/flutter/160423120/",
+              "protocol": "https",
+              "host": [
+                "ubaya",
+                "cloud"
+              ],
+              "path": [
+                "flutter",
+                "160423120",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Save Rating",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "action",
+                  "value": "SAVE_RATING",
+                  "type": "text",
+                  "uuid": "b2d3e537-b6b5-4223-8c63-d7faaf9ec6ef"
+                },
+                {
+                  "key": "rating[comic_id]",
+                  "value": "{{RECENT_COMIC_ID}}",
+                  "type": "text",
+                  "uuid": "1dfb452c-8da0-425f-8f3a-41d60edc8d50"
+                },
+                {
+                  "key": "rating[rating]",
+                  "value": "5",
+                  "type": "text",
+                  "uuid": "9abf6164-0152-4310-98e5-1ba3887a0153"
+                }
+              ]
+            },
+            "url": {
+              "raw": "https://ubaya.cloud/flutter/160423120/",
+              "protocol": "https",
+              "host": [
+                "ubaya",
+                "cloud"
+              ],
+              "path": [
+                "flutter",
+                "160423120",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Rating",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "action",
+                  "value": "DELETE_RATING",
+                  "type": "text",
+                  "uuid": "b2d3e537-b6b5-4223-8c63-d7faaf9ec6ef"
+                },
+                {
+                  "key": "comic_id",
+                  "value": "{{RECENT_COMIC_ID}}",
+                  "type": "text",
+                  "uuid": "1dfb452c-8da0-425f-8f3a-41d60edc8d50"
+                }
+              ]
+            },
+            "url": {
+              "raw": "https://ubaya.cloud/flutter/160423120/",
+              "protocol": "https",
+              "host": [
+                "ubaya",
+                "cloud"
+              ],
+              "path": [
+                "flutter",
+                "160423120",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Reply",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "action",
+                  "value": "DELETE_REPLY",
+                  "type": "text",
+                  "uuid": "b2d3e537-b6b5-4223-8c63-d7faaf9ec6ef"
+                },
+                {
+                  "key": "id",
+                  "value": "{{RECENT_REPLY_ID}}",
+                  "type": "text",
+                  "uuid": "299ac32f-a68a-4c6d-8631-dfb6e5323d7e"
+                }
+              ]
+            },
+            "url": {
+              "raw": "https://ubaya.cloud/flutter/160423120/",
+              "protocol": "https",
+              "host": [
+                "ubaya",
+                "cloud"
+              ],
+              "path": [
+                "flutter",
+                "160423120",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Comment",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "action",
+                  "value": "DELETE_COMMENT",
+                  "type": "text",
+                  "uuid": "b2d3e537-b6b5-4223-8c63-d7faaf9ec6ef"
+                },
+                {
+                  "key": "id",
+                  "value": "{{RECENT_COMMENT_ID}}",
+                  "type": "text",
+                  "uuid": "299ac32f-a68a-4c6d-8631-dfb6e5323d7e"
+                }
+              ]
+            },
+            "url": {
+              "raw": "https://ubaya.cloud/flutter/160423120/",
+              "protocol": "https",
+              "host": [
+                "ubaya",
+                "cloud"
+              ],
+              "path": [
+                "flutter",
+                "160423120",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Comic Chapter Page",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "action",
+                  "value": "DELETE_COMIC_CHAPTER_PAGE",
+                  "type": "text",
+                  "uuid": "b2d3e537-b6b5-4223-8c63-d7faaf9ec6ef"
+                },
+                {
+                  "key": "id",
+                  "value": "{{RECENT_COMIC_CHAPTER_PAGE_ID}}",
+                  "type": "text",
+                  "uuid": "299ac32f-a68a-4c6d-8631-dfb6e5323d7e"
+                }
+              ]
+            },
+            "url": {
+              "raw": "https://ubaya.cloud/flutter/160423120/",
+              "protocol": "https",
+              "host": [
+                "ubaya",
+                "cloud"
+              ],
+              "path": [
+                "flutter",
+                "160423120",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Comic Chapter",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "action",
+                  "value": "DELETE_COMIC_CHAPTER",
+                  "type": "text",
+                  "uuid": "b2d3e537-b6b5-4223-8c63-d7faaf9ec6ef"
+                },
+                {
+                  "key": "id",
+                  "value": "{{RECENT_COMIC_CHAPTER_ID}}",
+                  "type": "text",
+                  "uuid": "299ac32f-a68a-4c6d-8631-dfb6e5323d7e"
+                }
+              ]
+            },
+            "url": {
+              "raw": "https://ubaya.cloud/flutter/160423120/",
+              "protocol": "https",
+              "host": [
+                "ubaya",
+                "cloud"
+              ],
+              "path": [
+                "flutter",
+                "160423120",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Comic",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "action",
+                  "value": "DELETE_COMIC",
+                  "type": "text",
+                  "uuid": "b2d3e537-b6b5-4223-8c63-d7faaf9ec6ef"
+                },
+                {
+                  "key": "id",
+                  "value": "{{RECENT_COMIC_ID}}",
+                  "type": "text",
+                  "uuid": "299ac32f-a68a-4c6d-8631-dfb6e5323d7e"
+                }
+              ]
+            },
+            "url": {
+              "raw": "https://ubaya.cloud/flutter/160423120/",
+              "protocol": "https",
+              "host": [
+                "ubaya",
+                "cloud"
+              ],
+              "path": [
+                "flutter",
+                "160423120",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Category",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "action",
+                  "value": "DELETE_CATEGORY",
+                  "type": "text",
+                  "uuid": "a4bb1ce8-6a3a-424e-aea4-0f45af35586d"
+                },
+                {
+                  "key": "id",
+                  "value": "{{RECENT_CATEGORY_ID}}",
+                  "type": "text",
+                  "uuid": "05da88e0-7eb4-4846-aa62-4bc996ea88d6"
+                }
+              ]
+            },
+            "url": {
+              "raw": "https://ubaya.cloud/flutter/160423120/",
+              "protocol": "https",
+              "host": [
+                "ubaya",
+                "cloud"
+              ],
+              "path": [
+                "flutter",
+                "160423120",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "action",
+                  "value": "DELETE_USER",
+                  "type": "text",
+                  "uuid": "46939248-cf87-4f79-9a92-51bd05a672f5"
+                },
+                {
+                  "key": "user[password]",
+                  "value": "1234567890",
+                  "type": "text",
+                  "uuid": "0f979b0b-797f-4250-a5e3-c29b6d5afc8a"
+                }
+              ]
+            },
+            "url": {
+              "raw": "https://ubaya.cloud/flutter/160423120/",
+              "protocol": "https",
+              "host": [
+                "ubaya",
+                "cloud"
+              ],
+              "path": [
+                "flutter",
+                "160423120",
+                ""
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{TOKEN}}",
+        "type": "string"
+      }
+    ]
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ]
+}

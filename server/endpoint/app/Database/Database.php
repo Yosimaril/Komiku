@@ -2,7 +2,6 @@
 
 namespace App\Database;
 
-use App\Response;
 use Exception;
 use mysqli;
 use mysqli_stmt;

@@ -5,7 +5,6 @@ namespace App\Controllers;
 use App\Database\Database;
 use App\Response;
 use App\Validator;
-use Exception;
 
 class CategoryController extends BaseController
 {

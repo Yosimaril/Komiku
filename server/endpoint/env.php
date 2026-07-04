@@ -17,6 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 }
 
 const APP_NAME = "Komiku";
+const BASE_URL = "https://ubaya.cloud/flutter/160423120/";
 const DB_HOST = "127.0.0.1";
 const DB_DATABASE = "komiku";
 const DB_USERNAME = "root";

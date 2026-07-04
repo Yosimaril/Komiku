@@ -7,7 +7,6 @@ use App\Middleware\AuthMiddleware;
 use App\Response;
 use App\Service\JwtService;
 use App\Validator;
-use Exception;
 
 class UserController extends BaseController
 {

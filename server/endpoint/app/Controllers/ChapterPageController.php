@@ -6,7 +6,6 @@ use App\Database\Database;
 use App\Middleware\AuthMiddleware;
 use App\Response;
 use App\Validator;
-use Exception;
 
 class ChapterPageController extends BaseController
 {

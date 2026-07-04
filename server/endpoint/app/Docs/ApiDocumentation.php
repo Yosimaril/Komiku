@@ -2,15 +2,6 @@
 
 namespace App\Docs;
 
-use App\Controllers\CategoryController;
-use App\Controllers\ChapterController;
-use App\Controllers\ChapterPageController;
-use App\Controllers\ComicController;
-use App\Controllers\CommentController;
-use App\Controllers\OptionController;
-use App\Controllers\RatingController;
-use App\Controllers\ReplyController;
-use App\Controllers\UserController;
 use App\Enums\Action;
 
 class ApiDocumentation
