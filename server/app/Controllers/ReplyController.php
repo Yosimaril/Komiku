@@ -178,7 +178,7 @@ class ReplyController extends BaseController
 
             Database::execute($statement);
 
-            if ($statement->get_result()->num_rows === 0) {
+            if (!Database::first($statement)) {
                 Response::error([
                     "Reply not found or permission denied."
                 ], 403);
@@ -239,7 +239,7 @@ class ReplyController extends BaseController
 
             Database::execute($statement);
 
-            if ($statement->get_result()->num_rows === 0) {
+            if (!Database::first($statement)) {
                 Response::error([
                     "Reply not found or permission denied."
                 ], 403);

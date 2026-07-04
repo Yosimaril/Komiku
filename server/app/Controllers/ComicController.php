@@ -318,7 +318,7 @@ class ComicController extends BaseController
 
             Database::execute($statement);
 
-            if ($statement->get_result()->num_rows === 0) {
+            if (!Database::first($statement)) {
                 Response::error([
                     "Comic not found or permission denied."
                 ], 403);
@@ -391,7 +391,7 @@ class ComicController extends BaseController
 
             Database::execute($statement);
 
-            if ($statement->get_result()->num_rows === 0) {
+            if (!Database::first($statement)) {
                 Response::error([
                     "Comic not found or permission denied."
                 ], 403);

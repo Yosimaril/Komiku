@@ -108,7 +108,7 @@ class UserController extends BaseController
 
             Database::execute($statement);
 
-            if ($statement->get_result()->num_rows > 0) {
+            if (Database::first($statement)) {
                 Response::error([
                     "Username already exists."
                 ], 409);

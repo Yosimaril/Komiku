@@ -104,9 +104,7 @@ class ChapterPageController extends BaseController
 
             Database::execute($statement);
 
-            $chapter = $statement
-                ->get_result()
-                ->fetch_assoc();
+            $chapter = Database::first($statement);
 
             if (!$chapter) {
                 Response::error([
@@ -218,7 +216,7 @@ class ChapterPageController extends BaseController
 
             Database::execute($statement);
 
-            if ($statement->get_result()->num_rows === 0) {
+            if (!Database::first($statement)) {
                 Response::error([
                     "Page not found or permission denied."
                 ], 403);
@@ -284,7 +282,7 @@ class ChapterPageController extends BaseController
 
             Database::execute($statement);
 
-            if ($statement->get_result()->num_rows === 0) {
+            if (!Database::first($statement)) {
                 Response::error([
                     "Page not found or permission denied."
                 ], 403);

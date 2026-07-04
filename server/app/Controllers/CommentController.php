@@ -156,7 +156,7 @@ class CommentController extends BaseController
 
             Database::execute($statement);
 
-            if ($statement->get_result()->num_rows === 0) {
+            if (!Database::first($statement)) {
                 Response::error([
                     "Comment not found or permission denied."
                 ], 403);
@@ -217,7 +217,7 @@ class CommentController extends BaseController
 
             Database::execute($statement);
 
-            if ($statement->get_result()->num_rows === 0) {
+            if (!Database::first($statement)) {
                 Response::error([
                     "Comment not found or permission denied."
                 ], 403);
@@ -238,7 +238,6 @@ class CommentController extends BaseController
             Response::success([
                 "deleted" => Database::isRowAffected($statement)
             ]);
-
         });
     }
 }

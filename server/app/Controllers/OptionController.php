@@ -6,7 +6,12 @@ use App\Docs\ApiDocumentation;
 use App\Enums\Action;
 use App\Response;
 
-class OptionController
+class OptionController extends BaseController
 {
-    public static function info(): void{}
+    public static function info(): void
+    {
+        self::execute(function () {
+            Response::success(ApiDocumentation::API);
+        });
+    }
 }
