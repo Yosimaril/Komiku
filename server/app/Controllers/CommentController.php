@@ -110,10 +110,12 @@ class CommentController
             Database::execute($statement);
 
             Response::success([
-                "id" => Database::getConnection()->insert_id,
-                "comic_id" => $comment["comic_id"],
-                "user_id" => $userId,
-                "content" => $comment["content"]
+                "comment" => [
+                    "id" => Database::getConnection()->insert_id,
+                    "comic_id" => $comment["comic_id"],
+                    "user_id" => $userId,
+                    "content" => $comment["content"]
+                ]
             ], 201);
 
         } catch (Exception $e) {

@@ -133,11 +133,13 @@ class ReplyController
             Database::execute($statement);
 
             Response::success([
-                "id" => Database::getConnection()->insert_id,
-                "comic_id" => $comment["comic_id"],
-                "parent_comment_id" => $reply["parent_comment_id"],
-                "user_id" => $userId,
-                "content" => $reply["content"]
+                "reply" => [
+                    "id" => Database::getConnection()->insert_id,
+                    "comic_id" => $comment["comic_id"],
+                    "parent_comment_id" => $reply["parent_comment_id"],
+                    "user_id" => $userId,
+                    "content" => $reply["content"]
+                ]
             ], 201);
 
         } catch (Exception $e) {

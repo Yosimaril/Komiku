@@ -11,7 +11,13 @@ use Exception;
 class RatingController
 {
     /**
-     * Insert a rating.
+     * Insert or update a rating.
+     *
+     * If the user has never rated the comic,
+     * a new rating will be inserted.
+     *
+     * Otherwise, the existing rating
+     * will be updated.
      *
      * Payload:
      * rating[
@@ -21,7 +27,7 @@ class RatingController
      *
      * @return void
      */
-    public static function insert(): void
+    public static function save(): void
     {
         try {
             $rating = Validator::payload(
@@ -44,6 +50,8 @@ class RatingController
                     rating
                 )
                 VALUES (?, ?, ?)
+                ON DUPLICATE KEY UPDATE
+                    rating = VALUES(rating)
             ");
 
             $statement->bind_param(
@@ -56,65 +64,12 @@ class RatingController
             Database::execute($statement);
 
             Response::success([
-                "comic_id" => $rating["comic_id"],
-                "user_id" => $userId,
-                "rating" => $rating["rating"]
+                "rating" => [
+                    "comic_id" => $rating["comic_id"],
+                    "user_id" => $userId,
+                    "rating" => $rating["rating"]
+                ]
             ], 201);
-
-        } catch (Exception $e) {
-            Response::error([
-                $e->getMessage()
-            ], 500);
-        }
-    }
-
-    /**
-     * Update a rating.
-     *
-     * Payload:
-     * rating[
-     *      comic_id,
-     *      rating
-     * ]
-     *
-     * @return void
-     */
-    public static function update(): void
-    {
-        try {
-            $rating = Validator::payload(
-                $_POST,
-                "rating"
-            );
-
-            Validator::required($rating, ["comic_id", "rating"]);
-            Validator::integer($rating, ["comic_id", "rating"]);
-            Validator::positive($rating, ["comic_id"]);
-            Validator::between($rating, "rating", 1, 5);
-
-            $userId = AuthMiddleware::getUser()["sub"];
-
-            $statement = Database::prepare("
-                UPDATE comic_rated_by_user
-                SET
-                    rating = ?
-                WHERE
-                    comic_id = ?
-                    AND user_id = ?
-            ");
-
-            $statement->bind_param(
-                "iii",
-                $rating["rating"],
-                $rating["comic_id"],
-                $userId
-            );
-
-            Database::execute($statement);
-
-            Response::success([
-                "updated" => $statement->affected_rows > 0
-            ]);
 
         } catch (Exception $e) {
             Response::error([

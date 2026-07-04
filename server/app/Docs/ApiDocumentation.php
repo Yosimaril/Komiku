@@ -690,23 +690,269 @@ class ApiDocumentation
     ];
 
     private const COMMENT_API = [
-        Action::GET_COMMENTS->value => "",
-        Action::INSERT_COMMENT->value => "",
-        Action::UPDATE_COMMENT->value => "",
-        Action::DELETE_COMMENT->value => "",
+        Action::GET_COMMENTS->value => [
+            "title" => "Get Comic Chapters",
+            "description" => "Retrieve all available comics.",
+            "method" => "POST",
+            "auth" => false,
+
+            "request" => [
+                "action" => Action::GET_COMMENTS->value,
+                "comic_id" => 1,
+            ],
+
+            "response" => [
+                "STATUS" => "SUCCESS",
+                "DATA" => [
+                    [
+                        "id" => 1,
+                        "content" => "This comic is insane, the fight scenes are so clean!",
+                        "created_at" => "...",
+                        "updated_at" => "...",
+                        "user_id" => 1,
+                        "username" => "Jack"
+                    ],
+                    [
+                        "id" => 2,
+                        "content" => "I love this comic!",
+                        "created_at" => "...",
+                        "updated_at" => "...",
+                        "user_id" => 2,
+                        "username" => "Jane"
+                    ]
+                ],
+                "ERROR_MESSAGE" => []
+            ]
+        ],
+
+        Action::INSERT_COMMENT->value => [
+            "title" => "Insert Category",
+            "description" => "Create a new user account.",
+            "method" => "POST",
+            "auth" => true,
+
+            "request" => [
+                "action" => Action::INSERT_COMMENT->value,
+                "comment" => [
+                    "comic_id" => 10,
+                    "content" => "Hello"
+                ]
+            ],
+
+            "response" => [
+                "STATUS" => "SUCCESS",
+                "DATA" => [
+                    "comment" => [
+                        "id" => 27,
+                        "comic_id" => 10,
+                        "user_id" => 13,
+                        "content" => "Hello"
+                    ]
+                ],
+                "ERROR_MESSAGE" => []
+            ]
+        ],
+
+        Action::UPDATE_COMMENT->value => [
+            "title" => "Update Category",
+            "description" => "Create a new user account.",
+            "method" => "POST",
+            "auth" => true,
+
+            "request" => [
+                "action" => Action::UPDATE_COMMENT->value,
+                "comment" => [
+                    "id" => 27,
+                    "content" => "Hello"
+                ]
+            ],
+
+            "response" => [
+                "STATUS" => "SUCCESS",
+                "DATA" => [
+                    "updated" => true
+                ],
+                "ERROR_MESSAGE" => []
+            ]
+        ],
+
+        Action::DELETE_COMMENT->value => [
+            "title" => "Delete Category",
+            "description" => "Create a new user account.",
+            "method" => "POST",
+            "auth" => true,
+
+            "request" => [
+                "action" => Action::DELETE_COMMENT->value,
+                "id" => 27
+            ],
+
+            "response" => [
+                "STATUS" => "SUCCESS",
+                "DATA" => [
+                    "deleted" => true
+                ],
+                "ERROR_MESSAGE" => []
+            ]
+        ],
     ];
 
     private const REPLY_API = [
-        Action::GET_REPLIES->value => "",
-        Action::INSERT_REPLY->value => "",
-        Action::UPDATE_REPLY->value => "",
-        Action::DELETE_REPLY->value => "",
+        Action::GET_REPLIES->value => [
+            "title" => "Get Comic Chapters",
+            "description" => "Retrieve all available comics.",
+            "method" => "POST",
+            "auth" => false,
+
+            "request" => [
+                "action" => Action::GET_REPLIES->value,
+                "parent_comment_id" => 26,
+            ],
+
+            "response" => [
+                "STATUS" => "SUCCESS",
+                "DATA" => [
+                    [
+                        "id" => 28,
+                        "content" => "asdfghjkl",
+                        "created_at" => "...",
+                        "updated_at" => "...",
+                        "user_id" => 16,
+                        "username" => "Spongebob"
+                    ],
+                    [
+                        "id" => 28,
+                        "content" => "ok",
+                        "created_at" => "...",
+                        "updated_at" => "...",
+                        "user_id" => 17,
+                        "username" => "Squidward"
+                    ]
+                ],
+                "ERROR_MESSAGE" => []
+            ]
+        ],
+
+        Action::INSERT_REPLY->value => [
+            "title" => "Insert Category",
+            "description" => "Create a new user account.",
+            "method" => "POST",
+            "auth" => true,
+
+            "request" => [
+                "action" => Action::INSERT_REPLY->value,
+                "reply" => [
+                    "parent_comment_id" => 26,
+                    "content" => "Hello, what's your name?"
+                ]
+            ],
+
+            "response" => [
+                "STATUS" => "SUCCESS",
+                "DATA" => [
+                    "reply" => [
+                        "id" => 30,
+                        "comic_id" => 10,
+                        "parent_comment_id" => 26,
+                        "user_id" => 13,
+                        "content" => "Hello, what's your name?"
+                    ]
+                ],
+                "ERROR_MESSAGE" => []
+            ]
+        ],
+
+        Action::UPDATE_REPLY->value => [
+            "title" => "Update Category",
+            "description" => "Create a new user account.",
+            "method" => "POST",
+            "auth" => true,
+
+            "request" => [
+                "action" => Action::UPDATE_REPLY->value,
+                "reply" => [
+                    "id" => 30,
+                    "content" => "Hello"
+                ]
+            ],
+
+            "response" => [
+                "STATUS" => "SUCCESS",
+                "DATA" => [
+                    "updated" => true
+                ],
+                "ERROR_MESSAGE" => []
+            ]
+        ],
+
+        Action::DELETE_REPLY->value => [
+            "title" => "Delete Category",
+            "description" => "Create a new user account.",
+            "method" => "POST",
+            "auth" => true,
+
+            "request" => [
+                "action" => Action::DELETE_REPLY->value,
+                "id" => 30
+            ],
+
+            "response" => [
+                "STATUS" => "SUCCESS",
+                "DATA" => [
+                    "deleted" => true
+                ],
+                "ERROR_MESSAGE" => []
+            ]
+        ],
     ];
 
     private const RATING_API = [
-        Action::INSERT_RATING->value => "",
-        Action::UPDATE_RATING->value => "",
-        Action::DELETE_RATING->value => "",
+        Action::SAVE_RATING->value => [
+            "title" => "Save Rating",
+            "description" => "Save a rating for a comic.",
+            "method" => "POST",
+            "auth" => true,
+
+            "request" => [
+                "action" => Action::SAVE_RATING->value,
+                "rating" => [
+                    "comic_id" => 10,
+                    "rating" => 5
+                ]
+            ],
+
+            "response" => [
+                "STATUS" => "SUCCESS",
+                "DATA" => [
+                    "rating" => [
+                        "comic_id" => 10,
+                        "user_id" => 13,
+                        "rating" => 5
+                    ]
+                ],
+                "ERROR_MESSAGE" => []
+            ]
+        ],
+
+        Action::DELETE_RATING->value => [
+            "title" => "Delete Category",
+            "description" => "Create a new user account.",
+            "method" => "POST",
+            "auth" => true,
+
+            "request" => [
+                "action" => Action::DELETE_RATING->value,
+                "comic_id" => 30
+            ],
+
+            "response" => [
+                "STATUS" => "SUCCESS",
+                "DATA" => [
+                    "deleted" => true
+                ],
+                "ERROR_MESSAGE" => []
+            ]
+        ],
     ];
 
     public static function link(string $id, string $title): string

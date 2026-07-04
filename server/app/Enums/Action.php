@@ -12,7 +12,6 @@ enum Action: string
     case UPDATE_USER = 'UPDATE_USER';
     case DELETE_USER = 'DELETE_USER';
 
-
     // Category
     case GET_CATEGORIES = 'GET_CATEGORIES';
     case INSERT_CATEGORY = 'INSERT_CATEGORY';
@@ -38,11 +37,6 @@ enum Action: string
     case UPDATE_COMIC_CHAPTER_PAGE = 'UPDATE_COMIC_CHAPTER_PAGE';
     case DELETE_COMIC_CHAPTER_PAGE = 'DELETE_COMIC_CHAPTER_PAGE';
 
-    // Rating
-    case INSERT_RATING = 'INSERT_RATING';
-    case UPDATE_RATING = 'UPDATE_RATING';
-    case DELETE_RATING = 'DELETE_RATING';
-
     // Comment
     case GET_COMMENTS = 'GET_COMMENTS';
     case INSERT_COMMENT = 'INSERT_COMMENT';
@@ -54,4 +48,8 @@ enum Action: string
     case INSERT_REPLY = 'INSERT_REPLY';
     case UPDATE_REPLY = 'UPDATE_REPLY';
     case DELETE_REPLY = 'DELETE_REPLY';
+
+    // Rating
+    case SAVE_RATING = 'SAVE_RATING';
+    case DELETE_RATING = 'DELETE_RATING';
 }

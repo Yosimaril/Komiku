@@ -40,8 +40,7 @@ class Router
         Action::UPDATE_REPLY,
         Action::DELETE_REPLY,
 
-        Action::INSERT_RATING,
-        Action::UPDATE_RATING,
+        Action::SAVE_RATING,
         Action::DELETE_RATING,
     ];
 
@@ -84,20 +83,13 @@ class Router
         Action::UPDATE_REPLY->value => [ReplyController::class, 'update'],
         Action::DELETE_REPLY->value => [ReplyController::class, 'delete'],
 
-        Action::INSERT_RATING->value => [RatingController::class, 'insert'],
-        Action::UPDATE_RATING->value => [RatingController::class, 'update'],
+        Action::SAVE_RATING->value => [RatingController::class, 'save'],
         Action::DELETE_RATING->value => [RatingController::class, 'delete'],
     ];
 
     public static function dispatch(Action $action): void
     {
-        if (
-            in_array(
-                $action,
-                self::AUTHENTICATED_ROUTES,
-                true
-            )
-        ) {
+        if (in_array($action, self::AUTHENTICATED_ROUTES, true)) {
             AuthMiddleware::authenticate();
         }
 

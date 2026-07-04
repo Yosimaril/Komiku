@@ -86,8 +86,7 @@ Router::dispatch($action);
     <?= ApiDocumentation::card(Action::DELETE_REPLY->value); ?>
 
     <?= ApiDocumentation::section("rating", "Rating"); ?>
-    <?= ApiDocumentation::card(Action::INSERT_RATING->value); ?>
-    <?= ApiDocumentation::card(Action::UPDATE_RATING->value); ?>
+    <?= ApiDocumentation::card(Action::SAVE_RATING->value); ?>
     <?= ApiDocumentation::card(Action::DELETE_RATING->value); ?>
 </div>
 </body>
