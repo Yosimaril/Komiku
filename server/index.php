@@ -16,12 +16,24 @@ Router::dispatch($action);
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title><?= APP_NAME ?></title>
+    <meta name="description" content="<?= APP_NAME ?> REST API documentation for the mobile application. Includes request payloads, responses, authentication, and endpoint references.">
+    <meta name="theme-color" content="#212529">
+    <meta name="author" content="<?= APP_NAME ?> Team">
+    <meta name="robots" content="index,follow">
+    <meta property="og:title" content="<?= APP_NAME ?> API">
+    <meta property="og:description" content="REST API documentation for <?= APP_NAME ?>.">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="app/Storage/icons/icon_komiku.png">
+    <title><?= APP_NAME ?> API Documentation</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
           integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <link rel="icon" type="image/png" href="app/Storage/icons/icon_komiku.png">
 </head>
-<body>
-<div id="top" class="bg-dark text-white py-5">
+<body class="bg-light">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+        crossorigin="anonymous" defer></script>
+<div id="top" class="bg-dark text-white py-5 px-3">
     <div class="container">
         <h1 class="display-4 fw-bold"><?= APP_NAME ?> API</h1>
         <p class="lead">REST API documentation for the <?= APP_NAME ?> Mobile Application.</p>
@@ -89,5 +101,46 @@ Router::dispatch($action);
     <?= ApiDocumentation::card(Action::SAVE_RATING->value); ?>
     <?= ApiDocumentation::card(Action::DELETE_RATING->value); ?>
 </div>
+<footer class="bg-dark text-white mt-5">
+    <div class="container py-5">
+        <div class="row">
+            <div class="col-lg-6 mb-4 mb-lg-0">
+                <h4><?= APP_NAME ?> API</h4>
+                <p class="text-secondary mb-3">
+                    REST API documentation for the
+                    <?= APP_NAME ?> Mobile Application.
+                </p>
+                <small class="text-secondary">
+                    Version 1.0.0
+                </small>
+            </div>
+            <div class="col-lg-3 mb-4 mb-lg-0">
+                <h6>API Information</h6>
+                <ul class="list-unstyled text-secondary">
+                    <li>Version : <?= ApiDocumentation::VERSION ?></li>
+                    <li>Endpoints : <?= ApiDocumentation::totalEndpoints() ?></li>
+                    <li>Authentication : <?= ApiDocumentation::AUTHENTICATION ?></li>
+                    <li>Method : <?= ApiDocumentation::METHOD ?></li>
+                </ul>
+            </div>
+            <div class="col-lg-3 mb-4 mb-lg-0">
+                <h6>Quick Links</h6>
+                <ul class="list-unstyled">
+                    <li>
+                        <a href="#top" class="text-decoration-none text-secondary">Back to Top</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <hr class="border-secondary">
+        <div class="d-flex justify-content-between align-items-center">
+            <small class="text-secondary">
+                &copy; <?= date("Y") ?>
+                <?= APP_NAME ?> API
+            </small>
+            <small class="text-secondary">Built with PHP & MySQL</small>
+        </div>
+    </div>
+</footer>
 </body>
 </html>

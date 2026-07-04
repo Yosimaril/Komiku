@@ -15,7 +15,26 @@ use App\Enums\Action;
 
 class ApiDocumentation
 {
+    public const VERSION = "1.0.0";
+    public const AUTHENTICATION = "JWT";
+    public const METHOD = "POST";
     public const API = [
+        Action::OPTIONS->value => [
+            "title" => "Options",
+            "description" => "Available options.",
+            "method" => "GET",
+            "auth" => false,
+
+            "request" => [
+                "action" => Action::OPTIONS->value,
+            ],
+
+            "response" => [
+                "status" => "SUCCESS",
+                "data" => "DATA",
+                "error_message" => "ERROR_MESSAGE"
+            ]
+        ],
         ...self::USER_API,
         ...self::CATEGORY_API,
         ...self::COMIC_API,
@@ -42,8 +61,8 @@ class ApiDocumentation
             ],
 
             "response" => [
-                "STATUS" => "SUCCESS",
-                "DATA" => [
+                "status" => "SUCCESS",
+                "data" => [
                     "user" => [
                         "id" => 1,
                         "username" => "Admin",
@@ -52,7 +71,7 @@ class ApiDocumentation
                     ],
                     "token" => "..."
                 ],
-                "ERROR_MESSAGE" => []
+                "error_message" => []
             ]
         ],
 
@@ -71,21 +90,21 @@ class ApiDocumentation
             ],
 
             "response" => [
-                "STATUS" => "SUCCESS",
-                "DATA" => [
+                "status" => "SUCCESS",
+                "data" => [
                     "user" => [
                         "id" => 1,
                         "username" => "Admin"
                     ],
                     "token" => "..."
                 ],
-                "ERROR_MESSAGE" => []
+                "error_message" => []
             ]
         ],
 
         Action::UPDATE_USER->value => [
             "title" => "Update User",
-            "description" => "Create a new user account.",
+            "description" => "Update user account details.",
             "method" => "POST",
             "auth" => true,
 
@@ -98,17 +117,17 @@ class ApiDocumentation
             ],
 
             "response" => [
-                "STATUS" => "SUCCESS",
-                "DATA" => [
+                "status" => "SUCCESS",
+                "data" => [
                     "updated" => true
                 ],
-                "ERROR_MESSAGE" => []
+                "error_message" => []
             ]
         ],
 
         Action::DELETE_USER->value => [
             "title" => "Delete User",
-            "description" => "Create a new user account.",
+            "description" => "Delete user account.",
             "method" => "POST",
             "auth" => true,
 
@@ -120,11 +139,11 @@ class ApiDocumentation
             ],
 
             "response" => [
-                "STATUS" => "SUCCESS",
-                "DATA" => [
+                "status" => "SUCCESS",
+                "data" => [
                     "deleted" => true
                 ],
-                "ERROR_MESSAGE" => []
+                "error_message" => []
             ]
         ]
     ];
@@ -142,8 +161,8 @@ class ApiDocumentation
             ],
 
             "response" => [
-                "STATUS" => "SUCCESS",
-                "DATA" => [
+                "status" => "SUCCESS",
+                "data" => [
                     [
                         "id" => 1,
                         "name" => "Action",
@@ -159,13 +178,13 @@ class ApiDocumentation
                         "updated_at" => "..."
                     ]
                 ],
-                "ERROR_MESSAGE" => []
+                "error_message" => []
             ]
         ],
 
         Action::INSERT_CATEGORY->value => [
             "title" => "Insert Category",
-            "description" => "Create a new user account.",
+            "description" => "Create a new category.",
             "method" => "POST",
             "auth" => false,
 
@@ -178,21 +197,21 @@ class ApiDocumentation
             ],
 
             "response" => [
-                "STATUS" => "SUCCESS",
-                "DATA" => [
+                "status" => "SUCCESS",
+                "data" => [
                     "category" => [
                         "id" => 5,
                         "name" => "Fantasy",
                         "description" => "null"
                     ]
                 ],
-                "ERROR_MESSAGE" => []
+                "error_message" => []
             ]
         ],
 
         Action::UPDATE_CATEGORY->value => [
             "title" => "Update Category",
-            "description" => "Create a new user account.",
+            "description" => "Update an existing category.",
             "method" => "POST",
             "auth" => false,
 
@@ -206,17 +225,17 @@ class ApiDocumentation
             ],
 
             "response" => [
-                "STATUS" => "SUCCESS",
-                "DATA" => [
+                "status" => "SUCCESS",
+                "data" => [
                     "updated" => true
                 ],
-                "ERROR_MESSAGE" => []
+                "error_message" => []
             ]
         ],
 
         Action::DELETE_CATEGORY->value => [
             "title" => "Delete Category",
-            "description" => "Create a new user account.",
+            "description" => "Delete a category.",
             "method" => "POST",
             "auth" => false,
 
@@ -226,11 +245,11 @@ class ApiDocumentation
             ],
 
             "response" => [
-                "STATUS" => "SUCCESS",
-                "DATA" => [
+                "status" => "SUCCESS",
+                "data" => [
                     "deleted" => true
                 ],
-                "ERROR_MESSAGE" => []
+                "error_message" => []
             ]
         ],
     ];
@@ -248,8 +267,8 @@ class ApiDocumentation
             ],
 
             "response" => [
-                "STATUS" => "SUCCESS",
-                "DATA" => [
+                "status" => "SUCCESS",
+                "data" => [
                     [
                         "id" => 1,
                         "title" => "Chronicles of Flutter",
@@ -269,24 +288,24 @@ class ApiDocumentation
                         "updated_at" => "..."
                     ]
                 ],
-                "ERROR_MESSAGE" => []
+                "error_message" => []
             ]
         ],
 
         Action::GET_COMIC_DETAIL->value => [
-            "title" => "Get Categories",
-            "description" => "Retrieve all available comic categories.",
+            "title" => "Get Comic Detail",
+            "description" => "Retrieve details for a specific comic.",
             "method" => "POST",
             "auth" => false,
 
             "request" => [
-                "action" => Action::GET_COMIC_DETAIL,
+                "action" => Action::GET_COMIC_DETAIL->value,
                 "id" => 2
             ],
 
             "response" => [
-                "STATUS" => "SUCCESS",
-                "DATA" => [
+                "status" => "SUCCESS",
+                "data" => [
                     "id" => 2,
                     "creator" => [
                         "id" => 2,
@@ -362,13 +381,13 @@ class ApiDocumentation
                         ]
                     ]
                 ],
-                "ERROR_MESSAGE" => []
+                "error_message" => []
             ]
         ],
 
         Action::INSERT_COMIC->value => [
-            "title" => "Insert Category",
-            "description" => "Create a new user account.",
+            "title" => "Insert Comic",
+            "description" => "Create a new comic.",
             "method" => "POST",
             "auth" => true,
 
@@ -382,8 +401,8 @@ class ApiDocumentation
             ],
 
             "response" => [
-                "STATUS" => "SUCCESS",
-                "DATA" => [
+                "status" => "SUCCESS",
+                "data" => [
                     "comic" => [
                         "id" => 9,
                         "creator_id" => 13,
@@ -392,13 +411,13 @@ class ApiDocumentation
                         "description" => "null"
                     ]
                 ],
-                "ERROR_MESSAGE" => []
+                "error_message" => []
             ]
         ],
 
         Action::UPDATE_COMIC->value => [
-            "title" => "Update Category",
-            "description" => "Create a new user account.",
+            "title" => "Update Comic",
+            "description" => "Update an existing comic.",
             "method" => "POST",
             "auth" => true,
 
@@ -413,17 +432,17 @@ class ApiDocumentation
             ],
 
             "response" => [
-                "STATUS" => "SUCCESS",
-                "DATA" => [
+                "status" => "SUCCESS",
+                "data" => [
                     "updated" => true
                 ],
-                "ERROR_MESSAGE" => []
+                "error_message" => []
             ]
         ],
 
         Action::DELETE_COMIC->value => [
-            "title" => "Delete Category",
-            "description" => "Create a new user account.",
+            "title" => "Delete Comic",
+            "description" => "Delete a comic.",
             "method" => "POST",
             "auth" => true,
 
@@ -433,19 +452,19 @@ class ApiDocumentation
             ],
 
             "response" => [
-                "STATUS" => "SUCCESS",
-                "DATA" => [
+                "status" => "SUCCESS",
+                "data" => [
                     "deleted" => true
                 ],
-                "ERROR_MESSAGE" => []
+                "error_message" => []
             ]
         ],
     ];
 
     private const COMIC_CHAPTER_API = [
         Action::GET_COMIC_CHAPTERS->value => [
-            "title" => "Get Comic Chapters",
-            "description" => "Retrieve all available comics.",
+            "title" => "Get Chapters",
+            "description" => "Retrieve all chapters of a comic.",
             "method" => "POST",
             "auth" => false,
 
@@ -456,8 +475,8 @@ class ApiDocumentation
             ],
 
             "response" => [
-                "STATUS" => "SUCCESS",
-                "DATA" => [
+                "status" => "SUCCESS",
+                "data" => [
                     [
                         "id" => 1,
                         "comic_title" => "The hero of Flutter",
@@ -475,13 +494,13 @@ class ApiDocumentation
                         "updated_at" => "..."
                     ]
                 ],
-                "ERROR_MESSAGE" => []
+                "error_message" => []
             ]
         ],
 
         Action::INSERT_COMIC_CHAPTERS->value => [
-            "title" => "Insert Category",
-            "description" => "Create a new user account.",
+            "title" => "Insert Comic Chapters",
+            "description" => "Insert new chapter(s) for a comic.",
             "method" => "POST",
             "auth" => true,
 
@@ -501,8 +520,8 @@ class ApiDocumentation
             ],
 
             "response" => [
-                "STATUS" => "SUCCESS",
-                "DATA" => [
+                "status" => "SUCCESS",
+                "data" => [
                     "comic_id" => 10,
                     "chapters" => [
                         [
@@ -517,13 +536,13 @@ class ApiDocumentation
                         ]
                     ]
                 ],
-                "ERROR_MESSAGE" => []
+                "error_message" => []
             ]
         ],
 
         Action::UPDATE_COMIC_CHAPTER->value => [
-            "title" => "Update Category",
-            "description" => "Create a new user account.",
+            "title" => "Update Comic Chapter",
+            "description" => "Update an existing chapter.",
             "method" => "POST",
             "auth" => true,
 
@@ -537,17 +556,17 @@ class ApiDocumentation
             ],
 
             "response" => [
-                "STATUS" => "SUCCESS",
-                "DATA" => [
+                "status" => "SUCCESS",
+                "data" => [
                     "updated" => true
                 ],
-                "ERROR_MESSAGE" => []
+                "error_message" => []
             ]
         ],
 
         Action::DELETE_COMIC_CHAPTER->value => [
-            "title" => "Delete Category",
-            "description" => "Create a new user account.",
+            "title" => "Delete Comic Chapter",
+            "description" => "Delete a chapter.",
             "method" => "POST",
             "auth" => true,
 
@@ -557,19 +576,19 @@ class ApiDocumentation
             ],
 
             "response" => [
-                "STATUS" => "SUCCESS",
-                "DATA" => [
+                "status" => "SUCCESS",
+                "data" => [
                     "deleted" => true
                 ],
-                "ERROR_MESSAGE" => []
+                "error_message" => []
             ]
         ],
     ];
 
     private const COMIC_CHAPTER_PAGE_API = [
         Action::GET_COMIC_CHAPTER_PAGES->value => [
-            "title" => "Get Comic Chapters",
-            "description" => "Retrieve all available comics.",
+            "title" => "Get Chapter Pages",
+            "description" => "Retrieve all pages of a chapter.",
             "method" => "POST",
             "auth" => false,
 
@@ -579,8 +598,8 @@ class ApiDocumentation
             ],
 
             "response" => [
-                "STATUS" => "SUCCESS",
-                "DATA" => [
+                "status" => "SUCCESS",
+                "data" => [
                     [
                         "id" => 1,
                         "chapter_title" => "The Broken Village",
@@ -598,13 +617,13 @@ class ApiDocumentation
                         "updated_at" => "..."
                     ]
                 ],
-                "ERROR_MESSAGE" => []
+                "error_message" => []
             ]
         ],
 
         Action::INSERT_COMIC_CHAPTER_PAGES->value => [
-            "title" => "Insert Category",
-            "description" => "Create a new user account.",
+            "title" => "Insert Comic Chapter Pages",
+            "description" => "Insert new page(s) for a chapter.",
             "method" => "POST",
             "auth" => true,
 
@@ -624,8 +643,8 @@ class ApiDocumentation
             ],
 
             "response" => [
-                "STATUS" => "SUCCESS",
-                "DATA" => [
+                "status" => "SUCCESS",
+                "data" => [
                     "chapter_id" => 12,
                     "pages" => [
                         [
@@ -640,13 +659,13 @@ class ApiDocumentation
                         ]
                     ]
                 ],
-                "ERROR_MESSAGE" => []
+                "error_message" => []
             ]
         ],
 
         Action::UPDATE_COMIC_CHAPTER_PAGE->value => [
-            "title" => "Update Category",
-            "description" => "Create a new user account.",
+            "title" => "Update Comic Chapter Page",
+            "description" => "Update an existing page.",
             "method" => "POST",
             "auth" => true,
 
@@ -660,17 +679,17 @@ class ApiDocumentation
             ],
 
             "response" => [
-                "STATUS" => "SUCCESS",
-                "DATA" => [
+                "status" => "SUCCESS",
+                "data" => [
                     "updated" => true
                 ],
-                "ERROR_MESSAGE" => []
+                "error_message" => []
             ]
         ],
 
         Action::DELETE_COMIC_CHAPTER_PAGE->value => [
-            "title" => "Delete Category",
-            "description" => "Create a new user account.",
+            "title" => "Delete Comic Chapter Page",
+            "description" => "Delete a page.",
             "method" => "POST",
             "auth" => true,
 
@@ -680,19 +699,19 @@ class ApiDocumentation
             ],
 
             "response" => [
-                "STATUS" => "SUCCESS",
-                "DATA" => [
+                "status" => "SUCCESS",
+                "data" => [
                     "deleted" => true
                 ],
-                "ERROR_MESSAGE" => []
+                "error_message" => []
             ]
         ],
     ];
 
     private const COMMENT_API = [
         Action::GET_COMMENTS->value => [
-            "title" => "Get Comic Chapters",
-            "description" => "Retrieve all available comics.",
+            "title" => "Get Comments",
+            "description" => "Retrieve all comments of a comic.",
             "method" => "POST",
             "auth" => false,
 
@@ -702,8 +721,8 @@ class ApiDocumentation
             ],
 
             "response" => [
-                "STATUS" => "SUCCESS",
-                "DATA" => [
+                "status" => "SUCCESS",
+                "data" => [
                     [
                         "id" => 1,
                         "content" => "This comic is insane, the fight scenes are so clean!",
@@ -721,13 +740,13 @@ class ApiDocumentation
                         "username" => "Jane"
                     ]
                 ],
-                "ERROR_MESSAGE" => []
+                "error_message" => []
             ]
         ],
 
         Action::INSERT_COMMENT->value => [
-            "title" => "Insert Category",
-            "description" => "Create a new user account.",
+            "title" => "Insert Comment",
+            "description" => "Insert a new comment.",
             "method" => "POST",
             "auth" => true,
 
@@ -740,8 +759,8 @@ class ApiDocumentation
             ],
 
             "response" => [
-                "STATUS" => "SUCCESS",
-                "DATA" => [
+                "status" => "SUCCESS",
+                "data" => [
                     "comment" => [
                         "id" => 27,
                         "comic_id" => 10,
@@ -749,13 +768,13 @@ class ApiDocumentation
                         "content" => "Hello"
                     ]
                 ],
-                "ERROR_MESSAGE" => []
+                "error_message" => []
             ]
         ],
 
         Action::UPDATE_COMMENT->value => [
-            "title" => "Update Category",
-            "description" => "Create a new user account.",
+            "title" => "Update Comment",
+            "description" => "Update a comment.",
             "method" => "POST",
             "auth" => true,
 
@@ -768,17 +787,17 @@ class ApiDocumentation
             ],
 
             "response" => [
-                "STATUS" => "SUCCESS",
-                "DATA" => [
+                "status" => "SUCCESS",
+                "data" => [
                     "updated" => true
                 ],
-                "ERROR_MESSAGE" => []
+                "error_message" => []
             ]
         ],
 
         Action::DELETE_COMMENT->value => [
-            "title" => "Delete Category",
-            "description" => "Create a new user account.",
+            "title" => "Delete Comment",
+            "description" => "Delete a comment.",
             "method" => "POST",
             "auth" => true,
 
@@ -788,19 +807,19 @@ class ApiDocumentation
             ],
 
             "response" => [
-                "STATUS" => "SUCCESS",
-                "DATA" => [
+                "status" => "SUCCESS",
+                "data" => [
                     "deleted" => true
                 ],
-                "ERROR_MESSAGE" => []
+                "error_message" => []
             ]
         ],
     ];
 
     private const REPLY_API = [
         Action::GET_REPLIES->value => [
-            "title" => "Get Comic Chapters",
-            "description" => "Retrieve all available comics.",
+            "title" => "Get Replies",
+            "description" => "Retrieve all replies of a comment.",
             "method" => "POST",
             "auth" => false,
 
@@ -810,8 +829,8 @@ class ApiDocumentation
             ],
 
             "response" => [
-                "STATUS" => "SUCCESS",
-                "DATA" => [
+                "status" => "SUCCESS",
+                "data" => [
                     [
                         "id" => 28,
                         "content" => "asdfghjkl",
@@ -829,13 +848,13 @@ class ApiDocumentation
                         "username" => "Squidward"
                     ]
                 ],
-                "ERROR_MESSAGE" => []
+                "error_message" => []
             ]
         ],
 
         Action::INSERT_REPLY->value => [
-            "title" => "Insert Category",
-            "description" => "Create a new user account.",
+            "title" => "Insert Reply",
+            "description" => "Insert a reply to a comment.",
             "method" => "POST",
             "auth" => true,
 
@@ -848,8 +867,8 @@ class ApiDocumentation
             ],
 
             "response" => [
-                "STATUS" => "SUCCESS",
-                "DATA" => [
+                "status" => "SUCCESS",
+                "data" => [
                     "reply" => [
                         "id" => 30,
                         "comic_id" => 10,
@@ -858,13 +877,13 @@ class ApiDocumentation
                         "content" => "Hello, what's your name?"
                     ]
                 ],
-                "ERROR_MESSAGE" => []
+                "error_message" => []
             ]
         ],
 
         Action::UPDATE_REPLY->value => [
-            "title" => "Update Category",
-            "description" => "Create a new user account.",
+            "title" => "Update Reply",
+            "description" => "Update an existing reply.",
             "method" => "POST",
             "auth" => true,
 
@@ -877,17 +896,17 @@ class ApiDocumentation
             ],
 
             "response" => [
-                "STATUS" => "SUCCESS",
-                "DATA" => [
+                "status" => "SUCCESS",
+                "data" => [
                     "updated" => true
                 ],
-                "ERROR_MESSAGE" => []
+                "error_message" => []
             ]
         ],
 
         Action::DELETE_REPLY->value => [
-            "title" => "Delete Category",
-            "description" => "Create a new user account.",
+            "title" => "Delete Reply",
+            "description" => "Delete a reply.",
             "method" => "POST",
             "auth" => true,
 
@@ -897,19 +916,19 @@ class ApiDocumentation
             ],
 
             "response" => [
-                "STATUS" => "SUCCESS",
-                "DATA" => [
+                "status" => "SUCCESS",
+                "data" => [
                     "deleted" => true
                 ],
-                "ERROR_MESSAGE" => []
+                "error_message" => []
             ]
         ],
     ];
 
     private const RATING_API = [
         Action::SAVE_RATING->value => [
-            "title" => "Save Rating",
-            "description" => "Save a rating for a comic.",
+            "title" => "Insert Rating",
+            "description" => "Insert a rating for a comic.",
             "method" => "POST",
             "auth" => true,
 
@@ -922,21 +941,21 @@ class ApiDocumentation
             ],
 
             "response" => [
-                "STATUS" => "SUCCESS",
-                "DATA" => [
+                "status" => "SUCCESS",
+                "data" => [
                     "rating" => [
                         "comic_id" => 10,
                         "user_id" => 13,
                         "rating" => 5
                     ]
                 ],
-                "ERROR_MESSAGE" => []
+                "error_message" => []
             ]
         ],
 
         Action::DELETE_RATING->value => [
-            "title" => "Delete Category",
-            "description" => "Create a new user account.",
+            "title" => "Delete Rating",
+            "description" => "Delete a rating for a comic.",
             "method" => "POST",
             "auth" => true,
 
@@ -946,11 +965,11 @@ class ApiDocumentation
             ],
 
             "response" => [
-                "STATUS" => "SUCCESS",
-                "DATA" => [
+                "status" => "SUCCESS",
+                "data" => [
                     "deleted" => true
                 ],
-                "ERROR_MESSAGE" => []
+                "error_message" => []
             ]
         ],
     ];
@@ -965,7 +984,7 @@ class ApiDocumentation
     public static function section(string $id, string $title): string
     {
         return "
-            <div id='$id' class='d-flex justify-content-between align-items-center mt-5 mb-3'>
+            <div id='$id' class='d-flex justify-content-between align-items-center mt-5 mb-3 px-2'>
                 <h2>$title</h2>
                 <a href='#top'>
                     Back to Top
@@ -987,7 +1006,7 @@ class ApiDocumentation
                 </div>
                 <div class='card-body'>
                     <p>{$api['description']}</p>
-                    <table class='table table-bordered mb-4'>
+                    <table class='table table-responsive table-bordered mb-4'>
                         <tr>
                             <th style='width: 200px'>Method</th>
                             <td>
@@ -1004,11 +1023,16 @@ class ApiDocumentation
                         </tr>
                     </table>
                     <h6>Payload</h6>
-                    <pre class='bg-light border p-3'>" . json_encode($request, JSON_PRETTY_PRINT) . "</pre>
+                    <pre class='bg-light border p-3 overflow-auto'>" . json_encode($request, JSON_PRETTY_PRINT) . "</pre>
                     <h6>Success Response</h6>
-                    <pre class='bg-light border p-3'>" . json_encode($response, JSON_PRETTY_PRINT) . "</pre>
+                    <pre class='bg-light border p-3 overflow-auto'>" . json_encode($response, JSON_PRETTY_PRINT) . "</pre>
                 </div>
             </div>
         ";
+    }
+
+    public static function totalEndpoints(): int
+    {
+        return count(self::API);
     }
 }

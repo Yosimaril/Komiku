@@ -12,9 +12,9 @@ class Response
         http_response_code($status);
 
         echo json_encode([
-            "STATUS" => "SUCCESS",
-            "DATA" => $data,
-            "ERROR_MESSAGE" => []
+            "status" => "SUCCESS",
+            "data" => $data,
+            "error_message" => []
         ]);
 
         exit();
@@ -28,9 +28,9 @@ class Response
         http_response_code($status);
 
         echo json_encode([
-            "STATUS" => "ERROR",
-            "DATA" => [],
-            "ERROR_MESSAGE" => $errors
+            "status" => "ERROR",
+            "data" => [],
+            "error_message" => $errors
         ]);
 
         exit();
