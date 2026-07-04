@@ -9,7 +9,7 @@ use App\Service\JwtService;
 use App\Validator;
 use Exception;
 
-class UserController
+class UserController extends BaseController
 {
     /**
      * Login.
@@ -24,7 +24,7 @@ class UserController
      */
     public static function login(): void
     {
-        try {
+        self::execute(function () {
             $user = Validator::payload($_POST, 'user');
 
             Validator::required($user, ['username', 'password']);
@@ -49,9 +49,7 @@ class UserController
 
             Database::execute($statement);
 
-            $databaseUser = $statement
-                ->get_result()
-                ->fetch_assoc();
+            $databaseUser = Database::first($statement);
 
             if (
                 !$databaseUser ||
@@ -75,12 +73,7 @@ class UserController
                 "user" => $databaseUser,
                 "token" => $token
             ]);
-
-        } catch (Exception $e) {
-            Response::error([
-                $e->getMessage()
-            ], 500);
-        }
+        });
     }
 
     /**
@@ -96,7 +89,7 @@ class UserController
      */
     public static function register(): void
     {
-        try {
+        self::execute(function () {
             $user = Validator::payload($_POST, 'user');
 
             Validator::required($user, ['username', 'password']);
@@ -156,12 +149,7 @@ class UserController
                 ],
                 "token" => $token
             ], 201);
-
-        } catch (Exception $e) {
-            Response::error([
-                $e->getMessage()
-            ], 500);
-        }
+        });
     }
 
     /**
@@ -177,13 +165,13 @@ class UserController
      */
     public static function update(): void
     {
-        try {
+        self::execute(function () {
             $user = Validator::payload($_POST, "user");
 
             Validator::required($user, ["username", "password"]);
             Validator::string($user, ["username", "password"]);
 
-            $id = AuthMiddleware::getUser()["sub"];
+            $id = AuthMiddleware::getUserId();
 
             $statement = Database::prepare("
                 SELECT password
@@ -198,9 +186,7 @@ class UserController
 
             Database::execute($statement);
 
-            $databaseUser = $statement
-                ->get_result()
-                ->fetch_assoc();
+            $databaseUser = Database::first($statement);
 
             if (
                 !$databaseUser ||
@@ -230,14 +216,9 @@ class UserController
             Database::execute($statement);
 
             Response::success([
-                "updated" => $statement->affected_rows > 0
+                "updated" => Database::isRowAffected($statement)
             ]);
-
-        } catch (Exception $e) {
-            Response::error([
-                $e->getMessage()
-            ], 500);
-        }
+        });
     }
 
     /**
@@ -251,13 +232,13 @@ class UserController
      */
     public static function delete(): void
     {
-        try {
+        self::execute(function () {
             $user = Validator::payload($_POST, "user");
 
             Validator::required($user, ["password"]);
             Validator::string($user, ["password"]);
 
-            $id = AuthMiddleware::getUser()["sub"];
+            $id = AuthMiddleware::getUserId();
 
             $statement = Database::prepare("
                 SELECT password
@@ -272,9 +253,7 @@ class UserController
 
             Database::execute($statement);
 
-            $databaseUser = $statement
-                ->get_result()
-                ->fetch_assoc();
+            $databaseUser = Database::first($statement);
 
             if (
                 !$databaseUser ||
@@ -301,13 +280,8 @@ class UserController
             Database::execute($statement);
 
             Response::success([
-                "deleted" => $statement->affected_rows > 0
+                "deleted" => Database::isRowAffected($statement)
             ]);
-
-        } catch (Exception $e) {
-            Response::error([
-                $e->getMessage()
-            ], 500);
-        }
+        });
     }
 }

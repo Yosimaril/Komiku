@@ -7,7 +7,7 @@ use App\Response;
 use App\Validator;
 use Exception;
 
-class CategoryController
+class CategoryController extends BaseController
 {
     /**
      * Retrieve all categories.
@@ -19,7 +19,7 @@ class CategoryController
      */
     public static function get(): void
     {
-        try {
+        self::execute(function () {
             $keyword = trim($_POST['keyword'] ?? '');
 
             $query = "
@@ -46,16 +46,9 @@ class CategoryController
             Database::execute($statement);
 
             Response::success(
-                $statement
-                    ->get_result()
-                    ->fetch_all(MYSQLI_ASSOC)
+                Database::all($statement)
             );
-
-        } catch (Exception $e) {
-            Response::error([
-                $e->getMessage()
-            ], 500);
-        }
+        });
     }
 
     /**
@@ -71,7 +64,7 @@ class CategoryController
      */
     public static function insert(): void
     {
-        try {
+        self::execute(function () {
             $category = Validator::payload(
                 $_POST,
                 'category'
@@ -109,12 +102,7 @@ class CategoryController
                     'description' => $description
                 ]
             ], 201);
-
-        } catch (Exception $e) {
-            Response::error([
-                $e->getMessage()
-            ], 500);
-        }
+        });
     }
 
     /**
@@ -131,7 +119,7 @@ class CategoryController
      */
     public static function update(): void
     {
-        try {
+        self::execute(function () {
             $category = Validator::payload(
                 $_POST,
                 'category'
@@ -164,14 +152,9 @@ class CategoryController
             Database::execute($statement);
 
             Response::success([
-                'updated' => $statement->affected_rows > 0
+                'updated' => Database::isRowAffected($statement)
             ]);
-
-        } catch (Exception $e) {
-            Response::error([
-                $e->getMessage()
-            ], 500);
-        }
+        });
     }
 
     /**
@@ -184,7 +167,7 @@ class CategoryController
      */
     public static function delete(): void
     {
-        try {
+        self::execute(function () {
             Validator::required($_POST, ['id']);
             Validator::integer($_POST, ['id']);
             Validator::positive($_POST, ['id']);
@@ -202,13 +185,8 @@ class CategoryController
             Database::execute($statement);
 
             Response::success([
-                'deleted' => $statement->affected_rows > 0
+                'deleted' => Database::isRowAffected($statement)
             ]);
-
-        } catch (Exception $e) {
-            Response::error([
-                $e->getMessage()
-            ], 500);
-        }
+        });
     }
 }

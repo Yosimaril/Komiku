@@ -8,7 +8,7 @@ use App\Response;
 use App\Validator;
 use Exception;
 
-class ComicController
+class ComicController extends BaseController
 {
     /**
      * Retrieve all comics.
@@ -20,7 +20,7 @@ class ComicController
      */
     public static function get(): void
     {
-        try {
+        self::execute(function () {
             $keyword = trim($_POST['keyword'] ?? '');
 
             $query = "
@@ -56,16 +56,9 @@ class ComicController
             Database::execute($statement);
 
             Response::success(
-                $statement
-                    ->get_result()
-                    ->fetch_all(MYSQLI_ASSOC)
+                Database::all($statement)
             );
-
-        } catch (Exception $e) {
-            Response::error([
-                $e->getMessage()
-            ], 500);
-        }
+        });
     }
 
     /**
@@ -78,7 +71,7 @@ class ComicController
      */
     public static function getDetail(): void
     {
-        try {
+        self::execute(function () {
             Validator::required($_POST, ['id']);
             Validator::integer($_POST, ['id']);
             Validator::positive($_POST, ['id']);
@@ -103,9 +96,7 @@ class ComicController
 
             Database::execute($statement);
 
-            $comic = $statement
-                ->get_result()
-                ->fetch_assoc();
+            $comic = Database::first($statement);
 
             if (!$comic) {
                 Response::error([
@@ -128,9 +119,7 @@ class ComicController
 
             Database::execute($statement);
 
-            $rating = $statement
-                ->get_result()
-                ->fetch_assoc();
+            $rating = Database::first($statement);
 
             $statement = Database::prepare("
                 SELECT
@@ -155,10 +144,7 @@ class ComicController
 
             Database::execute($statement);
 
-            $comments = $statement
-                ->get_result()
-                ->fetch_all(MYSQLI_ASSOC);
-
+            $comments = Database::all($statement);
 
             $statement = Database::prepare("
                 SELECT *
@@ -174,9 +160,7 @@ class ComicController
 
             Database::execute($statement);
 
-            $chapters = $statement
-                ->get_result()
-                ->fetch_all(MYSQLI_ASSOC);
+            $chapters = Database::all($statement);
 
             foreach ($chapters as &$chapter) {
                 $statement = Database::prepare("
@@ -196,9 +180,7 @@ class ComicController
 
                 Database::execute($statement);
 
-                $chapter['chapter_pages'] = $statement
-                    ->get_result()
-                    ->fetch_all(MYSQLI_ASSOC);
+                $chapter['chapter_pages'] = Database::all($statement);
             }
 
             unset($chapter);
@@ -222,12 +204,7 @@ class ComicController
                 'comments' => $comments,
                 'chapters' => $chapters
             ]);
-
-        } catch (Exception $e) {
-            Response::error([
-                $e->getMessage()
-            ], 500);
-        }
+        });
     }
 
     /**
@@ -244,7 +221,7 @@ class ComicController
      */
     public static function insert(): void
     {
-        try {
+        self::execute(function () {
             $comic = Validator::payload(
                 $_POST,
                 "comic"
@@ -253,7 +230,7 @@ class ComicController
             Validator::required($comic, ["title"]);
             Validator::string($comic, ["title"]);
 
-            $creatorId = AuthMiddleware::getUser()["sub"];
+            $creatorId = AuthMiddleware::getUserId();
 
             $poster = Validator::nullableString(
                 $comic,
@@ -295,12 +272,7 @@ class ComicController
                     "description" => $description
                 ]
             ], 201);
-
-        } catch (Exception $e) {
-            Response::error([
-                $e->getMessage()
-            ], 500);
-        }
+        });
     }
 
     /**
@@ -318,7 +290,7 @@ class ComicController
      */
     public static function update(): void
     {
-        try {
+        self::execute(function () {
             $comic = Validator::payload(
                 $_POST,
                 "comic"
@@ -329,7 +301,7 @@ class ComicController
             Validator::positive($comic, ["id"]);
             Validator::string($comic, ["title"]);
 
-            $creatorId = AuthMiddleware::getUser()["sub"];
+            $creatorId = AuthMiddleware::getUserId();
 
             $statement = Database::prepare("
                 SELECT id
@@ -382,14 +354,9 @@ class ComicController
             Database::execute($statement);
 
             Response::success([
-                "updated" => $statement->affected_rows > 0
+                "updated" => Database::isRowAffected($statement)
             ]);
-
-        } catch (Exception $e) {
-            Response::error([
-                $e->getMessage()
-            ], 500);
-        }
+        });
     }
 
     /**
@@ -402,12 +369,12 @@ class ComicController
      */
     public static function delete(): void
     {
-        try {
+        self::execute(function () {
             Validator::required($_POST, ["id"]);
             Validator::integer($_POST, ["id"]);
             Validator::positive($_POST, ["id"]);
 
-            $creatorId = AuthMiddleware::getUser()["sub"];
+            $creatorId = AuthMiddleware::getUserId();
 
             $statement = Database::prepare("
                 SELECT id
@@ -443,13 +410,8 @@ class ComicController
             Database::execute($statement);
 
             Response::success([
-                "deleted" => $statement->affected_rows > 0
+                "deleted" => Database::isRowAffected($statement)
             ]);
-
-        } catch (Exception $e) {
-            Response::error([
-                $e->getMessage()
-            ], 500);
-        }
+        });
     }
 }

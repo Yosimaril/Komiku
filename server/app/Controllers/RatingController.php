@@ -8,7 +8,7 @@ use App\Response;
 use App\Validator;
 use Exception;
 
-class RatingController
+class RatingController extends BaseController
 {
     /**
      * Insert or update a rating.
@@ -29,7 +29,7 @@ class RatingController
      */
     public static function save(): void
     {
-        try {
+        self::execute(function () {
             $rating = Validator::payload(
                 $_POST,
                 "rating"
@@ -40,7 +40,7 @@ class RatingController
             Validator::positive($rating, ["comic_id"]);
             Validator::between($rating, "rating", 1, 5);
 
-            $userId = AuthMiddleware::getUser()["sub"];
+            $userId = AuthMiddleware::getUserId();
 
             $statement = Database::prepare("
                 INSERT INTO comic_rated_by_user
@@ -70,12 +70,7 @@ class RatingController
                     "rating" => $rating["rating"]
                 ]
             ], 201);
-
-        } catch (Exception $e) {
-            Response::error([
-                $e->getMessage()
-            ], 500);
-        }
+        });
     }
 
     /**
@@ -88,12 +83,12 @@ class RatingController
      */
     public static function delete(): void
     {
-        try {
+        self::execute(function () {
             Validator::required($_POST, ["comic_id"]);
             Validator::integer($_POST, ["comic_id"]);
             Validator::positive($_POST, ["comic_id"]);
 
-            $userId = AuthMiddleware::getUser()["sub"];
+            $userId = AuthMiddleware::getUserId();
 
             $statement = Database::prepare("
                 DELETE FROM comic_rated_by_user
@@ -111,13 +106,8 @@ class RatingController
             Database::execute($statement);
 
             Response::success([
-                "deleted" => $statement->affected_rows > 0
+                "deleted" => Database::isRowAffected($statement)
             ]);
-
-        } catch (Exception $e) {
-            Response::error([
-                $e->getMessage()
-            ], 500);
-        }
+        });
     }
 }

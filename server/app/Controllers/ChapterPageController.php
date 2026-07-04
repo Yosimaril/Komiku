@@ -8,7 +8,7 @@ use App\Response;
 use App\Validator;
 use Exception;
 
-class ChapterPageController
+class ChapterPageController extends BaseController
 {
     /**
      * Retrieve all pages of a chapter.
@@ -20,7 +20,7 @@ class ChapterPageController
      */
     public static function get(): void
     {
-        try {
+        self::execute(function () {
             Validator::required($_POST, ['chapter_id']);
             Validator::integer($_POST, ['chapter_id']);
             Validator::positive($_POST, ['chapter_id']);
@@ -50,16 +50,9 @@ class ChapterPageController
             Database::execute($statement);
 
             Response::success(
-                $statement
-                    ->get_result()
-                    ->fetch_all(MYSQLI_ASSOC)
+                Database::all($statement)
             );
-
-        } catch (Exception $e) {
-            Response::error([
-                $e->getMessage()
-            ], 500);
-        }
+        });
     }
 
     /**
@@ -79,7 +72,7 @@ class ChapterPageController
      */
     public static function insert(): void
     {
-        try {
+        self::execute(function () {
             Validator::required($_POST, ["chapter_id", "pages"]);
             Validator::integer($_POST, ["chapter_id"]);
             Validator::positive($_POST, ["chapter_id"]);
@@ -94,7 +87,7 @@ class ChapterPageController
             }
 
             $chapterId = (int)$_POST["chapter_id"];
-            $creatorId = AuthMiddleware::getUser()["sub"];
+            $creatorId = AuthMiddleware::getUserId();
 
             $statement = Database::prepare("
                 SELECT c.creator_id
@@ -129,58 +122,53 @@ class ChapterPageController
                 ], 403);
             }
 
-            $db = Database::getConnection();
+            $pages = $_POST["pages"];
 
-            $db->begin_transaction();
+            $inserted = Database::transaction(
+                function () use ($pages, $chapterId) {
+                    $statement = Database::prepare("
+                        INSERT INTO chapter_pages
+                        (
+                            chapter_id,
+                            page_number,
+                            image
+                        )
+                        VALUES (?, ?, ?)
+                    ");
 
-            $statement = Database::prepare("
-                INSERT INTO chapter_pages
-                (
-                    chapter_id,
-                    page_number,
-                    image
-                )
-                VALUES (?, ?, ?)
-            ");
+                    $inserted = [];
 
-            $inserted = [];
+                    foreach ($_POST["pages"] as $page) {
+                        Validator::required($page, ["page_number", "image"]);
+                        Validator::integer($page, ["page_number"]);
+                        Validator::positive($page, ["page_number"]);
+                        Validator::string($page, ["image"]);
 
-            foreach ($_POST["pages"] as $page) {
-                Validator::required($page, ["page_number", "image"]);
-                Validator::integer($page, ["page_number"]);
-                Validator::positive($page, ["page_number"]);
-                Validator::string($page, ["image"]);
+                        $statement->bind_param(
+                            "iis",
+                            $chapterId,
+                            $page["page_number"],
+                            $page["image"]
+                        );
 
-                $statement->bind_param(
-                    "iis",
-                    $chapterId,
-                    $page["page_number"],
-                    $page["image"]
-                );
+                        Database::execute($statement);
 
-                Database::execute($statement);
+                        $inserted[] = [
+                            "id" => Database::getConnection()->insert_id,
+                            "page_number" => $page["page_number"],
+                            "image" => $page["image"]
+                        ];
+                    }
 
-                $inserted[] = [
-                    "id" => $db->insert_id,
-                    "page_number" => $page["page_number"],
-                    "image" => $page["image"]
-                ];
-            }
-
-            $db->commit();
+                    return $inserted;
+                }
+            );
 
             Response::success([
                 "chapter_id" => $chapterId,
                 "pages" => $inserted
             ], 201);
-
-        } catch (Exception $e) {
-            Database::getConnection()->rollback();
-
-            Response::error([
-                $e->getMessage()
-            ], 500);
-        }
+        });
     }
 
     /**
@@ -197,7 +185,7 @@ class ChapterPageController
      */
     public static function update(): void
     {
-        try {
+        self::execute(function () {
             $page = Validator::payload(
                 $_POST,
                 "page"
@@ -208,7 +196,7 @@ class ChapterPageController
             Validator::positive($page, ["id", "page_number"]);
             Validator::string($page, ["image"]);
 
-            $creatorId = AuthMiddleware::getUser()["sub"];
+            $creatorId = AuthMiddleware::getUserId();
 
             $statement = Database::prepare("
                 SELECT p.id
@@ -254,14 +242,9 @@ class ChapterPageController
             Database::execute($statement);
 
             Response::success([
-                "updated" => $statement->affected_rows > 0
+                "updated" => Database::isRowAffected($statement)
             ]);
-
-        } catch (Exception $e) {
-            Response::error([
-                $e->getMessage()
-            ], 500);
-        }
+        });
     }
 
     /**
@@ -274,12 +257,12 @@ class ChapterPageController
      */
     public static function delete(): void
     {
-        try {
+        self::execute(function () {
             Validator::required($_POST, ["id"]);
             Validator::integer($_POST, ["id"]);
             Validator::positive($_POST, ["id"]);
 
-            $creatorId = AuthMiddleware::getUser()["sub"];
+            $creatorId = AuthMiddleware::getUserId();
 
             $statement = Database::prepare("
                 SELECT p.id
@@ -320,13 +303,8 @@ class ChapterPageController
             Database::execute($statement);
 
             Response::success([
-                "deleted" => $statement->affected_rows > 0
+                "deleted" => Database::isRowAffected($statement)
             ]);
-
-        } catch (Exception $e) {
-            Response::error([
-                $e->getMessage()
-            ], 500);
-        }
+        });
     }
 }

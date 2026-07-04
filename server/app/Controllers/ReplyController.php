@@ -8,7 +8,7 @@ use App\Response;
 use App\Validator;
 use Exception;
 
-class ReplyController
+class ReplyController extends BaseController
 {
     /**
      * Retrieve all replies of a comment.
@@ -20,7 +20,7 @@ class ReplyController
      */
     public static function get(): void
     {
-        try {
+        self::execute(function () {
             Validator::required($_POST, ["parent_comment_id"]);
             Validator::integer($_POST, ["parent_comment_id"]);
             Validator::positive($_POST, ["parent_comment_id"]);
@@ -49,16 +49,9 @@ class ReplyController
             Database::execute($statement);
 
             Response::success(
-                $statement
-                    ->get_result()
-                    ->fetch_all(MYSQLI_ASSOC)
+                Database::all($statement)
             );
-
-        } catch (Exception $e) {
-            Response::error([
-                $e->getMessage()
-            ], 500);
-        }
+        });
     }
 
     /**
@@ -74,7 +67,7 @@ class ReplyController
      */
     public static function insert(): void
     {
-        try {
+        self::execute(function () {
             $reply = Validator::payload(
                 $_POST,
                 "reply"
@@ -85,7 +78,7 @@ class ReplyController
             Validator::positive($reply, ["parent_comment_id"]);
             Validator::string($reply, ["content"]);
 
-            $userId = AuthMiddleware::getUser()["sub"];
+            $userId = AuthMiddleware::getUserId();
 
             $statement = Database::prepare("
                 SELECT comic_id
@@ -101,9 +94,7 @@ class ReplyController
 
             Database::execute($statement);
 
-            $comment = $statement
-                ->get_result()
-                ->fetch_assoc();
+            $comment = Database::first($statement);
 
             if (!$comment) {
                 Response::error([
@@ -141,12 +132,7 @@ class ReplyController
                     "content" => $reply["content"]
                 ]
             ], 201);
-
-        } catch (Exception $e) {
-            Response::error([
-                $e->getMessage()
-            ], 500);
-        }
+        });
     }
 
     /**
@@ -162,7 +148,7 @@ class ReplyController
      */
     public static function update(): void
     {
-        try {
+        self::execute(function () {
             $reply = Validator::payload(
                 $_POST,
                 "reply"
@@ -173,7 +159,7 @@ class ReplyController
             Validator::positive($reply, ["id"]);
             Validator::string($reply, ["content"]);
 
-            $userId = AuthMiddleware::getUser()["sub"];
+            $userId = AuthMiddleware::getUserId();
 
             $statement = Database::prepare("
                 SELECT id
@@ -214,14 +200,9 @@ class ReplyController
             Database::execute($statement);
 
             Response::success([
-                "updated" => $statement->affected_rows > 0
+                "updated" => Database::isRowAffected($statement)
             ]);
-
-        } catch (Exception $e) {
-            Response::error([
-                $e->getMessage()
-            ], 500);
-        }
+        });
     }
 
     /**
@@ -234,12 +215,12 @@ class ReplyController
      */
     public static function delete(): void
     {
-        try {
+        self::execute(function () {
             Validator::required($_POST, ["id"]);
             Validator::integer($_POST, ["id"]);
             Validator::positive($_POST, ["id"]);
 
-            $userId = AuthMiddleware::getUser()["sub"];
+            $userId = AuthMiddleware::getUserId();
 
             $statement = Database::prepare("
                 SELECT id
@@ -277,13 +258,8 @@ class ReplyController
             Database::execute($statement);
 
             Response::success([
-                "deleted" => $statement->affected_rows > 0
+                "deleted" => Database::isRowAffected($statement)
             ]);
-
-        } catch (Exception $e) {
-            Response::error([
-                $e->getMessage()
-            ], 500);
-        }
+        });
     }
 }

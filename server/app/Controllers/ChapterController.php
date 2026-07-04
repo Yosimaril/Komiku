@@ -8,7 +8,7 @@ use App\Response;
 use App\Validator;
 use Exception;
 
-class ChapterController
+class ChapterController extends BaseController
 {
     /**
      * Retrieve all chapters of a comic.
@@ -21,7 +21,7 @@ class ChapterController
      */
     public static function get(): void
     {
-        try {
+        self::execute(function () {
             Validator::required($_POST, ['comic_id']);
             Validator::integer($_POST, ['comic_id']);
             Validator::positive($_POST, ['comic_id']);
@@ -68,16 +68,9 @@ class ChapterController
             Database::execute($statement);
 
             Response::success(
-                $statement
-                    ->get_result()
-                    ->fetch_all(MYSQLI_ASSOC)
+                Database::all($statement)
             );
-
-        } catch (Exception $e) {
-            Response::error([
-                $e->getMessage()
-            ], 500);
-        }
+        });
     }
 
     /**
@@ -97,7 +90,7 @@ class ChapterController
      */
     public static function insert(): void
     {
-        try {
+        self::execute(function () {
             Validator::required($_POST, ["comic_id", "chapters"]);
             Validator::integer($_POST, ["comic_id"]);
             Validator::positive($_POST, ["comic_id"]);
@@ -112,7 +105,7 @@ class ChapterController
             }
 
             $comicId = (int)$_POST["comic_id"];
-            $creatorId = AuthMiddleware::getUser()["sub"];
+            $creatorId = AuthMiddleware::getUserId();
 
             $statement = Database::prepare("
                 SELECT creator_id
@@ -127,9 +120,7 @@ class ChapterController
 
             Database::execute($statement);
 
-            $comic = $statement
-                ->get_result()
-                ->fetch_assoc();
+            $comic = Database::first($statement);
 
             if (!$comic) {
                 Response::error([
@@ -145,58 +136,53 @@ class ChapterController
                 ], 403);
             }
 
-            $db = Database::getConnection();
+            $chapters = $_POST["chapters"];
 
-            $db->begin_transaction();
+            $inserted = Database::transaction(
+                function () use ($chapters, $comicId){
+                    $statement = Database::prepare("
+                        INSERT INTO chapters
+                        (
+                            comic_id,
+                            chapter_number,
+                            title
+                        )
+                        VALUES (?, ?, ?)
+                    ");
 
-            $statement = Database::prepare("
-                INSERT INTO chapters
-                (
-                    comic_id,
-                    chapter_number,
-                    title
-                )
-                VALUES (?, ?, ?)
-            ");
+                    $inserted = [];
 
-            $inserted = [];
+                    foreach ($chapters as $chapter) {
+                        Validator::required($chapter, ["chapter_number", "title"]);
+                        Validator::integer($chapter, ["chapter_number"]);
+                        Validator::positive($chapter, ["chapter_number"]);
+                        Validator::string($chapter, ["title"]);
 
-            foreach ($_POST["chapters"] as $chapter) {
-                Validator::required($chapter, ["chapter_number", "title"]);
-                Validator::integer($chapter, ["chapter_number"]);
-                Validator::positive($chapter, ["chapter_number"]);
-                Validator::string($chapter, ["title"]);
+                        $statement->bind_param(
+                            "iis",
+                            $comicId,
+                            $chapter["chapter_number"],
+                            $chapter["title"]
+                        );
 
-                $statement->bind_param(
-                    "iis",
-                    $comicId,
-                    $chapter["chapter_number"],
-                    $chapter["title"]
-                );
+                        Database::execute($statement);
 
-                Database::execute($statement);
+                        $inserted[] = [
+                            "id" => Database::getConnection()->insert_id,
+                            "chapter_number" => $chapter["chapter_number"],
+                            "title" => $chapter["title"]
+                        ];
+                    }
 
-                $inserted[] = [
-                    "id" => $db->insert_id,
-                    "chapter_number" => $chapter["chapter_number"],
-                    "title" => $chapter["title"]
-                ];
-            }
-
-            $db->commit();
+                    return $inserted;
+                }
+            );
 
             Response::success([
                 "comic_id" => $comicId,
                 "chapters" => $inserted
             ], 201);
-
-        } catch (Exception $e) {
-            Database::getConnection()->rollback();
-
-            Response::error([
-                $e->getMessage()
-            ], 500);
-        }
+        });
     }
 
     /**
@@ -213,7 +199,7 @@ class ChapterController
      */
     public static function update(): void
     {
-        try {
+        self::execute(function () {
             $chapter = Validator::payload(
                 $_POST,
                 "chapter"
@@ -224,7 +210,7 @@ class ChapterController
             Validator::positive($chapter, ["id", "chapter_number"]);
             Validator::string($chapter, ["title"]);
 
-            $creatorId = AuthMiddleware::getUser()["sub"];
+            $creatorId = AuthMiddleware::getUserId();
 
             $statement = Database::prepare("
                 SELECT ch.id
@@ -268,14 +254,9 @@ class ChapterController
             Database::execute($statement);
 
             Response::success([
-                "updated" => $statement->affected_rows > 0
+                "updated" => Database::isRowAffected($statement)
             ]);
-
-        } catch (Exception $e) {
-            Response::error([
-                $e->getMessage()
-            ], 500);
-        }
+        });
     }
 
     /**
@@ -288,12 +269,12 @@ class ChapterController
      */
     public static function delete(): void
     {
-        try {
+        self::execute(function () {
             Validator::required($_POST, ["id"]);
             Validator::integer($_POST, ["id"]);
             Validator::positive($_POST, ["id"]);
 
-            $creatorId = AuthMiddleware::getUser()["sub"];
+            $creatorId = AuthMiddleware::getUserId();
 
             $statement = Database::prepare("
                 SELECT ch.id
@@ -332,13 +313,8 @@ class ChapterController
             Database::execute($statement);
 
             Response::success([
-                "deleted" => $statement->affected_rows > 0
+                "deleted" => Database::isRowAffected($statement)
             ]);
-
-        } catch (Exception $e) {
-            Response::error([
-                $e->getMessage()
-            ], 500);
-        }
+        });
     }
 }

@@ -8,7 +8,7 @@ use App\Response;
 use App\Validator;
 use Exception;
 
-class CommentController
+class CommentController extends BaseController
 {
     /**
      * Retrieve all comments of a comic.
@@ -20,7 +20,7 @@ class CommentController
      */
     public static function get(): void
     {
-        try {
+        self::execute(function () {
             Validator::required($_POST, ['comic_id']);
             Validator::integer($_POST, ['comic_id']);
             Validator::positive($_POST, ['comic_id']);
@@ -52,16 +52,9 @@ class CommentController
             Database::execute($statement);
 
             Response::success(
-                $statement
-                    ->get_result()
-                    ->fetch_all(MYSQLI_ASSOC)
+                Database::all($statement)
             );
-
-        } catch (Exception $e) {
-            Response::error([
-                $e->getMessage()
-            ], 500);
-        }
+        });
     }
 
     /**
@@ -77,7 +70,7 @@ class CommentController
      */
     public static function insert(): void
     {
-        try {
+        self::execute(function () {
             $comment = Validator::payload(
                 $_POST,
                 "comment"
@@ -88,7 +81,7 @@ class CommentController
             Validator::positive($comment, ["comic_id"]);
             Validator::string($comment, ["content"]);
 
-            $userId = AuthMiddleware::getUser()["sub"];
+            $userId = AuthMiddleware::getUserId();
 
             $statement = Database::prepare("
                 INSERT INTO comments
@@ -117,12 +110,7 @@ class CommentController
                     "content" => $comment["content"]
                 ]
             ], 201);
-
-        } catch (Exception $e) {
-            Response::error([
-                $e->getMessage()
-            ], 500);
-        }
+        });
     }
 
     /**
@@ -138,7 +126,7 @@ class CommentController
      */
     public static function update(): void
     {
-        try {
+        self::execute(function () {
             $comment = Validator::payload(
                 $_POST,
                 "comment"
@@ -149,7 +137,7 @@ class CommentController
             Validator::positive($comment, ["id"]);
             Validator::string($comment, ["content"]);
 
-            $userId = AuthMiddleware::getUser()["sub"];
+            $userId = AuthMiddleware::getUserId();
 
             $statement = Database::prepare("
                 SELECT id
@@ -190,14 +178,9 @@ class CommentController
             Database::execute($statement);
 
             Response::success([
-                "updated" => $statement->affected_rows > 0
+                "updated" => Database::isRowAffected($statement)
             ]);
-
-        } catch (Exception $e) {
-            Response::error([
-                $e->getMessage()
-            ], 500);
-        }
+        });
     }
 
     /**
@@ -210,12 +193,12 @@ class CommentController
      */
     public static function delete(): void
     {
-        try {
+        self::execute(function () {
             Validator::required($_POST, ["id"]);
             Validator::integer($_POST, ["id"]);
             Validator::positive($_POST, ["id"]);
 
-            $userId = AuthMiddleware::getUser()["sub"];
+            $userId = AuthMiddleware::getUserId();
 
             $statement = Database::prepare("
                 SELECT id
@@ -253,13 +236,9 @@ class CommentController
             Database::execute($statement);
 
             Response::success([
-                "deleted" => $statement->affected_rows > 0
+                "deleted" => Database::isRowAffected($statement)
             ]);
 
-        } catch (Exception $e) {
-            Response::error([
-                $e->getMessage()
-            ], 500);
-        }
+        });
     }
 }
