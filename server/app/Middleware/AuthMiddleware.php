@@ -46,6 +46,6 @@ class AuthMiddleware
 
     public static function getUserId(): int
     {
-        return self::$user['id'];
+        return (int)self::$user['sub'];
     }
 }

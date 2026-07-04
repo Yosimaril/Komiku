@@ -927,8 +927,8 @@ class ApiDocumentation
 
     private const RATING_API = [
         Action::SAVE_RATING->value => [
-            "title" => "Insert Rating",
-            "description" => "Insert a rating for a comic.",
+            "title" => "Insert or Update Rating",
+            "description" => "Insert or update a rating for a comic.",
             "method" => "POST",
             "auth" => true,
 
