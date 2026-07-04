@@ -289,11 +289,13 @@ class ComicController
             Database::execute($statement);
 
             Response::success([
-                "id" => Database::getConnection()->insert_id,
-                "creator_id" => $creatorId,
-                "title" => $comic["title"],
-                "poster" => $poster,
-                "description" => $description
+                "comic" => [
+                    "id" => Database::getConnection()->insert_id,
+                    "creator_id" => $creatorId,
+                    "title" => $comic["title"],
+                    "poster" => $poster,
+                    "description" => $description
+                ]
             ], 201);
 
         } catch (Exception $e) {

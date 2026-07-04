@@ -32,10 +32,6 @@ class Router
         Action::UPDATE_COMIC_CHAPTER_PAGE,
         Action::DELETE_COMIC_CHAPTER_PAGE,
 
-        Action::INSERT_RATING,
-        Action::UPDATE_RATING,
-        Action::DELETE_RATING,
-
         Action::INSERT_COMMENT,
         Action::UPDATE_COMMENT,
         Action::DELETE_COMMENT,
@@ -43,6 +39,10 @@ class Router
         Action::INSERT_REPLY,
         Action::UPDATE_REPLY,
         Action::DELETE_REPLY,
+
+        Action::INSERT_RATING,
+        Action::UPDATE_RATING,
+        Action::DELETE_RATING,
     ];
 
     private const ROUTES = [
@@ -74,10 +74,6 @@ class Router
         Action::UPDATE_COMIC_CHAPTER_PAGE->value => [ChapterPageController::class, 'update'],
         Action::DELETE_COMIC_CHAPTER_PAGE->value => [ChapterPageController::class, 'delete'],
 
-        Action::INSERT_RATING->value => [RatingController::class, 'insert'],
-        Action::UPDATE_RATING->value => [RatingController::class, 'update'],
-        Action::DELETE_RATING->value => [RatingController::class, 'delete'],
-
         Action::GET_COMMENTS->value => [CommentController::class, 'get'],
         Action::INSERT_COMMENT->value => [CommentController::class, 'insert'],
         Action::UPDATE_COMMENT->value => [CommentController::class, 'update'],
@@ -87,6 +83,10 @@ class Router
         Action::INSERT_REPLY->value => [ReplyController::class, 'insert'],
         Action::UPDATE_REPLY->value => [ReplyController::class, 'update'],
         Action::DELETE_REPLY->value => [ReplyController::class, 'delete'],
+
+        Action::INSERT_RATING->value => [RatingController::class, 'insert'],
+        Action::UPDATE_RATING->value => [RatingController::class, 'update'],
+        Action::DELETE_RATING->value => [RatingController::class, 'delete'],
     ];
 
     public static function dispatch(Action $action): void
