@@ -64,12 +64,12 @@ class Router
         Action::UPDATE_COMIC->value => [ComicController::class, 'update'],
         Action::DELETE_COMIC->value => [ComicController::class, 'delete'],
 
-        Action::GET_CHAPTERS->value => [ChapterController::class, 'get'],
+        Action::GET_COMIC_CHAPTERS->value => [ChapterController::class, 'get'],
         Action::INSERT_COMIC_CHAPTERS->value => [ChapterController::class, 'insert'],
         Action::UPDATE_COMIC_CHAPTER->value => [ChapterController::class, 'update'],
         Action::DELETE_COMIC_CHAPTER->value => [ChapterController::class, 'delete'],
 
-        Action::GET_CHAPTER_PAGES->value => [ChapterPageController::class, 'get'],
+        Action::GET_COMIC_CHAPTER_PAGES->value => [ChapterPageController::class, 'get'],
         Action::INSERT_COMIC_CHAPTER_PAGES->value => [ChapterPageController::class, 'insert'],
         Action::UPDATE_COMIC_CHAPTER_PAGE->value => [ChapterPageController::class, 'update'],
         Action::DELETE_COMIC_CHAPTER_PAGE->value => [ChapterPageController::class, 'delete'],

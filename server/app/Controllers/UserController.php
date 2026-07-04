@@ -156,6 +156,7 @@ class UserController
                 ],
                 "token" => $token
             ], 201);
+
         } catch (Exception $e) {
             Response::error([
                 $e->getMessage()

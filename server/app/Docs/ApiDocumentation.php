@@ -138,6 +138,7 @@ class ApiDocumentation
 
             "request" => [
                 "action" => Action::GET_CATEGORIES->value,
+                "keyword" => "[optional]"
             ],
 
             "response" => [
@@ -243,6 +244,7 @@ class ApiDocumentation
 
             "request" => [
                 "action" => Action::GET_COMICS->value,
+                "keyword" => "[optional]"
             ],
 
             "response" => [
@@ -253,7 +255,7 @@ class ApiDocumentation
                         "title" => "Chronicles of Flutter",
                         "poster" => "...",
                         "description" => "...",
-                        "creator" => "Adam",
+                        "creator_name" => "Adam",
                         "created_at" => "...",
                         "updated_at" => "..."
                     ],
@@ -262,7 +264,7 @@ class ApiDocumentation
                         "title" => "Adventure of Dart",
                         "poster" => "...",
                         "description" => "...",
-                        "creator" => "Eve",
+                        "creator_name" => "Eve",
                         "created_at" => "...",
                         "updated_at" => "..."
                     ]
@@ -441,17 +443,250 @@ class ApiDocumentation
     ];
 
     private const COMIC_CHAPTER_API = [
-        Action::GET_CHAPTERS->value => "",
-        Action::INSERT_COMIC_CHAPTERS->value => "",
-        Action::UPDATE_COMIC_CHAPTER->value => "",
-        Action::DELETE_COMIC_CHAPTER->value => "",
+        Action::GET_COMIC_CHAPTERS->value => [
+            "title" => "Get Comic Chapters",
+            "description" => "Retrieve all available comics.",
+            "method" => "POST",
+            "auth" => false,
+
+            "request" => [
+                "action" => Action::GET_COMIC_CHAPTERS->value,
+                "comic_id" => 2,
+                "keyword" => "[optional]"
+            ],
+
+            "response" => [
+                "STATUS" => "SUCCESS",
+                "DATA" => [
+                    [
+                        "id" => 1,
+                        "comic_title" => "The hero of Flutter",
+                        "chapter_number" => 1,
+                        "title" => "Troublesome IDE",
+                        "created_at" => "...",
+                        "updated_at" => "..."
+                    ],
+                    [
+                        "id" => 2,
+                        "comic_title" => "The hero of Flutter",
+                        "chapter_number" => 2,
+                        "title" => "A paid subscription",
+                        "created_at" => "...",
+                        "updated_at" => "..."
+                    ]
+                ],
+                "ERROR_MESSAGE" => []
+            ]
+        ],
+
+        Action::INSERT_COMIC_CHAPTERS->value => [
+            "title" => "Insert Category",
+            "description" => "Create a new user account.",
+            "method" => "POST",
+            "auth" => true,
+
+            "request" => [
+                "action" => Action::INSERT_COMIC_CHAPTERS->value,
+                "comic_id" => 10,
+                "chapters" => [
+                    [
+                        "chapter_number" => 1,
+                        "title" => "Ini the beninging",
+                    ],
+                    [
+                        "chapter_number" => 2,
+                        "title" => "Ini the second aftermath",
+                    ]
+                ]
+            ],
+
+            "response" => [
+                "STATUS" => "SUCCESS",
+                "DATA" => [
+                    "comic_id" => 10,
+                    "chapters" => [
+                        [
+                            "id" => 11,
+                            "chapter_number" => 1,
+                            "title" => "Ini the beninging",
+                        ],
+                        [
+                            "id" => 12,
+                            "chapter_number" => 2,
+                            "title" => "Ini the second aftermath",
+                        ]
+                    ]
+                ],
+                "ERROR_MESSAGE" => []
+            ]
+        ],
+
+        Action::UPDATE_COMIC_CHAPTER->value => [
+            "title" => "Update Category",
+            "description" => "Create a new user account.",
+            "method" => "POST",
+            "auth" => true,
+
+            "request" => [
+                "action" => Action::UPDATE_COMIC_CHAPTER->value,
+                "chapter" => [
+                    "id" => 11,
+                    "chapter_number" => 3,
+                    "title" => "In the beginning",
+                ]
+            ],
+
+            "response" => [
+                "STATUS" => "SUCCESS",
+                "DATA" => [
+                    "updated" => true
+                ],
+                "ERROR_MESSAGE" => []
+            ]
+        ],
+
+        Action::DELETE_COMIC_CHAPTER->value => [
+            "title" => "Delete Category",
+            "description" => "Create a new user account.",
+            "method" => "POST",
+            "auth" => true,
+
+            "request" => [
+                "action" => Action::DELETE_COMIC_CHAPTER->value,
+                "id" => 11
+            ],
+
+            "response" => [
+                "STATUS" => "SUCCESS",
+                "DATA" => [
+                    "deleted" => true
+                ],
+                "ERROR_MESSAGE" => []
+            ]
+        ],
     ];
 
     private const COMIC_CHAPTER_PAGE_API = [
-        Action::GET_CHAPTER_PAGES->value => "",
-        Action::INSERT_COMIC_CHAPTER_PAGES->value => "",
-        Action::UPDATE_COMIC_CHAPTER_PAGE->value => "",
-        Action::DELETE_COMIC_CHAPTER_PAGE->value => "",
+        Action::GET_COMIC_CHAPTER_PAGES->value => [
+            "title" => "Get Comic Chapters",
+            "description" => "Retrieve all available comics.",
+            "method" => "POST",
+            "auth" => false,
+
+            "request" => [
+                "action" => Action::GET_COMIC_CHAPTER_PAGES->value,
+                "chapter_id" => 1,
+            ],
+
+            "response" => [
+                "STATUS" => "SUCCESS",
+                "DATA" => [
+                    [
+                        "id" => 1,
+                        "chapter_title" => "The Broken Village",
+                        "page_number" => 1,
+                        "image" => "...",
+                        "created_at" => "...",
+                        "updated_at" => "..."
+                    ],
+                    [
+                        "id" => 2,
+                        "chapter_title" => "The Broken Village",
+                        "page_number" => 2,
+                        "image" => "...",
+                        "created_at" => "...",
+                        "updated_at" => "..."
+                    ]
+                ],
+                "ERROR_MESSAGE" => []
+            ]
+        ],
+
+        Action::INSERT_COMIC_CHAPTER_PAGES->value => [
+            "title" => "Insert Category",
+            "description" => "Create a new user account.",
+            "method" => "POST",
+            "auth" => true,
+
+            "request" => [
+                "action" => Action::INSERT_COMIC_CHAPTER_PAGES->value,
+                "chapter_id" => 12,
+                "pages" => [
+                    [
+                        "page_number" => 1,
+                        "image" => "...",
+                    ],
+                    [
+                        "page_number" => 2,
+                        "image" => "...",
+                    ]
+                ]
+            ],
+
+            "response" => [
+                "STATUS" => "SUCCESS",
+                "DATA" => [
+                    "chapter_id" => 12,
+                    "pages" => [
+                        [
+                            "id" => 59,
+                            "page_number" => 1,
+                            "image" => "...",
+                        ],
+                        [
+                            "id" => 60,
+                            "page_number" => 2,
+                            "image" => "...",
+                        ]
+                    ]
+                ],
+                "ERROR_MESSAGE" => []
+            ]
+        ],
+
+        Action::UPDATE_COMIC_CHAPTER_PAGE->value => [
+            "title" => "Update Category",
+            "description" => "Create a new user account.",
+            "method" => "POST",
+            "auth" => true,
+
+            "request" => [
+                "action" => Action::UPDATE_COMIC_CHAPTER_PAGE->value,
+                "page" => [
+                    "id" => 59,
+                    "page_number" => 3,
+                    "image" => "...",
+                ]
+            ],
+
+            "response" => [
+                "STATUS" => "SUCCESS",
+                "DATA" => [
+                    "updated" => true
+                ],
+                "ERROR_MESSAGE" => []
+            ]
+        ],
+
+        Action::DELETE_COMIC_CHAPTER_PAGE->value => [
+            "title" => "Delete Category",
+            "description" => "Create a new user account.",
+            "method" => "POST",
+            "auth" => true,
+
+            "request" => [
+                "action" => Action::DELETE_COMIC_CHAPTER_PAGE->value,
+                "id" => 59
+            ],
+
+            "response" => [
+                "STATUS" => "SUCCESS",
+                "DATA" => [
+                    "deleted" => true
+                ],
+                "ERROR_MESSAGE" => []
+            ]
+        ],
     ];
 
     private const COMMENT_API = [
@@ -509,7 +744,9 @@ class ApiDocumentation
                     <table class='table table-bordered mb-4'>
                         <tr>
                             <th style='width: 200px'>Method</th>
-                            <td>{$api['method']}</td>
+                            <td>
+                                <span class='badge text-bg-secondary'>{$api['method']}</span>
+                            </td>
                         </tr>
                         <tr>
                             <th>Action</th>
@@ -517,7 +754,7 @@ class ApiDocumentation
                         </tr>
                         <tr>
                             <th>Authentication</th>
-                            <td>" . ($api['auth'] ? "Required" : "-") . "</td>
+                            <td>" . ($api['auth'] ? "<span class='badge text-bg-success'>JWT Authentication</span>" : "-") . "</td>
                         </tr>
                     </table>
                     <h6>Payload</h6>

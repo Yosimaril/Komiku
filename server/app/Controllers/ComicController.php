@@ -29,7 +29,7 @@ class ComicController
                     c.title,
                     c.poster,
                     c.description,
-                    u.username AS creator,
+                    u.username AS creator_name,
                     c.created_at,
                     c.updated_at
                 FROM comics c
@@ -54,6 +54,7 @@ class ComicController
             }
 
             Database::execute($statement);
+
             Response::success(
                 $statement
                     ->get_result()
@@ -202,7 +203,7 @@ class ComicController
 
             unset($chapter);
 
-            $result = [
+            Response::success([
                 'id' => $comic['id'],
                 'creator' => [
                     'id' => $comic['creator_id'],
@@ -220,15 +221,12 @@ class ComicController
                 'rating_count' => (int)$rating['rating_count'],
                 'comments' => $comments,
                 'chapters' => $chapters
-            ];
-            Response::success($result);
+            ]);
 
         } catch (Exception $e) {
-
             Response::error([
                 $e->getMessage()
             ], 500);
-
         }
     }
 

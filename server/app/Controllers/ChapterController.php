@@ -87,8 +87,8 @@ class ChapterController
      * - comic_id
      * - chapters[
      *      [
+     *          chapter_number,
      *          title,
-     *          chapter_number
      *      ],
      *      ...
      * ]

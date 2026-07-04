@@ -62,13 +62,13 @@ Router::dispatch($action);
     <?= ApiDocumentation::card(Action::DELETE_COMIC->value); ?>
 
     <?= ApiDocumentation::section("chapter", "Chapter"); ?>
-    <?= ApiDocumentation::card(Action::GET_CHAPTERS->value); ?>
+    <?= ApiDocumentation::card(Action::GET_COMIC_CHAPTERS->value); ?>
     <?= ApiDocumentation::card(Action::INSERT_COMIC_CHAPTERS->value); ?>
     <?= ApiDocumentation::card(Action::UPDATE_COMIC_CHAPTER->value); ?>
     <?= ApiDocumentation::card(Action::DELETE_COMIC_CHAPTER->value) ?>
 
     <?= ApiDocumentation::section("page", "Chapter Page"); ?>
-    <?= ApiDocumentation::card(Action::GET_CHAPTER_PAGES->value); ?>
+    <?= ApiDocumentation::card(Action::GET_COMIC_CHAPTER_PAGES->value); ?>
     <?= ApiDocumentation::card(Action::INSERT_COMIC_CHAPTER_PAGES->value); ?>
     <?= ApiDocumentation::card(Action::UPDATE_COMIC_CHAPTER_PAGE->value); ?>
     <?= ApiDocumentation::card(Action::DELETE_COMIC_CHAPTER_PAGE->value); ?>

@@ -44,6 +44,7 @@ class CategoryController
             }
 
             Database::execute($statement);
+
             Response::success(
                 $statement
                     ->get_result()
@@ -100,6 +101,7 @@ class CategoryController
             );
 
             Database::execute($statement);
+
             Response::success([
                 'category' => [
                     'id' => Database::getConnection()->insert_id,
@@ -160,6 +162,7 @@ class CategoryController
             );
 
             Database::execute($statement);
+
             Response::success([
                 'updated' => $statement->affected_rows > 0
             ]);
@@ -197,6 +200,7 @@ class CategoryController
             );
 
             Database::execute($statement);
+
             Response::success([
                 'deleted' => $statement->affected_rows > 0
             ]);
