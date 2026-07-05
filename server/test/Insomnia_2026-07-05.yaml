@@ -1,0 +1,2595 @@
+type: collection.insomnia.rest/5.0
+schema_version: "5.1"
+name: Komiku API
+meta:
+  id: wrk_c3c2ad504e0542898693777123cae2f5
+  created: 1783264927918
+  modified: 1783264927918
+  description: ""
+collection:
+  - name: Komiku API
+    meta:
+      id: fld_82919a0b2bc54801911b115f73d0db14
+      created: 1783264927925
+      modified: 1783264927925
+      sortKey: -1783264926336
+      description: >-
+        This collection contains the API endpoints for the Komiku application.
+        It is organized around the main resources of the system, including
+        users, categories, comics, chapters, chapter pages, comments, replies,
+        and ratings.
+
+
+        The collection supports common application workflows such as user
+        registration and login, content management, comic browsing, chapter and
+        page retrieval, and community interactions through comments, replies,
+        and ratings. It also includes a dedicated end-to-end section for testing
+        complete multi-step scenarios across the API.
+
+
+        Overall, this collection is intended to help with development, manual
+        testing, and validation of the full Komiku backend workflow from
+        authentication to content and interaction management.
+    children:
+      - name: Web
+        meta:
+          id: fld_f43515fe2373453c931db6db3e342575
+          created: 1783264927928
+          modified: 1783264927928
+          sortKey: -1783264926335
+          description: ""
+        children:
+          - url: https://ubaya.cloud/flutter/160423120/
+            name: API Page
+            meta:
+              id: req_6bbd0ae4bba64f18b52c0258651a7715
+              created: 1783264927931
+              modified: 1783264942132
+              isPrivate: false
+              description: ""
+              sortKey: -1783264926334
+            method: GET
+            scripts:
+              afterResponse: |-
+                insomnia.test('Check if status is 200', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(200);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+      - name: User
+        meta:
+          id: fld_47da64cd39e04bc8be42582a7549e17c
+          created: 1783264927933
+          modified: 1783264927933
+          sortKey: -1783264926333
+          description: ""
+        children:
+          - url: https://ubaya.cloud/flutter/160423120/
+            name: Register
+            meta:
+              id: req_72f6a577435e49d4abca758f1f748d39
+              created: 1783264927935
+              modified: 1783264964483
+              isPrivate: false
+              description: ""
+              sortKey: -1783264926332
+            method: POST
+            body:
+              mimeType: application/x-www-form-urlencoded
+              params:
+                - name: action
+                  value: REGISTER
+                  disabled: false
+                - name: user[username]
+                  value: "{% faker 'timestamp' %}"
+                  disabled: false
+                - name: user[password]
+                  value: "1234567890"
+                  disabled: false
+            headers:
+              - name: Content-Type
+                value: application/x-www-form-urlencoded
+            scripts:
+              afterResponse: |-
+                const json = insomnia.response.json();
+
+                const username = json.data.user.username;
+                insomnia.environment.set(
+                    "USERNAME",
+                    username
+                );
+
+                const token = json.data.token;
+                insomnia.environment.set(
+                    "TOKEN",
+                    token
+                );
+
+                insomnia.test('Check if status is 201', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(201);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: https://ubaya.cloud/flutter/160423120/
+            name: Login
+            meta:
+              id: req_f8a7faed2477438c89bd2ade4b894eb3
+              created: 1783264927938
+              modified: 1783264948144
+              isPrivate: false
+              description: ""
+              sortKey: -1783264926331
+            method: POST
+            body:
+              mimeType: application/x-www-form-urlencoded
+              params:
+                - name: action
+                  value: LOGIN
+                  disabled: false
+                - name: user[username]
+                  value: "{{USERNAME}}"
+                  disabled: false
+                - name: user[password]
+                  value: "1234567890"
+                  disabled: false
+            headers:
+              - name: Content-Type
+                value: application/x-www-form-urlencoded
+            scripts:
+              afterResponse: |-
+                const json = insomnia.response.json();
+
+                const token = json.data.token;
+                insomnia.environment.set(
+                    "TOKEN",
+                    token
+                );
+
+                insomnia.test('Check if status is 200', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(200);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: https://ubaya.cloud/flutter/160423120/
+            name: Update User
+            meta:
+              id: req_ebbfe62d537d4de99b3f1bd24b5f85ed
+              created: 1783264927940
+              modified: 1783264971054
+              isPrivate: false
+              description: ""
+              sortKey: -1783264926330
+            method: POST
+            body:
+              mimeType: application/x-www-form-urlencoded
+              params:
+                - name: action
+                  value: UPDATE_USER
+                  disabled: false
+                - name: user[username]
+                  value: "{% faker 'timestamp' %}"
+                  disabled: false
+                - name: user[password]
+                  value: "1234567890"
+                  disabled: false
+            headers:
+              - name: Content-Type
+                value: application/x-www-form-urlencoded
+            scripts:
+              afterResponse: |-
+                insomnia.test('Check if status is 200', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(200);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: https://ubaya.cloud/flutter/160423120/
+            name: Delete User
+            meta:
+              id: req_69cdcfb8c9a4445f8735277188007318
+              created: 1783264927943
+              modified: 1783264975377
+              isPrivate: false
+              description: ""
+              sortKey: -1783264926329
+            method: POST
+            body:
+              mimeType: application/x-www-form-urlencoded
+              params:
+                - name: action
+                  value: DELETE_USER
+                  disabled: false
+                - name: user[password]
+                  value: "1234567890"
+                  disabled: false
+            headers:
+              - name: Content-Type
+                value: application/x-www-form-urlencoded
+            scripts:
+              afterResponse: |-
+                insomnia.test('Check if status is 200', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(200);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+      - name: Category
+        meta:
+          id: fld_404b4c31922a4e13aaa03a015e204561
+          created: 1783264927945
+          modified: 1783264927945
+          sortKey: -1783264926328
+          description: ""
+        children:
+          - url: https://ubaya.cloud/flutter/160423120/
+            name: Get Categories
+            meta:
+              id: req_a758db1ac9d34785a0ded529ea0db5e5
+              created: 1783264927946
+              modified: 1783264986657
+              isPrivate: false
+              description: ""
+              sortKey: -1783264926327
+            method: POST
+            body:
+              mimeType: application/x-www-form-urlencoded
+              params:
+                - name: action
+                  value: GET_CATEGORIES
+                  disabled: false
+            headers:
+              - name: Content-Type
+                value: application/x-www-form-urlencoded
+            scripts:
+              afterResponse: |
+                insomnia.test('Check if status is 200', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(200);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: https://ubaya.cloud/flutter/160423120/
+            name: Insert Category
+            meta:
+              id: req_92df9e4b86044031bad6744a7b2bd2f7
+              created: 1783264927948
+              modified: 1783264991905
+              isPrivate: false
+              description: ""
+              sortKey: -1783264926326
+            method: POST
+            body:
+              mimeType: application/x-www-form-urlencoded
+              params:
+                - name: action
+                  value: INSERT_CATEGORY
+                  disabled: false
+                - name: category[name]
+                  value: TEST_INSERT_CATEGORY_NAME
+                  disabled: false
+                - name: category[description]
+                  value: TEST_INSERT_CATEGORY_DESCRIPTION
+                  disabled: false
+            headers:
+              - name: Content-Type
+                value: application/x-www-form-urlencoded
+            scripts:
+              afterResponse: |
+                insomnia.test('Check if status is 201', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(201);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: https://ubaya.cloud/flutter/160423120/
+            name: Update Category
+            meta:
+              id: req_0a2a4a072b2c4650904bf54279b81523
+              created: 1783264927951
+              modified: 1783264995980
+              isPrivate: false
+              description: ""
+              sortKey: -1783264926325
+            method: POST
+            body:
+              mimeType: application/x-www-form-urlencoded
+              params:
+                - name: action
+                  value: UPDATE_CATEGORY
+                  disabled: false
+                - name: category[id]
+                  value: "1"
+                  disabled: false
+                - name: category[name]
+                  value: TEST_UPDATE_CATEGORY_NAME
+                  disabled: false
+                - name: category[description]
+                  value: TEST_UPDATE_CATEGORY_DESCRIPTION
+                  disabled: false
+            headers:
+              - name: Content-Type
+                value: application/x-www-form-urlencoded
+            scripts:
+              afterResponse: |-
+                insomnia.test('Check if status is 200', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(200);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: https://ubaya.cloud/flutter/160423120/
+            name: Delete Category
+            meta:
+              id: req_179a744692854b6e852c68579a1073eb
+              created: 1783264927952
+              modified: 1783265000646
+              isPrivate: false
+              description: ""
+              sortKey: -1783264926324
+            method: POST
+            body:
+              mimeType: application/x-www-form-urlencoded
+              params:
+                - name: action
+                  value: DELETE_CATEGORY
+                  disabled: false
+                - name: id
+                  value: "1"
+                  disabled: false
+            headers:
+              - name: Content-Type
+                value: application/x-www-form-urlencoded
+            scripts:
+              afterResponse: |-
+                insomnia.test('Check if status is 200', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(200);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+      - name: Comic
+        meta:
+          id: fld_b73276bf7f9d4c40a9c6f346ab0e500e
+          created: 1783264927954
+          modified: 1783264927954
+          sortKey: -1783264926323
+          description: ""
+        children:
+          - url: https://ubaya.cloud/flutter/160423120/
+            name: Get Comics
+            meta:
+              id: req_b2198e1dd556453b98dff9fa50ec9796
+              created: 1783264927955
+              modified: 1783265003766
+              isPrivate: false
+              description: ""
+              sortKey: -1783264926322
+            method: POST
+            body:
+              mimeType: application/x-www-form-urlencoded
+              params:
+                - name: action
+                  value: GET_COMICS
+                  disabled: false
+            headers:
+              - name: Content-Type
+                value: application/x-www-form-urlencoded
+            scripts:
+              afterResponse: |-
+                insomnia.test('Check if status is 200', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(200);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: https://ubaya.cloud/flutter/160423120/
+            name: Get Comic Detail
+            meta:
+              id: req_58d34d95cbe14ea78263b65ebb8dccf5
+              created: 1783264927957
+              modified: 1783265007029
+              isPrivate: false
+              description: ""
+              sortKey: -1783264926321
+            method: POST
+            body:
+              mimeType: application/x-www-form-urlencoded
+              params:
+                - name: action
+                  value: GET_COMIC_DETAIL
+                  disabled: false
+                - name: id
+                  value: "1"
+                  disabled: false
+            headers:
+              - name: Content-Type
+                value: application/x-www-form-urlencoded
+            scripts:
+              afterResponse: |-
+                insomnia.test('Check if status is 200', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(200);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: https://ubaya.cloud/flutter/160423120/
+            name: Insert Comic
+            meta:
+              id: req_10b74d7d4d024235892e1e43315e1479
+              created: 1783264927960
+              modified: 1783265011180
+              isPrivate: false
+              description: ""
+              sortKey: -1783264926320
+            method: POST
+            body:
+              mimeType: application/x-www-form-urlencoded
+              params:
+                - name: action
+                  value: INSERT_COMIC
+                  disabled: false
+                - name: comic[title]
+                  value: TEST_INSERT_COMIC_TITLE
+                  disabled: false
+                - name: comic[poster]
+                  value: TEST_INSERT_COMIC_POSTER
+                  disabled: false
+                - name: comic[description]
+                  value: TEST_INSERT_COMIC_DESCRIPTION
+                  disabled: false
+            headers:
+              - name: Content-Type
+                value: application/x-www-form-urlencoded
+            scripts:
+              afterResponse: |
+                insomnia.test('Check if status is 201', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(201);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: https://ubaya.cloud/flutter/160423120/
+            name: Update Comic
+            meta:
+              id: req_473439ed80594e14ad4fc13260a95e07
+              created: 1783264927961
+              modified: 1783265014416
+              isPrivate: false
+              description: ""
+              sortKey: -1783264926319
+            method: POST
+            body:
+              mimeType: application/x-www-form-urlencoded
+              params:
+                - name: action
+                  value: UPDATE_COMIC
+                  disabled: false
+                - name: comic[id]
+                  value: "1"
+                  disabled: false
+                - name: comic[title]
+                  value: TEST_UPDATE_COMIC_TITLE
+                  disabled: false
+                - name: comic[poster]
+                  value: TEST_UPDATE_COMIC_POSTER
+                  disabled: false
+                - name: comic[description]
+                  value: TEST_UPDATE_COMIC_DESCRIPTION
+                  disabled: false
+            headers:
+              - name: Content-Type
+                value: application/x-www-form-urlencoded
+            scripts:
+              afterResponse: |-
+                insomnia.test('Check if status is 200', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(200);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: https://ubaya.cloud/flutter/160423120/
+            name: Delete Comic
+            meta:
+              id: req_792ff2482a9c4ac68f69d96a3766e141
+              created: 1783264927963
+              modified: 1783265017734
+              isPrivate: false
+              description: ""
+              sortKey: -1783264926318
+            method: POST
+            body:
+              mimeType: application/x-www-form-urlencoded
+              params:
+                - name: action
+                  value: DELETE_COMIC
+                  disabled: false
+                - name: id
+                  value: "1"
+                  disabled: false
+            headers:
+              - name: Content-Type
+                value: application/x-www-form-urlencoded
+            scripts:
+              afterResponse: |-
+                insomnia.test('Check if status is 200', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(200);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+      - name: Chapter
+        meta:
+          id: fld_ba725153a0454be38143649a9068786e
+          created: 1783264927965
+          modified: 1783264927965
+          sortKey: -1783264926317
+          description: ""
+        children:
+          - url: https://ubaya.cloud/flutter/160423120/
+            name: Get Comic Chapters
+            meta:
+              id: req_5353bec237744d578912d7cc6b1bc847
+              created: 1783264927967
+              modified: 1783265021004
+              isPrivate: false
+              description: ""
+              sortKey: -1783264926316
+            method: POST
+            body:
+              mimeType: application/x-www-form-urlencoded
+              params:
+                - name: action
+                  value: GET_COMIC_CHAPTERS
+                  disabled: false
+                - name: comic_id
+                  value: "1"
+                  disabled: false
+            headers:
+              - name: Content-Type
+                value: application/x-www-form-urlencoded
+            scripts:
+              afterResponse: |-
+                insomnia.test('Check if status is 200', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(200);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: https://ubaya.cloud/flutter/160423120/
+            name: Insert Comic Chapters
+            meta:
+              id: req_1046848ff17c47029642ac26817f1b13
+              created: 1783264927969
+              modified: 1783265025343
+              isPrivate: false
+              description: ""
+              sortKey: -1783264926315
+            method: POST
+            body:
+              mimeType: application/x-www-form-urlencoded
+              params:
+                - name: action
+                  value: INSERT_COMIC_CHAPTERS
+                  disabled: false
+                - name: comic_id
+                  value: "1"
+                  disabled: false
+                - name: chapters[0][chapter_number]
+                  value: "1"
+                  disabled: false
+                - name: chapters[0][title]
+                  value: TEST_INSERT_COMIC_CHAPTER_1_TITLE
+                  disabled: false
+                - name: chapters[1][chapter_number]
+                  value: "2"
+                  disabled: false
+                - name: chapters[1][title]
+                  value: TEST_INSERT_COMIC_CHAPTER_2_TITLE
+                  disabled: false
+            headers:
+              - name: Content-Type
+                value: application/x-www-form-urlencoded
+            scripts:
+              afterResponse: |
+                insomnia.test('Check if status is 201', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(201);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: https://ubaya.cloud/flutter/160423120/
+            name: Update Comic Chapter
+            meta:
+              id: req_6b329295d5f24fed83c8367d5690c3eb
+              created: 1783264927971
+              modified: 1783265028777
+              isPrivate: false
+              description: ""
+              sortKey: -1783264926314
+            method: POST
+            body:
+              mimeType: application/x-www-form-urlencoded
+              params:
+                - name: action
+                  value: UPDATE_COMIC_CHAPTER
+                  disabled: false
+                - name: chapter[id]
+                  value: "1"
+                  disabled: false
+                - name: chapter[chapter_number]
+                  value: "1"
+                  disabled: false
+                - name: chapter[title]
+                  value: TEST_UPDATE_COMIC_CHAPTER
+                  disabled: false
+            headers:
+              - name: Content-Type
+                value: application/x-www-form-urlencoded
+            scripts:
+              afterResponse: |-
+                insomnia.test('Check if status is 200', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(200);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: https://ubaya.cloud/flutter/160423120/
+            name: Delete Comic Chapter
+            meta:
+              id: req_466ab483424b4b47b43291df41b60b95
+              created: 1783264927973
+              modified: 1783265032440
+              isPrivate: false
+              description: ""
+              sortKey: -1783264926313
+            method: POST
+            body:
+              mimeType: application/x-www-form-urlencoded
+              params:
+                - name: action
+                  value: DELETE_COMIC_CHAPTER
+                  disabled: false
+                - name: id
+                  value: "1"
+                  disabled: false
+            headers:
+              - name: Content-Type
+                value: application/x-www-form-urlencoded
+            scripts:
+              afterResponse: |-
+                insomnia.test('Check if status is 200', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(200);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+      - name: Chapter Page
+        meta:
+          id: fld_d18f0c90ce0e49ca874ea6df37da7c8c
+          created: 1783264927974
+          modified: 1783264927974
+          sortKey: -1783264926312
+          description: ""
+        children:
+          - url: https://ubaya.cloud/flutter/160423120/
+            name: Get Comic Chapter Pages
+            meta:
+              id: req_ed556b374f0b46049cf67c0602d573db
+              created: 1783264927976
+              modified: 1783265038280
+              isPrivate: false
+              description: ""
+              sortKey: -1783264926311
+            method: POST
+            body:
+              mimeType: application/x-www-form-urlencoded
+              params:
+                - name: action
+                  value: GET_COMIC_CHAPTER_PAGES
+                  disabled: false
+                - name: chapter_id
+                  value: "1"
+                  disabled: false
+            headers:
+              - name: Content-Type
+                value: application/x-www-form-urlencoded
+            scripts:
+              afterResponse: |-
+                insomnia.test('Check if status is 200', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(200);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: https://ubaya.cloud/flutter/160423120/
+            name: Insert Comic Chapter Pages
+            meta:
+              id: req_606bec937c8341b391e6f4121ff2f79e
+              created: 1783264927978
+              modified: 1783265042079
+              isPrivate: false
+              description: ""
+              sortKey: -1783264926310
+            method: POST
+            body:
+              mimeType: application/x-www-form-urlencoded
+              params:
+                - name: action
+                  value: INSERT_COMIC_CHAPTER_PAGES
+                  disabled: false
+                - name: chapter_id
+                  value: "1"
+                  disabled: false
+                - name: pages[0][page_number]
+                  value: "1"
+                  disabled: false
+                - name: pages[0][image]
+                  value: TEST_INSERT_COMIC_CHAPTER_PAGE_1_IMAGE
+                  disabled: false
+                - name: pages[1][page_number]
+                  value: "2"
+                  disabled: false
+                - name: pages[1][image]
+                  value: TEST_INSERT_COMIC_CHAPTER_PAGE_2_IMAGE
+                  disabled: false
+            headers:
+              - name: Content-Type
+                value: application/x-www-form-urlencoded
+            scripts:
+              afterResponse: |
+                insomnia.test('Check if status is 201', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(201);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: https://ubaya.cloud/flutter/160423120/
+            name: Update Comic Chapter Page
+            meta:
+              id: req_cb0250f9e81e4a92bb910cc1f3970f8e
+              created: 1783264927980
+              modified: 1783265045629
+              isPrivate: false
+              description: ""
+              sortKey: -1783264926309
+            method: POST
+            body:
+              mimeType: application/x-www-form-urlencoded
+              params:
+                - name: action
+                  value: UPDATE_COMIC_CHAPTER_PAGE
+                  disabled: false
+                - name: page[id]
+                  value: "1"
+                  disabled: false
+                - name: page[page_number]
+                  value: "1"
+                  disabled: false
+                - name: page[image]
+                  value: TEST_UPDATE_COMIC_CHAPTER_PAGE
+                  disabled: false
+            headers:
+              - name: Content-Type
+                value: application/x-www-form-urlencoded
+            scripts:
+              afterResponse: |-
+                insomnia.test('Check if status is 200', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(200);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: https://ubaya.cloud/flutter/160423120/
+            name: Delete Comic Chapter Page
+            meta:
+              id: req_69b8aaa783b74b3e88ae6599cb18a3c9
+              created: 1783264927981
+              modified: 1783265048568
+              isPrivate: false
+              description: ""
+              sortKey: -1783264926308
+            method: POST
+            body:
+              mimeType: application/x-www-form-urlencoded
+              params:
+                - name: action
+                  value: DELETE_COMIC_CHAPTER_PAGE
+                  disabled: false
+                - name: id
+                  value: "1"
+                  disabled: false
+            headers:
+              - name: Content-Type
+                value: application/x-www-form-urlencoded
+            scripts:
+              afterResponse: |-
+                insomnia.test('Check if status is 200', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(200);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+      - name: Comment
+        meta:
+          id: fld_0f9eb99943e249e4a769d28c9c54cc82
+          created: 1783264927983
+          modified: 1783264927983
+          sortKey: -1783264926307
+          description: ""
+        children:
+          - url: https://ubaya.cloud/flutter/160423120/
+            name: Get Comments
+            meta:
+              id: req_5bb997a396d54b3d8a06a1223880e228
+              created: 1783264927984
+              modified: 1783265052799
+              isPrivate: false
+              description: ""
+              sortKey: -1783264926306
+            method: POST
+            body:
+              mimeType: application/x-www-form-urlencoded
+              params:
+                - name: action
+                  value: GET_COMMENTS
+                  disabled: false
+                - name: comic_id
+                  value: "1"
+                  disabled: false
+            headers:
+              - name: Content-Type
+                value: application/x-www-form-urlencoded
+            scripts:
+              afterResponse: |-
+                insomnia.test('Check if status is 200', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(200);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: https://ubaya.cloud/flutter/160423120/
+            name: Insert Comment
+            meta:
+              id: req_bd0bb8e67d104990ad176c2201e2e5f0
+              created: 1783264927987
+              modified: 1783265056384
+              isPrivate: false
+              description: ""
+              sortKey: -1783264926305
+            method: POST
+            body:
+              mimeType: application/x-www-form-urlencoded
+              params:
+                - name: action
+                  value: INSERT_COMMENT
+                  disabled: false
+                - name: comment[comic_id]
+                  value: "1"
+                  disabled: false
+                - name: comment[content]
+                  value: TEST_INSERT_COMMENT_CONTENT
+                  disabled: false
+            headers:
+              - name: Content-Type
+                value: application/x-www-form-urlencoded
+            scripts:
+              afterResponse: |
+                insomnia.test('Check if status is 201', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(201);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: https://ubaya.cloud/flutter/160423120/
+            name: Update Comment
+            meta:
+              id: req_6edb56bc783346d8acb7b480f3fb28ff
+              created: 1783264927988
+              modified: 1783265059828
+              isPrivate: false
+              description: ""
+              sortKey: -1783264926304
+            method: POST
+            body:
+              mimeType: application/x-www-form-urlencoded
+              params:
+                - name: action
+                  value: UPDATE_COMMENT
+                  disabled: false
+                - name: comment[id]
+                  value: "1"
+                  disabled: false
+                - name: comment[content]
+                  value: TEST_UPDATE_COMMENT_CONTENT
+                  disabled: false
+            headers:
+              - name: Content-Type
+                value: application/x-www-form-urlencoded
+            scripts:
+              afterResponse: |-
+                insomnia.test('Check if status is 200', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(200);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: https://ubaya.cloud/flutter/160423120/
+            name: Delete Comment
+            meta:
+              id: req_0a14edc0d94f4e5ba137e590f95ae780
+              created: 1783264927991
+              modified: 1783265063472
+              isPrivate: false
+              description: ""
+              sortKey: -1783264926303
+            method: POST
+            body:
+              mimeType: application/x-www-form-urlencoded
+              params:
+                - name: action
+                  value: DELETE_COMMENT
+                  disabled: false
+                - name: id
+                  value: "1"
+                  disabled: false
+            headers:
+              - name: Content-Type
+                value: application/x-www-form-urlencoded
+            scripts:
+              afterResponse: |-
+                insomnia.test('Check if status is 200', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(200);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+      - name: Reply
+        meta:
+          id: fld_5fa52a6b0e194e9291e3bd492a6216b6
+          created: 1783264927992
+          modified: 1783264927992
+          sortKey: -1783264926302
+          description: ""
+        children:
+          - url: https://ubaya.cloud/flutter/160423120/
+            name: Get Replies
+            meta:
+              id: req_326fcb4e789044b795b6eed5ca9903fd
+              created: 1783264927994
+              modified: 1783265071501
+              isPrivate: false
+              description: ""
+              sortKey: -1783264926301
+            method: POST
+            body:
+              mimeType: application/x-www-form-urlencoded
+              params:
+                - name: action
+                  value: GET_REPLIES
+                  disabled: false
+                - name: parent_comment_id
+                  value: "1"
+                  disabled: false
+            headers:
+              - name: Content-Type
+                value: application/x-www-form-urlencoded
+            scripts:
+              afterResponse: |-
+                insomnia.test('Check if status is 200', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(200);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: https://ubaya.cloud/flutter/160423120/
+            name: Insert Reply
+            meta:
+              id: req_730550f30e7748259015d9cf7d31cd51
+              created: 1783264927997
+              modified: 1783265067243
+              isPrivate: false
+              description: ""
+              sortKey: -1783264926300
+            method: POST
+            body:
+              mimeType: application/x-www-form-urlencoded
+              params:
+                - name: action
+                  value: INSERT_REPLY
+                  disabled: false
+                - name: reply[parent_comment_id]
+                  value: "1"
+                  disabled: false
+                - name: reply[content]
+                  value: TEST_INSERT_REPLY_CONTENT
+                  disabled: false
+            headers:
+              - name: Content-Type
+                value: application/x-www-form-urlencoded
+            scripts:
+              afterResponse: |
+                insomnia.test('Check if status is 201', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(201);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: https://ubaya.cloud/flutter/160423120/
+            name: Update Reply
+            meta:
+              id: req_d7c072534d264685b7b2a346985519b7
+              created: 1783264927999
+              modified: 1783265075172
+              isPrivate: false
+              description: ""
+              sortKey: -1783264926299
+            method: POST
+            body:
+              mimeType: application/x-www-form-urlencoded
+              params:
+                - name: action
+                  value: UPDATE_REPLY
+                  disabled: false
+                - name: reply[id]
+                  value: "1"
+                  disabled: false
+                - name: reply[content]
+                  value: TEST_UPDATE_REPLY_CONTENT
+                  disabled: false
+            headers:
+              - name: Content-Type
+                value: application/x-www-form-urlencoded
+            scripts:
+              afterResponse: |-
+                insomnia.test('Check if status is 200', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(200);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: https://ubaya.cloud/flutter/160423120/
+            name: Delete Reply
+            meta:
+              id: req_4c1bfb29c30543278b83a4d0b85c59a0
+              created: 1783264928001
+              modified: 1783265080436
+              isPrivate: false
+              description: ""
+              sortKey: -1783264926298
+            method: POST
+            body:
+              mimeType: application/x-www-form-urlencoded
+              params:
+                - name: action
+                  value: DELETE_REPLY
+                  disabled: false
+                - name: id
+                  value: "1"
+                  disabled: false
+            headers:
+              - name: Content-Type
+                value: application/x-www-form-urlencoded
+            scripts:
+              afterResponse: |-
+                insomnia.test('Check if status is 200', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(200);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+      - name: Rating
+        meta:
+          id: fld_4528e1adbaf840b9bd5860036add7a68
+          created: 1783264928003
+          modified: 1783264928003
+          sortKey: -1783264926297
+          description: ""
+        children:
+          - url: https://ubaya.cloud/flutter/160423120/
+            name: Save Rating
+            meta:
+              id: req_505bbe5a9477408eb67b699fbf100a62
+              created: 1783264928005
+              modified: 1783265109091
+              isPrivate: false
+              description: ""
+              sortKey: -1783264926296
+            method: POST
+            body:
+              mimeType: application/x-www-form-urlencoded
+              params:
+                - name: action
+                  value: SAVE_RATING
+                  disabled: false
+                - name: rating[comic_id]
+                  value: "1"
+                  disabled: false
+                - name: rating[rating]
+                  value: "5"
+                  disabled: false
+            headers:
+              - name: Content-Type
+                value: application/x-www-form-urlencoded
+            scripts:
+              afterResponse: >-
+                insomnia.test('Check if status is 200 or 201', () => {
+                    insomnia.expect(insomnia.response.code).to.be.oneOf([200, 201]);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: https://ubaya.cloud/flutter/160423120/
+            name: Delete Rating
+            meta:
+              id: req_edc1fc30c07d41748eaf1e3b19781930
+              created: 1783264928007
+              modified: 1783265114165
+              isPrivate: false
+              description: ""
+              sortKey: -1783264926295
+            method: POST
+            body:
+              mimeType: application/x-www-form-urlencoded
+              params:
+                - name: action
+                  value: DELETE_RATING
+                  disabled: false
+                - name: comic_id
+                  value: "1"
+                  disabled: false
+            headers:
+              - name: Content-Type
+                value: application/x-www-form-urlencoded
+            scripts:
+              afterResponse: |-
+                insomnia.test('Check if status is 200', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(200);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+      - name: End-to-End
+        meta:
+          id: fld_10e7e6150c4147f9acf562bdcf130f4c
+          created: 1783264928010
+          modified: 1783264928010
+          sortKey: -1783264926294
+          description: ""
+        children:
+          - url: https://ubaya.cloud/flutter/160423120/
+            name: API Page
+            meta:
+              id: req_f2a85be9963a426885f1a0469e84189a
+              created: 1783264928012
+              modified: 1783265118513
+              isPrivate: false
+              description: ""
+              sortKey: -1783264926293
+            method: GET
+            scripts:
+              afterResponse: |-
+                insomnia.test('Check if status is 200', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(200);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: https://ubaya.cloud/flutter/160423120/
+            name: Register
+            meta:
+              id: req_b3229a96768d46bd8d942f57573a1baf
+              created: 1783264928014
+              modified: 1783265123322
+              isPrivate: false
+              description: ""
+              sortKey: -1783264926292
+            method: POST
+            body:
+              mimeType: application/x-www-form-urlencoded
+              params:
+                - name: action
+                  value: REGISTER
+                  disabled: false
+                - name: user[username]
+                  value: "{% faker 'timestamp' %}"
+                  disabled: false
+                - name: user[password]
+                  value: "1234567890"
+                  disabled: false
+            headers:
+              - name: Content-Type
+                value: application/x-www-form-urlencoded
+            scripts:
+              afterResponse: |-
+                const json = insomnia.response.json();
+
+                const username = json.data.user.username;
+                insomnia.environment.set(
+                    "USERNAME",
+                    username
+                );
+
+                const token = json.data.token;
+                insomnia.environment.set(
+                    "TOKEN",
+                    token
+                );
+
+                insomnia.test('Check if status is 201', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(201);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: https://ubaya.cloud/flutter/160423120/
+            name: Login
+            meta:
+              id: req_fb977924ea78423b9929d896e96025bf
+              created: 1783264928016
+              modified: 1783265128297
+              isPrivate: false
+              description: ""
+              sortKey: -1783264926291
+            method: POST
+            body:
+              mimeType: application/x-www-form-urlencoded
+              params:
+                - name: action
+                  value: LOGIN
+                  disabled: false
+                - name: user[username]
+                  value: "{{USERNAME}}"
+                  disabled: false
+                - name: user[password]
+                  value: "1234567890"
+                  disabled: false
+            headers:
+              - name: Content-Type
+                value: application/x-www-form-urlencoded
+            scripts:
+              afterResponse: |-
+                const json = insomnia.response.json();
+
+                const token = json.data.token;
+                insomnia.environment.set(
+                    "TOKEN",
+                    token
+                );
+
+                insomnia.test('Check if status is 200', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(200);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: https://ubaya.cloud/flutter/160423120/
+            name: Update User
+            meta:
+              id: req_7ae3802f700c433088f73f7f7d845b11
+              created: 1783264928018
+              modified: 1783265132589
+              isPrivate: false
+              description: ""
+              sortKey: -1783264926290
+            method: POST
+            body:
+              mimeType: application/x-www-form-urlencoded
+              params:
+                - name: action
+                  value: UPDATE_USER
+                  disabled: false
+                - name: user[username]
+                  value: "{% faker 'timestamp' %}"
+                  disabled: false
+                - name: user[password]
+                  value: "1234567890"
+                  disabled: false
+            headers:
+              - name: Content-Type
+                value: application/x-www-form-urlencoded
+            scripts:
+              afterResponse: |-
+                insomnia.test('Check if status is 200', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(200);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: https://ubaya.cloud/flutter/160423120/
+            name: Get Categories
+            meta:
+              id: req_bb51c64260fd4538ba5cdb3eaca4d2db
+              created: 1783264928020
+              modified: 1783265136035
+              isPrivate: false
+              description: ""
+              sortKey: -1783264926289
+            method: POST
+            body:
+              mimeType: application/x-www-form-urlencoded
+              params:
+                - name: action
+                  value: GET_CATEGORIES
+                  disabled: false
+            headers:
+              - name: Content-Type
+                value: application/x-www-form-urlencoded
+            scripts:
+              afterResponse: |-
+                insomnia.test('Check if status is 200', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(200);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: https://ubaya.cloud/flutter/160423120/
+            name: Insert Category
+            meta:
+              id: req_cea730cfe6f34405909620f1089cb7dd
+              created: 1783264928022
+              modified: 1783265143796
+              isPrivate: false
+              description: ""
+              sortKey: -1783264926288
+            method: POST
+            body:
+              mimeType: application/x-www-form-urlencoded
+              params:
+                - name: action
+                  value: INSERT_CATEGORY
+                  disabled: false
+                - name: category[name]
+                  value: TEST_INSERT_CATEGORY_NAME
+                  disabled: false
+                - name: category[description]
+                  value: TEST_INSERT_CATEGORY_DESCRIPTION
+                  disabled: false
+            headers:
+              - name: Content-Type
+                value: application/x-www-form-urlencoded
+            scripts:
+              afterResponse: |-
+                const json = insomnia.response.json();
+
+                const categoryId = json.data.category.id;
+                insomnia.environment.set(
+                    "RECENT_CATEGORY_ID",
+                    categoryId
+                );
+
+                insomnia.test('Check if status is 201', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(201);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: https://ubaya.cloud/flutter/160423120/
+            name: Update Category
+            meta:
+              id: req_ef60d6e02e0046508d3d72ce88ab0f52
+              created: 1783264928024
+              modified: 1783265138836
+              isPrivate: false
+              description: ""
+              sortKey: -1783264926287
+            method: POST
+            body:
+              mimeType: application/x-www-form-urlencoded
+              params:
+                - name: action
+                  value: UPDATE_CATEGORY
+                  disabled: false
+                - name: category[id]
+                  value: "{{RECENT_CATEGORY_ID}}"
+                  disabled: false
+                - name: category[name]
+                  value: TEST_UPDATE_CATEGORY_NAME
+                  disabled: false
+                - name: category[description]
+                  value: TEST_UPDATE_CATEGORY_DESCRIPTION
+                  disabled: false
+            headers:
+              - name: Content-Type
+                value: application/x-www-form-urlencoded
+            scripts:
+              afterResponse: |-
+                insomnia.test('Check if status is 200', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(200);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: https://ubaya.cloud/flutter/160423120/
+            name: Get Comics
+            meta:
+              id: req_a4d429bb76c948cf99d4a5422bf5de1d
+              created: 1783264928026
+              modified: 1783265149257
+              isPrivate: false
+              description: ""
+              sortKey: -1783264926286
+            method: POST
+            body:
+              mimeType: application/x-www-form-urlencoded
+              params:
+                - name: action
+                  value: GET_COMICS
+                  disabled: false
+            headers:
+              - name: Content-Type
+                value: application/x-www-form-urlencoded
+            scripts:
+              afterResponse: |-
+                insomnia.test('Check if status is 200', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(200);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: https://ubaya.cloud/flutter/160423120/
+            name: Get Comic Detail
+            meta:
+              id: req_12c9c5dc97ba4d0ea5f7b7e5a6dfa8b7
+              created: 1783264928028
+              modified: 1783265154848
+              isPrivate: false
+              description: ""
+              sortKey: -1783264926285
+            method: POST
+            body:
+              mimeType: application/x-www-form-urlencoded
+              params:
+                - name: action
+                  value: GET_COMIC_DETAIL
+                  disabled: false
+                - name: id
+                  value: "1"
+                  disabled: false
+            headers:
+              - name: Content-Type
+                value: application/x-www-form-urlencoded
+            scripts:
+              afterResponse: |-
+                insomnia.test('Check if status is 200', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(200);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: https://ubaya.cloud/flutter/160423120/
+            name: Insert Comic
+            meta:
+              id: req_7c12f832684f487ea107ed2d29078c3d
+              created: 1783264928031
+              modified: 1783265159768
+              isPrivate: false
+              description: ""
+              sortKey: -1783264926284
+            method: POST
+            body:
+              mimeType: application/x-www-form-urlencoded
+              params:
+                - name: action
+                  value: INSERT_COMIC
+                  disabled: false
+                - name: comic[title]
+                  value: TEST_INSERT_COMIC_TITLE
+                  disabled: false
+                - name: comic[poster]
+                  value: TEST_INSERT_COMIC_POSTER
+                  disabled: false
+                - name: comic[description]
+                  value: TEST_INSERT_COMIC_DESCRIPTION
+                  disabled: false
+            headers:
+              - name: Content-Type
+                value: application/x-www-form-urlencoded
+            scripts:
+              afterResponse: |-
+                const json = insomnia.response.json();
+
+                const comicId = json.data.comic.id;
+                insomnia.environment.set(
+                    "RECENT_COMIC_ID",
+                    comicId
+                );
+
+                insomnia.test('Check if status is 201', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(201);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: https://ubaya.cloud/flutter/160423120/
+            name: Update Comic
+            meta:
+              id: req_5366daf621a2456ca796ccb4dcf4b6bd
+              created: 1783264928033
+              modified: 1783265163797
+              isPrivate: false
+              description: ""
+              sortKey: -1783264926283
+            method: POST
+            body:
+              mimeType: application/x-www-form-urlencoded
+              params:
+                - name: action
+                  value: UPDATE_COMIC
+                  disabled: false
+                - name: comic[id]
+                  value: "{{RECENT_COMIC_ID}}"
+                  disabled: false
+                - name: comic[title]
+                  value: TEST_UPDATE_COMIC_TITLE
+                  disabled: false
+                - name: comic[poster]
+                  value: TEST_UPDATE_COMIC_POSTER
+                  disabled: false
+                - name: comic[description]
+                  value: TEST_UPDATE_COMIC_DESCRIPTION
+                  disabled: false
+            headers:
+              - name: Content-Type
+                value: application/x-www-form-urlencoded
+            scripts:
+              afterResponse: |-
+                insomnia.test('Check if status is 200', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(200);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: https://ubaya.cloud/flutter/160423120/
+            name: Get Comic Chapters
+            meta:
+              id: req_ad0e661d45034ad89cf6e9f0b840b8ff
+              created: 1783264928035
+              modified: 1783265167845
+              isPrivate: false
+              description: ""
+              sortKey: -1783264926282
+            method: POST
+            body:
+              mimeType: application/x-www-form-urlencoded
+              params:
+                - name: action
+                  value: GET_COMIC_CHAPTERS
+                  disabled: false
+                - name: comic_id
+                  value: "1"
+                  disabled: false
+            headers:
+              - name: Content-Type
+                value: application/x-www-form-urlencoded
+            scripts:
+              afterResponse: |-
+                insomnia.test('Check if status is 200', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(200);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: https://ubaya.cloud/flutter/160423120/
+            name: Insert Comic Chapter
+            meta:
+              id: req_e5de9644de8a4e4d862dc37c5fec3c58
+              created: 1783264928036
+              modified: 1783265173835
+              isPrivate: false
+              description: ""
+              sortKey: -1783264926281
+            method: POST
+            body:
+              mimeType: application/x-www-form-urlencoded
+              params:
+                - name: action
+                  value: INSERT_COMIC_CHAPTERS
+                  disabled: false
+                - name: comic_id
+                  value: "{{RECENT_COMIC_ID}}"
+                  disabled: false
+                - name: chapters[0][chapter_number]
+                  value: "1"
+                  disabled: false
+                - name: chapters[0][title]
+                  value: TEST_INSERT_COMIC_CHAPTER_1_TITLE
+                  disabled: false
+                - name: chapters[1][chapter_number]
+                  value: "2"
+                  disabled: false
+                - name: chapters[1][title]
+                  value: TEST_INSERT_COMIC_CHAPTER_2_TITLE
+                  disabled: false
+            headers:
+              - name: Content-Type
+                value: application/x-www-form-urlencoded
+            scripts:
+              afterResponse: |-
+                const json = insomnia.response.json();
+
+                const comicChapterId = json.data.chapters[0].id;
+                insomnia.environment.set(
+                    "RECENT_COMIC_CHAPTER_ID",
+                    comicChapterId
+                );
+
+                insomnia.test('Check if status is 201', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(201);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: https://ubaya.cloud/flutter/160423120/
+            name: Update Comic Chapter
+            meta:
+              id: req_95654dc9552d45e4ac4e4359c2602ff9
+              created: 1783264928037
+              modified: 1783265180408
+              isPrivate: false
+              description: ""
+              sortKey: -1783264926280
+            method: POST
+            body:
+              mimeType: application/x-www-form-urlencoded
+              params:
+                - name: action
+                  value: UPDATE_COMIC_CHAPTER
+                  disabled: false
+                - name: chapter[id]
+                  value: "{{RECENT_COMIC_CHAPTER_ID}}"
+                  disabled: false
+                - name: chapter[chapter_number]
+                  value: "1"
+                  disabled: false
+                - name: chapter[title]
+                  value: TEST_UPDATE_COMIC_CHAPTER
+                  disabled: false
+            headers:
+              - name: Content-Type
+                value: application/x-www-form-urlencoded
+            scripts:
+              afterResponse: |-
+                insomnia.test('Check if status is 200', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(200);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: https://ubaya.cloud/flutter/160423120/
+            name: Get Comic Chapter Pages
+            meta:
+              id: req_69d84ecf18cd4bc7af5382ed433e6f54
+              created: 1783264928039
+              modified: 1783265183401
+              isPrivate: false
+              description: ""
+              sortKey: -1783264926279
+            method: POST
+            body:
+              mimeType: application/x-www-form-urlencoded
+              params:
+                - name: action
+                  value: GET_COMIC_CHAPTER_PAGES
+                  disabled: false
+                - name: chapter_id
+                  value: "1"
+                  disabled: false
+            headers:
+              - name: Content-Type
+                value: application/x-www-form-urlencoded
+            scripts:
+              afterResponse: |-
+                insomnia.test('Check if status is 200', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(200);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: https://ubaya.cloud/flutter/160423120/
+            name: Insert Comic Chapter Pages
+            meta:
+              id: req_ea9bdb1222f346c781f2c36fc830f508
+              created: 1783264928041
+              modified: 1783265187642
+              isPrivate: false
+              description: ""
+              sortKey: -1783264926278
+            method: POST
+            body:
+              mimeType: application/x-www-form-urlencoded
+              params:
+                - name: action
+                  value: INSERT_COMIC_CHAPTER_PAGES
+                  disabled: false
+                - name: chapter_id
+                  value: "{{RECENT_COMIC_CHAPTER_ID}}"
+                  disabled: false
+                - name: pages[0][page_number]
+                  value: "1"
+                  disabled: false
+                - name: pages[0][image]
+                  value: TEST_INSERT_COMIC_CHAPTER_PAGE_1_IMAGE
+                  disabled: false
+                - name: pages[1][page_number]
+                  value: "2"
+                  disabled: false
+                - name: pages[1][image]
+                  value: TEST_INSERT_COMIC_CHAPTER_PAGE_2_IMAGE
+                  disabled: false
+            headers:
+              - name: Content-Type
+                value: application/x-www-form-urlencoded
+            scripts:
+              afterResponse: |-
+                const json = insomnia.response.json();
+
+                const comicChapterPageId = json.data.pages[0].id;
+                insomnia.environment.set(
+                    "RECENT_COMIC_CHAPTER_PAGE_ID",
+                    comicChapterPageId
+                );
+
+                insomnia.test('Check if status is 201', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(201);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: https://ubaya.cloud/flutter/160423120/
+            name: Update Comic Chapter Page
+            meta:
+              id: req_b93cf6168a174897969eada2f140045f
+              created: 1783264928043
+              modified: 1783265194862
+              isPrivate: false
+              description: ""
+              sortKey: -1783264926277
+            method: POST
+            body:
+              mimeType: application/x-www-form-urlencoded
+              params:
+                - name: action
+                  value: UPDATE_COMIC_CHAPTER_PAGE
+                  disabled: false
+                - name: page[id]
+                  value: "{{RECENT_COMIC_CHAPTER_PAGE_ID}}"
+                  disabled: false
+                - name: page[page_number]
+                  value: "1"
+                  disabled: false
+                - name: page[image]
+                  value: TEST_UPDATE_COMIC_CHAPTER_PAGE
+                  disabled: false
+            headers:
+              - name: Content-Type
+                value: application/x-www-form-urlencoded
+            scripts:
+              afterResponse: |-
+                insomnia.test('Check if status is 200', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(200);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: https://ubaya.cloud/flutter/160423120/
+            name: Get Comments
+            meta:
+              id: req_2d4a356b59d146ebb127fab2e4816f41
+              created: 1783264928044
+              modified: 1783265191529
+              isPrivate: false
+              description: ""
+              sortKey: -1783264926276
+            method: POST
+            body:
+              mimeType: application/x-www-form-urlencoded
+              params:
+                - name: action
+                  value: GET_COMMENTS
+                  disabled: false
+                - name: comic_id
+                  value: "1"
+                  disabled: false
+            headers:
+              - name: Content-Type
+                value: application/x-www-form-urlencoded
+            scripts:
+              afterResponse: |-
+                insomnia.test('Check if status is 200', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(200);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: https://ubaya.cloud/flutter/160423120/
+            name: Insert Comment
+            meta:
+              id: req_f66cd5c94821413a8532158c34fc57bf
+              created: 1783264928046
+              modified: 1783265202700
+              isPrivate: false
+              description: ""
+              sortKey: -1783264926275
+            method: POST
+            body:
+              mimeType: application/x-www-form-urlencoded
+              params:
+                - name: action
+                  value: INSERT_COMMENT
+                  disabled: false
+                - name: comment[comic_id]
+                  value: "{{RECENT_COMIC_ID}}"
+                  disabled: false
+                - name: comment[content]
+                  value: TEST_INSERT_COMMENT_CONTENT
+                  disabled: false
+            headers:
+              - name: Content-Type
+                value: application/x-www-form-urlencoded
+            scripts:
+              afterResponse: |-
+                const json = insomnia.response.json();
+
+                const commentId = json.data.comment.id;
+                insomnia.environment.set(
+                    "RECENT_COMMENT_ID",
+                    commentId
+                );
+
+                insomnia.test('Check if status is 201', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(201);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: https://ubaya.cloud/flutter/160423120/
+            name: Update Comment
+            meta:
+              id: req_f0ad64cbbc064b8c890b261f7f408d18
+              created: 1783264928048
+              modified: 1783265198005
+              isPrivate: false
+              description: ""
+              sortKey: -1783264926274
+            method: POST
+            body:
+              mimeType: application/x-www-form-urlencoded
+              params:
+                - name: action
+                  value: UPDATE_COMMENT
+                  disabled: false
+                - name: comment[id]
+                  value: "{{RECENT_COMMENT_ID}}"
+                  disabled: false
+                - name: comment[content]
+                  value: TEST_UPDATE_COMMENT_CONTENT
+                  disabled: false
+            headers:
+              - name: Content-Type
+                value: application/x-www-form-urlencoded
+            scripts:
+              afterResponse: |-
+                insomnia.test('Check if status is 200', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(200);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: https://ubaya.cloud/flutter/160423120/
+            name: Get Replies
+            meta:
+              id: req_8c9ae2a3c891482db4bea2fe06875a2e
+              created: 1783264928050
+              modified: 1783265210982
+              isPrivate: false
+              description: ""
+              sortKey: -1783264926273
+            method: POST
+            body:
+              mimeType: application/x-www-form-urlencoded
+              params:
+                - name: action
+                  value: GET_REPLIES
+                  disabled: false
+                - name: parent_comment_id
+                  value: "1"
+                  disabled: false
+            headers:
+              - name: Content-Type
+                value: application/x-www-form-urlencoded
+            scripts:
+              afterResponse: |-
+                insomnia.test('Check if status is 200', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(200);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: https://ubaya.cloud/flutter/160423120/
+            name: Insert Reply
+            meta:
+              id: req_2cbf96292d79415eab16f4f3e8e97c3b
+              created: 1783264928051
+              modified: 1783265216210
+              isPrivate: false
+              description: ""
+              sortKey: -1783264926272
+            method: POST
+            body:
+              mimeType: application/x-www-form-urlencoded
+              params:
+                - name: action
+                  value: INSERT_REPLY
+                  disabled: false
+                - name: reply[parent_comment_id]
+                  value: "{{RECENT_COMMENT_ID}}"
+                  disabled: false
+                - name: reply[content]
+                  value: TEST_INSERT_REPLY_CONTENT
+                  disabled: false
+            headers:
+              - name: Content-Type
+                value: application/x-www-form-urlencoded
+            scripts:
+              afterResponse: |-
+                const json = insomnia.response.json();
+
+                const replyId = json.data.reply.id;
+                insomnia.environment.set(
+                    "RECENT_REPLY_ID",
+                    replyId
+                );
+
+                insomnia.test('Check if status is 201', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(201);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: https://ubaya.cloud/flutter/160423120/
+            name: Update Reply
+            meta:
+              id: req_86ef562cb3d543438d52169ea716d880
+              created: 1783264928053
+              modified: 1783265220407
+              isPrivate: false
+              description: ""
+              sortKey: -1783264926271
+            method: POST
+            body:
+              mimeType: application/x-www-form-urlencoded
+              params:
+                - name: action
+                  value: UPDATE_REPLY
+                  disabled: false
+                - name: reply[id]
+                  value: "{{RECENT_REPLY_ID}}"
+                  disabled: false
+                - name: reply[content]
+                  value: TEST_UPDATE_REPLY_CONTENT
+                  disabled: false
+            headers:
+              - name: Content-Type
+                value: application/x-www-form-urlencoded
+            scripts:
+              afterResponse: |-
+                insomnia.test('Check if status is 200', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(200);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: https://ubaya.cloud/flutter/160423120/
+            name: Save Rating
+            meta:
+              id: req_dce0b8cb8bec4dfa9b82241ff4169f02
+              created: 1783264928055
+              modified: 1783265257267
+              isPrivate: false
+              description: ""
+              sortKey: -1783264926270
+            method: POST
+            body:
+              mimeType: application/x-www-form-urlencoded
+              params:
+                - name: action
+                  value: SAVE_RATING
+                  disabled: false
+                - name: rating[comic_id]
+                  value: "{{RECENT_COMIC_ID}}"
+                  disabled: false
+                - name: rating[rating]
+                  value: "5"
+                  disabled: false
+            headers:
+              - name: Content-Type
+                value: application/x-www-form-urlencoded
+            scripts:
+              afterResponse: >-
+                insomnia.test('Check if status is 200 or 201', () => {
+                    insomnia.expect(insomnia.response.code).to.be.oneOf([200, 201]);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: https://ubaya.cloud/flutter/160423120/
+            name: Delete Rating
+            meta:
+              id: req_45d4f4bffa93400da90ca0575bc216c6
+              created: 1783264928057
+              modified: 1783265226768
+              isPrivate: false
+              description: ""
+              sortKey: -1783264926269
+            method: POST
+            body:
+              mimeType: application/x-www-form-urlencoded
+              params:
+                - name: action
+                  value: DELETE_RATING
+                  disabled: false
+                - name: comic_id
+                  value: "{{RECENT_COMIC_ID}}"
+                  disabled: false
+            headers:
+              - name: Content-Type
+                value: application/x-www-form-urlencoded
+            scripts:
+              afterResponse: |-
+                insomnia.test('Check if status is 200', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(200);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: https://ubaya.cloud/flutter/160423120/
+            name: Delete Reply
+            meta:
+              id: req_f730e6d157d644cd8234a212eeb0ab46
+              created: 1783264928058
+              modified: 1783265230501
+              isPrivate: false
+              description: ""
+              sortKey: -1783264926268
+            method: POST
+            body:
+              mimeType: application/x-www-form-urlencoded
+              params:
+                - name: action
+                  value: DELETE_REPLY
+                  disabled: false
+                - name: id
+                  value: "{{RECENT_REPLY_ID}}"
+                  disabled: false
+            headers:
+              - name: Content-Type
+                value: application/x-www-form-urlencoded
+            scripts:
+              afterResponse: |-
+                insomnia.test('Check if status is 200', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(200);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: https://ubaya.cloud/flutter/160423120/
+            name: Delete Comment
+            meta:
+              id: req_89a903135a4444c7a8618a3b24d06a15
+              created: 1783264928059
+              modified: 1783265233527
+              isPrivate: false
+              description: ""
+              sortKey: -1783264926267
+            method: POST
+            body:
+              mimeType: application/x-www-form-urlencoded
+              params:
+                - name: action
+                  value: DELETE_COMMENT
+                  disabled: false
+                - name: id
+                  value: "{{RECENT_COMMENT_ID}}"
+                  disabled: false
+            headers:
+              - name: Content-Type
+                value: application/x-www-form-urlencoded
+            scripts:
+              afterResponse: |-
+                insomnia.test('Check if status is 200', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(200);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: https://ubaya.cloud/flutter/160423120/
+            name: Delete Comic Chapter Page
+            meta:
+              id: req_c4413802d80b45059285a5a78767ac05
+              created: 1783264928061
+              modified: 1783265236493
+              isPrivate: false
+              description: ""
+              sortKey: -1783264926266
+            method: POST
+            body:
+              mimeType: application/x-www-form-urlencoded
+              params:
+                - name: action
+                  value: DELETE_COMIC_CHAPTER_PAGE
+                  disabled: false
+                - name: id
+                  value: "{{RECENT_COMIC_CHAPTER_PAGE_ID}}"
+                  disabled: false
+            headers:
+              - name: Content-Type
+                value: application/x-www-form-urlencoded
+            scripts:
+              afterResponse: |-
+                insomnia.test('Check if status is 200', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(200);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: https://ubaya.cloud/flutter/160423120/
+            name: Delete Comic Chapter
+            meta:
+              id: req_0628239b804b49b29d5eaefd697033d3
+              created: 1783264928063
+              modified: 1783265238153
+              isPrivate: false
+              description: ""
+              sortKey: -1783264926265
+            method: POST
+            body:
+              mimeType: application/x-www-form-urlencoded
+              params:
+                - name: action
+                  value: DELETE_COMIC_CHAPTER
+                  disabled: false
+                - name: id
+                  value: "{{RECENT_COMIC_CHAPTER_ID}}"
+                  disabled: false
+            headers:
+              - name: Content-Type
+                value: application/x-www-form-urlencoded
+            scripts:
+              afterResponse: |-
+                insomnia.test('Check if status is 200', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(200);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: https://ubaya.cloud/flutter/160423120/
+            name: Delete Comic
+            meta:
+              id: req_7258e12b026d44d1af01026e6403d2d6
+              created: 1783264928065
+              modified: 1783265240023
+              isPrivate: false
+              description: ""
+              sortKey: -1783264926264
+            method: POST
+            body:
+              mimeType: application/x-www-form-urlencoded
+              params:
+                - name: action
+                  value: DELETE_COMIC
+                  disabled: false
+                - name: id
+                  value: "{{RECENT_COMIC_ID}}"
+                  disabled: false
+            headers:
+              - name: Content-Type
+                value: application/x-www-form-urlencoded
+            scripts:
+              afterResponse: |-
+                insomnia.test('Check if status is 200', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(200);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: https://ubaya.cloud/flutter/160423120/
+            name: Delete Category
+            meta:
+              id: req_3929c63afb2c4b2eb590f5886ae7df87
+              created: 1783264928066
+              modified: 1783265243245
+              isPrivate: false
+              description: ""
+              sortKey: -1783264926263
+            method: POST
+            body:
+              mimeType: application/x-www-form-urlencoded
+              params:
+                - name: action
+                  value: DELETE_CATEGORY
+                  disabled: false
+                - name: id
+                  value: "{{RECENT_CATEGORY_ID}}"
+                  disabled: false
+            headers:
+              - name: Content-Type
+                value: application/x-www-form-urlencoded
+            scripts:
+              afterResponse: |-
+                insomnia.test('Check if status is 200', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(200);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: https://ubaya.cloud/flutter/160423120/
+            name: Delete User
+            meta:
+              id: req_f87be54a6f5946748304ecbf539ac57d
+              created: 1783264928070
+              modified: 1783265245543
+              isPrivate: false
+              description: ""
+              sortKey: -1783264926262
+            method: POST
+            body:
+              mimeType: application/x-www-form-urlencoded
+              params:
+                - name: action
+                  value: DELETE_USER
+                  disabled: false
+                - name: user[password]
+                  value: "1234567890"
+                  disabled: false
+            headers:
+              - name: Content-Type
+                value: application/x-www-form-urlencoded
+            scripts:
+              afterResponse: |-
+                insomnia.test('Check if status is 200', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(200);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+    authentication:
+      type: bearer
+      disabled: false
+      token: "{{TOKEN}}"
+      prefix: ""
+cookieJar:
+  name: Default Jar
+  meta:
+    id: jar_236bf6549f240a1e3964caf89d812b680955247a
+    created: 1783264928297
+    modified: 1783264928297
+environments:
+  name: Base Environment
+  meta:
+    id: env_236bf6549f240a1e3964caf89d812b680955247a
+    created: 1783264928072
+    modified: 1783264928072
+    isPrivate: false
