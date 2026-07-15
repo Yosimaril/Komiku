@@ -27,8 +27,27 @@ class _ComicListScreenState extends State<ComicListScreen> {
 
   Widget _ratingStars(double ratingAvg) {
     final full = ratingAvg.floor().clamp(0, 5);
-    return Text('★★★★★'.substring(0, full).padRight(5, '☆'),
-        style: const TextStyle(color: Colors.amber, fontSize: 12));
+    final hasHalf = (ratingAvg - full) >= 0.25;
+    String stars = '';
+    for (int i = 0; i < 5; i++) {
+      if (i < full) {
+        stars += '★';
+      } else if (i == full && hasHalf) {
+        stars += '½';
+      } else {
+        stars += '☆';
+      }
+    }
+    return Row(
+      children: [
+        Text(stars, style: const TextStyle(color: Colors.amber, fontSize: 14)),
+        const SizedBox(width: 4),
+        Text(
+          ratingAvg.toStringAsFixed(1),
+          style: TextStyle(color: Colors.grey.shade600, fontSize: 12),
+        ),
+      ],
+    );
   }
 
   @override
@@ -84,8 +103,26 @@ class _ComicListScreenState extends State<ComicListScreen> {
                                 ? Image.network(
                                     comic.posterUrl!,
                                     fit: BoxFit.cover,
+                                    errorBuilder: (context, error, stackTrace) {
+                                      return Container(
+                                        color: Colors.grey.shade200,
+                                        child: const Icon(Icons.broken_image, color: Colors.grey),
+                                      );
+                                    },
+                                    loadingBuilder: (context, child, loadingProgress) {
+                                      if (loadingProgress == null) return child;
+                                      return Container(
+                                        color: Colors.grey.shade100,
+                                        child: const Center(
+                                          child: CircularProgressIndicator(strokeWidth: 2),
+                                        ),
+                                      );
+                                    },
                                   )
-                                : Container(color: Colors.grey.shade200),
+                                : Container(
+                                    color: Colors.grey.shade200,
+                                    child: const Icon(Icons.image, color: Colors.grey),
+                                  ),
                           ),
                         ),
                         const SizedBox(width: 12),

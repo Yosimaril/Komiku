@@ -89,20 +89,69 @@ class _CreateComicScreenState extends State<CreateComicScreen> {
   }
 
   Future<void> _submitComic() async {
+    // Validate form fields
     if (!_formKey.currentState!.validate()) {
-      return;
-    }
-
-    if (_selectedCategoryId == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please select a category')),
+        const SnackBar(
+          content: Text('Please fix the form errors before submitting'),
+          backgroundColor: Colors.orange,
+        ),
       );
       return;
     }
 
+    // Validate category
+    if (_selectedCategoryId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please select a category'),
+          backgroundColor: Colors.orange,
+        ),
+      );
+      return;
+    }
+
+    // Validate chapters
     if (_chapters.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please add at least one chapter')),
+        const SnackBar(
+          content: Text('Please add at least one chapter'),
+          backgroundColor: Colors.orange,
+        ),
+      );
+      return;
+    }
+
+    // Validate each chapter has a title
+    for (int i = 0; i < _chapters.length; i++) {
+      if (_chapters[i].title.trim().isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Please enter a title for Chapter ${i + 1}'),
+            backgroundColor: Colors.orange,
+          ),
+        );
+        return;
+      }
+      // Validate each chapter has at least one page
+      if (_chapters[i].pages.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Chapter ${i + 1} must have at least one page'),
+            backgroundColor: Colors.orange,
+          ),
+        );
+        return;
+      }
+    }
+
+    // Validate poster
+    if (_posterImage == null && _posterUrlController.text.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please pick a poster image or enter a poster URL'),
+          backgroundColor: Colors.orange,
+        ),
       );
       return;
     }
@@ -130,14 +179,20 @@ class _CreateComicScreenState extends State<CreateComicScreen> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Comic created successfully!')),
+          const SnackBar(
+            content: Text('Comic created successfully!'),
+            backgroundColor: Colors.green,
+          ),
         );
         Navigator.pop(context);
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e')),
+          SnackBar(
+            content: Text('Error: $e'),
+            backgroundColor: Colors.red,
+          ),
         );
       }
     } finally {
@@ -205,7 +260,7 @@ class _CreateComicScreenState extends State<CreateComicScreen> {
                         border: OutlineInputBorder(),
                       ),
                       hint: const Text('Select Category'),
-                      value: _selectedCategoryId,
+                      initialValue: _selectedCategoryId,
                       items: _categories.map((Category category) {
                         return DropdownMenuItem<int>(
                           value: category.id,
@@ -325,12 +380,19 @@ class _CreateComicScreenState extends State<CreateComicScreen> {
                                   ),
                                   const SizedBox(height: 12),
 
-                                  // Chapter Title
+                    // Chapter Title
                                   TextFormField(
                                     decoration: const InputDecoration(
                                       labelText: 'Chapter Title',
+                                      hintText: 'e.g. The Beginning',
                                       border: OutlineInputBorder(),
                                     ),
+                                    validator: (value) {
+                                      if (value == null || value.trim().isEmpty) {
+                                        return 'Chapter title is required';
+                                      }
+                                      return null;
+                                    },
                                     onChanged: (value) {
                                       chapter.title = value;
                                     },
