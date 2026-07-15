@@ -185,14 +185,24 @@ class ApiService {
   static Future<Map<String, dynamic>> insertComment(Comment comment) {
     return _api.postAuthenticated(
       action: RequestAction.insertComment,
-      body: {'comment': comment.toJson()},
+      body: {
+        'comment': {
+          'comic_id': comment.comicId,
+          'content': comment.content,
+        }
+      },
     );
   }
 
   static Future<Map<String, dynamic>> updateComment(Comment comment) {
     return _api.postAuthenticated(
       action: RequestAction.updateComment,
-      body: {'comment': comment.toJson()},
+      body: {
+        'comment': {
+          'id': comment.id,
+          'content': comment.content,
+        }
+      },
     );
   }
 
@@ -214,14 +224,24 @@ class ApiService {
   static Future<Map<String, dynamic>> insertReply(Reply reply) {
     return _api.postAuthenticated(
       action: RequestAction.insertReply,
-      body: {'reply': reply.toJson()},
+      body: {
+        'reply': {
+          'parent_comment_id': reply.parentCommentId,
+          'content': reply.content,
+        }
+      },
     );
   }
 
   static Future<Map<String, dynamic>> updateReply(Reply reply) {
     return _api.postAuthenticated(
       action: RequestAction.updateReply,
-      body: {'reply': reply.toJson()},
+      body: {
+        'reply': {
+          'id': reply.id,
+          'content': reply.content,
+        }
+      },
     );
   }
 

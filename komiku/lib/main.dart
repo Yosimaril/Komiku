@@ -66,15 +66,23 @@ class MyApp extends StatelessWidget {
         NavigationRoute.loginScreen.name: (context) => const LoginScreen(),
         NavigationRoute.registerScreen.name: (context) =>
             const RegisterScreen(),
-        NavigationRoute.listComicScreen.name: (context) => ListComicScreen(
-          categoryId: ModalRoute.of(context)?.settings.arguments as int?,
+        NavigationRoute.listComicScreen.name: (context) => Scaffold(
+          appBar: AppBar(title: const Text('Comics')),
+          body: ListComicScreen(
+            categoryId: ModalRoute.of(context)?.settings.arguments as int?,
+          ),
         ),
-        NavigationRoute.listCategoryScreen.name: (context) =>
-            const ListCategoryScreen(),
+        NavigationRoute.listCategoryScreen.name: (context) => Scaffold(
+          appBar: AppBar(title: const Text('Categories')),
+          body: const ListCategoryScreen(),
+        ),
         NavigationRoute.comicDetailScreen.name: (context) => ComicDetailScreen(
           comicId: ModalRoute.of(context)?.settings.arguments as int,
         ),
-        NavigationRoute.settingScreen.name: (context) => const SettingScreen(),
+        NavigationRoute.settingScreen.name: (context) => Scaffold(
+          appBar: AppBar(title: const Text('Settings')),
+          body: const SettingScreen(),
+        ),
       },
     );
   }

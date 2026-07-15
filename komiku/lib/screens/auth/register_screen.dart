@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:komiku/models/user.dart';
 import 'package:komiku/screens/home_screen.dart';
@@ -53,9 +54,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
       if (success && mounted) {
         final data = response['data'] as Map<String, dynamic>?;
         final token = data?['token'];
+        final user = data?['user'];
         if (token != null) {
           final secureStorage = context.read<SecureStorageService>();
           await secureStorage.saveToken(token);
+          if (user != null) {
+            await secureStorage.saveUser(jsonEncode(user));
+          }
 
           if (mounted) {
             Navigator.pushReplacement(

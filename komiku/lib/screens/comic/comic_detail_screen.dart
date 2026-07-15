@@ -1,8 +1,15 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:komiku/components/list_comic_screen/rating_star.dart';
 import 'package:komiku/models/comic.dart';
+import 'package:komiku/models/comment.dart';
+import 'package:komiku/models/reply.dart';
+import 'package:komiku/models/user.dart';
 import 'package:komiku/services/api_service.dart';
+import 'package:komiku/services/secure_storage_service.dart';
 import 'package:komiku/static/error_message.dart';
+import 'package:provider/provider.dart';
 
 class ComicDetailScreen extends StatefulWidget {
   final int comicId;
@@ -15,13 +22,27 @@ class ComicDetailScreen extends StatefulWidget {
 
 class _ComicDetailScreenState extends State<ComicDetailScreen> {
   late Future<Comic> _futureComic;
+  User? _currentUser;
 
   final _commentController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    _futureComic = getComicDetail(widget.comicId);
+    _loadInitialData();
+  }
+
+  Future<void> _loadInitialData() async {
+    setState(() {
+      _futureComic = _getComicDetail(widget.comicId);
+    });
+    final secureStorage = context.read<SecureStorageService>();
+    final userJson = await secureStorage.getUser();
+    if (userJson != null) {
+      setState(() {
+        _currentUser = User.fromJson(jsonDecode(userJson));
+      });
+    }
   }
 
   @override
@@ -30,9 +51,161 @@ class _ComicDetailScreenState extends State<ComicDetailScreen> {
     super.dispose();
   }
 
-  Future<Comic> getComicDetail(int id) async {
+  Future<Comic> _getComicDetail(int id) async {
     final response = await ApiService.getComicDetail(id);
-    return Comic.fromJson(response['data']);
+    Comic comic = Comic.fromJson(response['data']);
+
+    try {
+      final commentsResponse = await ApiService.getComments(id);
+      if (commentsResponse['status'] == 'SUCCESS') {
+        List<Comment> comments = (commentsResponse['data'] as List)
+            .map((e) => Comment.fromJson(e))
+            .toList();
+
+        // Fetch replies for each comment in parallel
+        await Future.wait(comments.asMap().entries.map((entry) async {
+          final commentIndex = entry.key;
+          final comment = entry.value;
+          final repliesResponse = await ApiService.getReplies(comment.id!);
+          if (repliesResponse['status'] == 'SUCCESS') {
+            List<Reply> replies = (repliesResponse['data'] as List)
+                .map((e) => Reply.fromJson(e))
+                .toList();
+            comments[commentIndex] = comment.copyWith(replies: replies);
+          }
+        }));
+
+        comic = comic.copyWith(comments: comments);
+      }
+    } catch (e) {
+      debugPrint("Error loading comments/replies: $e");
+    }
+
+    return comic;
+  }
+
+  Future<void> _refreshData() async {
+    setState(() {
+      _futureComic = _getComicDetail(widget.comicId);
+    });
+  }
+
+  Future<void> _submitComment() async {
+    if (_commentController.text.trim().isEmpty) return;
+
+    final response = await ApiService.insertComment(
+      Comment(
+        comicId: widget.comicId,
+        content: _commentController.text,
+      ),
+    );
+
+    if (response['status'] == 'SUCCESS') {
+      _commentController.clear();
+      _refreshData();
+    } else if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(response['error_message']?.toString() ?? 'Failed to post comment')),
+      );
+    }
+  }
+
+  Future<void> _deleteComment(int id) async {
+    final response = await ApiService.deleteComment(id);
+    if (response['status'] == 'SUCCESS') {
+      _refreshData();
+    }
+  }
+
+  Future<void> _editComment(Comment comment) async {
+    final controller = TextEditingController(text: comment.content);
+    final newContent = await showDialog<String>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Edit Comment'),
+        content: TextField(
+          controller: controller,
+          autofocus: true,
+          decoration: const InputDecoration(hintText: 'Update your comment'),
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
+          TextButton(onPressed: () => Navigator.pop(context, controller.text), child: const Text('Save')),
+        ],
+      ),
+    );
+
+    if (newContent != null && newContent.trim().isNotEmpty && newContent != comment.content) {
+      final response = await ApiService.updateComment(comment.copyWith(content: newContent));
+      if (response['status'] == 'SUCCESS') {
+        _refreshData();
+      }
+    }
+  }
+
+  Future<void> _submitReply(int parentCommentId) async {
+    final controller = TextEditingController();
+    final content = await showDialog<String>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Reply to Comment'),
+        content: TextField(
+          controller: controller,
+          autofocus: true,
+          decoration: const InputDecoration(hintText: 'Enter your reply'),
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
+          TextButton(onPressed: () => Navigator.pop(context, controller.text), child: const Text('Post')),
+        ],
+      ),
+    );
+
+    if (content != null && content.trim().isNotEmpty) {
+      final response = await ApiService.insertReply(
+        Reply(
+          parentCommentId: parentCommentId,
+          content: content,
+        ),
+      );
+
+      if (response['status'] == 'SUCCESS') {
+        _refreshData();
+      }
+    }
+  }
+
+  Future<void> _deleteReply(int id) async {
+    final response = await ApiService.deleteReply(id);
+    if (response['status'] == 'SUCCESS') {
+      _refreshData();
+    }
+  }
+
+  Future<void> _editReply(Reply reply) async {
+    final controller = TextEditingController(text: reply.content);
+    final newContent = await showDialog<String>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Edit Reply'),
+        content: TextField(
+          controller: controller,
+          autofocus: true,
+          decoration: const InputDecoration(hintText: 'Update your reply'),
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
+          TextButton(onPressed: () => Navigator.pop(context, controller.text), child: const Text('Save')),
+        ],
+      ),
+    );
+
+    if (newContent != null && newContent.trim().isNotEmpty && newContent != reply.content) {
+      final response = await ApiService.updateReply(reply.copyWith(content: newContent));
+      if (response['status'] == 'SUCCESS') {
+        _refreshData();
+      }
+    }
   }
 
   @override
@@ -41,16 +214,16 @@ class _ComicDetailScreenState extends State<ComicDetailScreen> {
       future: _futureComic,
       builder: (context, snapshot) {
         if (snapshot.connectionState != ConnectionState.done) {
-          return const Center(child: CircularProgressIndicator());
+          return const Scaffold(body: Center(child: CircularProgressIndicator()));
         }
 
         if (snapshot.hasError) {
-          return Center(child: Text('${ErrorMessage.loadComicDetailError}: ${snapshot.error}'));
+          return Scaffold(body: Center(child: Text('${ErrorMessage.loadComicDetailError}: ${snapshot.error}')));
         }
 
         final comic = snapshot.data;
         if (comic == null) {
-          return const Center(child: Text(ErrorMessage.loadComicDetailEmpty));
+          return const Scaffold(body: Center(child: Text(ErrorMessage.loadComicDetailEmpty)));
         }
 
         return Scaffold(
@@ -134,7 +307,7 @@ class _ComicDetailScreenState extends State<ComicDetailScreen> {
                         ),
                         trailing: const Icon(Icons.chevron_right),
                         onTap: () {
-                          // TODO: Navigate to reader screen
+                          // TODO: Readerscreen navigation
                         },
                       );
                     },
@@ -168,11 +341,7 @@ class _ComicDetailScreenState extends State<ComicDetailScreen> {
                       const SizedBox(width: 8),
 
                       ElevatedButton(
-                        onPressed: () {
-                          // TODO: Insert comment
-
-                          _commentController.clear();
-                        },
+                        onPressed: _submitComment,
                         child: const Text('Submit'),
                       ),
                     ],
@@ -189,19 +358,44 @@ class _ComicDetailScreenState extends State<ComicDetailScreen> {
                     itemCount: comic.comments.length,
                     itemBuilder: (context, index) {
                       final comment = comic.comments[index];
+                      final isOwner = _currentUser?.id == comment.userId;
 
                       return Card(
-                        margin: const EdgeInsets.only(bottom: 10),
+                        margin: const EdgeInsets.only(bottom: 12),
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          side: BorderSide(color: Colors.grey.shade200),
+                        ),
                         child: Padding(
                           padding: const EdgeInsets.all(12),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
-                                comment.username ?? 'Unknown',
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    comment.username ?? 'Unknown',
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  if (isOwner)
+                                    Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        IconButton(
+                                          icon: const Icon(Icons.edit, size: 18),
+                                          onPressed: () => _editComment(comment),
+                                        ),
+                                        IconButton(
+                                          icon: const Icon(Icons.delete, size: 18, color: Colors.red),
+                                          onPressed: () => _deleteComment(comment.id!),
+                                        ),
+                                      ],
+                                    ),
+                                ],
                               ),
 
                               const SizedBox(height: 4),
@@ -210,12 +404,67 @@ class _ComicDetailScreenState extends State<ComicDetailScreen> {
 
                               const SizedBox(height: 8),
 
-                              TextButton(
-                                onPressed: () {
-                                  // TODO: Reply comment
-                                },
-                                child: const Text('Reply'),
+                              TextButton.icon(
+                                icon: const Icon(Icons.reply, size: 16),
+                                label: const Text('Reply'),
+                                onPressed: () => _submitReply(comment.id!),
                               ),
+
+                              if (comment.replies.isNotEmpty)
+                                ...[
+                                  const Divider(),
+                                  Padding(
+                                    padding: const EdgeInsets.only(left: 16),
+                                    child: ListView.builder(
+                                      shrinkWrap: true,
+                                      physics: const NeverScrollableScrollPhysics(),
+                                      itemCount: comment.replies.length,
+                                      itemBuilder: (context, rIndex) {
+                                        final reply = comment.replies[rIndex];
+                                        final isReplyOwner = _currentUser?.id == reply.userId;
+
+                                        return Container(
+                                          padding: const EdgeInsets.symmetric(vertical: 8),
+                                          decoration: BoxDecoration(
+                                            border: Border(left: BorderSide(color: Colors.grey.shade300, width: 2)),
+                                          ),
+                                          child: Padding(
+                                            padding: const EdgeInsets.only(left: 12),
+                                            child: Column(
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              children: [
+                                                Row(
+                                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                  children: [
+                                                    Text(
+                                                      reply.username ?? 'Unknown',
+                                                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                                                    ),
+                                                    if (isReplyOwner)
+                                                      Row(
+                                                        mainAxisSize: MainAxisSize.min,
+                                                        children: [
+                                                          IconButton(
+                                                            icon: const Icon(Icons.edit, size: 16),
+                                                            onPressed: () => _editReply(reply),
+                                                          ),
+                                                          IconButton(
+                                                            icon: const Icon(Icons.delete, size: 16, color: Colors.red),
+                                                            onPressed: () => _deleteReply(reply.id!),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                  ],
+                                                ),
+                                                Text(reply.content, style: const TextStyle(fontSize: 14)),
+                                              ],
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                ],
                             ],
                           ),
                         ),
@@ -224,7 +473,7 @@ class _ComicDetailScreenState extends State<ComicDetailScreen> {
                   ),
                 ),
 
-                const SizedBox(height: 24),
+                const SizedBox(height: 32),
               ],
             ),
           ),
