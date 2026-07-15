@@ -3,7 +3,7 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 
 import '../models/category.dart';
-import '../services/komiku_api_service.dart';
+import '../services/api_service.dart';
 
 class CreateComicScreen extends StatefulWidget {
   const CreateComicScreen({super.key});

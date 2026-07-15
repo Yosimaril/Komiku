@@ -1,43 +1,39 @@
-class Category {
+class User {
   final int? id;
-  final String name;
-  final String? description;
+  final String username;
+  final String? password;
   final DateTime? createdAt;
   final DateTime? updatedAt;
 
-  const Category({
+  const User({
     this.id,
-    required this.name,
-    this.description,
+    required this.username,
+    this.password,
     this.createdAt,
     this.updatedAt,
   });
 
-  Category copyWith({
+  User copyWith({
     int? id,
-    String? name,
-    String? description,
+    String? username,
+    String? password,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) {
-    return Category(
+    return User(
       id: id ?? this.id,
-      name: name ?? this.name,
-      description: description ?? this.description,
+      username: username ?? this.username,
+      password: password ?? this.password,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
     );
   }
 
-  factory Category.fromJson(Map<String, dynamic> json) {
-    return Category(
+  factory User.fromJson(Map<String, dynamic> json) {
+    return User(
       id: json['id'] as int?,
-      name: json['name'] as String,
-      description:
-          json['description'] == null ||
-              json['description'].toString().toLowerCase() == 'null'
-          ? null
-          : json['description'] as String,
+      username: json['username'] as String,
+      password: json['password'] as String?,
       createdAt: json['created_at'] != null
           ? DateTime.parse(json['created_at'])
           : null,
@@ -50,8 +46,8 @@ class Category {
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'name': name,
-      if (description != null) 'description': description,
+      'username': username,
+      if (password != null) 'password': password,
       'created_at': createdAt?.toIso8601String(),
       'updated_at': updatedAt?.toIso8601String(),
     };
@@ -59,6 +55,6 @@ class Category {
 
   @override
   String toString() {
-    return 'Category(id: $id, name: $name, description: $description, createdAt: $createdAt, updatedAt: $updatedAt)';
+    return 'User(id: $id, username: $username, createdAt: $createdAt, updatedAt: $updatedAt)';
   }
 }

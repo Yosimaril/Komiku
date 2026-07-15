@@ -1,58 +1,54 @@
-import 'package:komiku/models/reply.dart';
-
-class Comment {
+class Reply {
   final int? id;
   final int? comicId;
+  final int parentCommentId;
   final int? userId;
   final String? username;
   final String content;
-  final List<Reply> replies;
   final DateTime? createdAt;
   final DateTime? updatedAt;
 
-  const Comment({
+  const Reply({
     this.id,
     this.comicId,
+    required this.parentCommentId,
     this.userId,
     this.username,
     required this.content,
-    this.replies = const [],
     this.createdAt,
     this.updatedAt,
   });
 
-  Comment copyWith({
+  Reply copyWith({
     int? id,
     int? comicId,
+    int? parentCommentId,
     int? userId,
     String? username,
     String? content,
-    List<Reply>? replies,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) {
-    return Comment(
+    return Reply(
       id: id ?? this.id,
       comicId: comicId ?? this.comicId,
+      parentCommentId: parentCommentId ?? this.parentCommentId,
       userId: userId ?? this.userId,
       username: username ?? this.username,
       content: content ?? this.content,
-      replies: replies ?? this.replies,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
     );
   }
 
-  factory Comment.fromJson(Map<String, dynamic> json) {
-    return Comment(
+  factory Reply.fromJson(Map<String, dynamic> json) {
+    return Reply(
       id: json['id'] as int?,
       comicId: json['comic_id'] as int?,
+      parentCommentId: json['parent_comment_id'] as int? ?? 0,
       userId: json['user_id'] as int?,
       username: json['username'] as String?,
       content: json['content'] as String,
-      replies: json['replies'] != null
-          ? (json['replies'] as List).map((e) => Reply.fromJson(e)).toList()
-          : const [],
       createdAt: json['created_at'] != null
           ? DateTime.parse(json['created_at'])
           : null,
@@ -66,10 +62,10 @@ class Comment {
     return {
       'id': id,
       'comic_id': comicId,
+      'parent_comment_id': parentCommentId,
       'user_id': userId,
       'username': username,
       'content': content,
-      'replies': replies.map((e) => e.toJson()).toList(),
       'created_at': createdAt?.toIso8601String(),
       'updated_at': updatedAt?.toIso8601String(),
     };
@@ -77,6 +73,6 @@ class Comment {
 
   @override
   String toString() {
-    return 'Comment(id: $id, comicId: $comicId, userId: $userId, username: $username, content: $content, replies: $replies, createdAt: $createdAt, updatedAt: $updatedAt)';
+    return 'Reply(id: $id, comicId: $comicId, parentCommentId: $parentCommentId, userId: $userId, username: $username, content: $content, createdAt: $createdAt, updatedAt: $updatedAt)';
   }
 }

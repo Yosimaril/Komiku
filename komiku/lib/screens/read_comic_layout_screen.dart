@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import '../models/comic.dart';
 import '../models/comment.dart';
 import '../models/chapter.dart';
-import '../services/komiku_api_service.dart';
+import '../services/api_service.dart';
 
 class ReadComicLayoutScreen extends StatefulWidget {
   final int comicId;

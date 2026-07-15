@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 import '../models/comic.dart';
-import '../services/komiku_api_service.dart';
+import '../services/api_service.dart';
 import 'read_comic_layout_screen.dart';
 
 class SearchScreen extends StatefulWidget {

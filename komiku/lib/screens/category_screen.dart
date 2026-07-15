@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../models/category.dart';
-import '../services/komiku_api_service.dart';
+import '../services/api_service.dart';
 import 'comic_list_screen.dart';
 
 class CategoryScreen extends StatefulWidget {
