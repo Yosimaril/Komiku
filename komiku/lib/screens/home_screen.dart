@@ -5,6 +5,7 @@ import 'package:komiku/screens/category/list_category_screen.dart';
 import 'package:komiku/screens/comic/list_comic_screen.dart';
 import 'package:komiku/screens/setting_screen.dart';
 import 'package:komiku/static/navigation_route.dart';
+import 'package:komiku/style/komiku_colors.dart';
 import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -38,6 +39,8 @@ class _HomeScreenState extends State<HomeScreen> {
       },
       floatingActionButton: navProvider.indexBottomNavBar == 0
           ? FloatingActionButton(
+              backgroundColor: KomikuColors.blue.color,
+              foregroundColor: KomikuColors.white.color,
               onPressed: () async {
                 final refresh = await Navigator.pushNamed(
                   context,

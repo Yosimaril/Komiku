@@ -7,6 +7,7 @@ import 'package:komiku/models/category.dart';
 import 'package:komiku/models/comic.dart';
 import 'package:komiku/services/api_service.dart';
 import 'package:komiku/static/error_message.dart';
+import 'package:komiku/static/success_message.dart';
 
 class UpdateComicScreen extends StatefulWidget {
   final int comicId;
@@ -63,6 +64,12 @@ class _UpdateComicScreenState extends State<UpdateComicScreen> {
           
           _isLoading = false;
         });
+
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text(SuccessMessage.updateComic)),
+          );
+        }
       }
     } catch (e) {
       debugPrint("Error loading data: $e");

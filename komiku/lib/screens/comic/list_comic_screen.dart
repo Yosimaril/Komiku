@@ -9,6 +9,7 @@ import 'package:komiku/models/user.dart';
 import 'package:komiku/services/api_service.dart';
 import 'package:komiku/services/secure_storage_service.dart';
 import 'package:komiku/static/error_message.dart';
+import 'package:komiku/static/success_message.dart';
 import 'package:komiku/static/navigation_route.dart';
 import 'package:provider/provider.dart';
 
@@ -108,6 +109,11 @@ class _ListComicScreenState extends State<ListComicScreen> {
       final response = await ApiService.deleteComic(id);
       if (response['status'] == 'SUCCESS') {
         _loadData(); // Refresh list
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text(SuccessMessage.deleteComic)),
+            );
+          }
       } else {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(

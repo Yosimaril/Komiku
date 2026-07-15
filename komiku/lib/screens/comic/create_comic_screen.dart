@@ -6,6 +6,7 @@ import 'package:komiku/models/category.dart';
 import 'package:komiku/models/comic.dart';
 import 'package:komiku/services/api_service.dart';
 import 'package:komiku/static/error_message.dart';
+import 'package:komiku/static/success_message.dart';
 
 class CreateComicScreen extends StatefulWidget {
   const CreateComicScreen({super.key});
@@ -99,7 +100,7 @@ class _CreateComicScreenState extends State<CreateComicScreen> {
         if (mounted) {
           Navigator.pop(context, true);
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text("Comic created successfully")),
+            const SnackBar(content: Text(SuccessMessage.addComic)),
           );
         }
       } else {
