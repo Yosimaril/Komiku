@@ -4,6 +4,7 @@ import 'package:komiku/components/list_comic_screen/search_field.dart';
 import 'package:komiku/models/comic.dart';
 import 'package:komiku/screens/comic/comic_detail_screen.dart';
 import 'package:komiku/services/api_service.dart';
+import 'package:komiku/static/error_message.dart';
 
 class ListComicScreen extends StatefulWidget {
   const ListComicScreen({super.key});
@@ -37,7 +38,7 @@ class _ListComicScreenState extends State<ListComicScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Comics')),
+      appBar: AppBar(title: const Text('Comics')),
       body: Column(
         children: [
           SearchField(
@@ -77,13 +78,13 @@ class ListComicWidget extends StatelessWidget {
 
         if (snapshot.hasError) {
           return Center(
-            child: Text('Failed to load comics: ${snapshot.error}'),
+            child: Text('${ErrorMessage.loadComicError}: ${snapshot.error}'),
           );
         }
 
         final comics = snapshot.data ?? const [];
         if (comics.isEmpty) {
-          return const Center(child: Text('No comics found'));
+          return const Center(child: Text(ErrorMessage.loadComicEmpty));
         }
 
         return ListView.builder(
