@@ -9,9 +9,12 @@ import 'package:komiku/models/reply.dart';
 import 'package:komiku/models/user.dart';
 import 'package:komiku/static/request_action.dart';
 
-
 class ApiService {
-  static final Api _api = Api();
+  static late Api _api;
+
+  static void initialize(Api api) {
+    _api = api;
+  }
 
   // User ====================================================================================================
   static Future<Map<String, dynamic>> login(User user) {
