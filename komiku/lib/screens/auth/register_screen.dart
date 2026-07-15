@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:komiku/models/user.dart';
+import 'package:komiku/screens/home_screen.dart';
 import 'package:komiku/services/api_service.dart';
+import 'package:komiku/services/secure_storage_service.dart';
 import 'package:komiku/static/navigation_route.dart';
+import 'package:provider/provider.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -44,6 +47,31 @@ class _RegisterScreenState extends State<RegisterScreen> {
           password: _passwordController.text,
         ),
       );
+
+      if (response['success'] && mounted) {
+        final token = response['token'];
+        if (token != null) {
+          final secureStorage = context.read<SecureStorageService>();
+          await secureStorage.saveToken(token);
+
+          if (mounted) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => const HomeScreen()),
+            );
+          }
+        } else {
+          // If no token, maybe just go to login
+          Navigator.pushReplacementNamed(
+            context,
+            NavigationRoute.loginScreen.name,
+          );
+        }
+      } else if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(response['message'] ?? 'Registration failed')),
+        );
+      }
     } catch (e) {
       debugPrint(e.toString());
     } finally {

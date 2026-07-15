@@ -3,12 +3,12 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:komiku/models/api.dart';
 import 'package:komiku/provider/index_nav_provider.dart';
 import 'package:komiku/provider/theme_state_provider.dart';
+import 'package:komiku/screens/auth/auth_gate.dart';
 import 'package:komiku/screens/auth/login_screen.dart';
 import 'package:komiku/screens/auth/register_screen.dart';
 import 'package:komiku/screens/category/list_category_screen.dart';
 import 'package:komiku/screens/comic/comic_detail_screen.dart';
 import 'package:komiku/screens/comic/list_comic_screen.dart';
-import 'package:komiku/screens/home_screen.dart';
 import 'package:komiku/screens/setting_screen.dart';
 import 'package:komiku/services/api_service.dart';
 import 'package:komiku/services/secure_storage_service.dart';
@@ -34,6 +34,7 @@ void main() async {
         Provider(
           create: (context) => SharedPreferencesService(sharedPreferences),
         ),
+        Provider.value(value: secureStorage),
         ChangeNotifierProvider(
           create: (BuildContext context) =>
               ThemeStateProvider(context.read<SharedPreferencesService>()),
@@ -60,9 +61,8 @@ class MyApp extends StatelessWidget {
           : ThemeMode.light,
       theme: KomikuTheme.lightTheme,
       darkTheme: KomikuTheme.darkTheme,
-      initialRoute: NavigationRoute.homeScreen.name,
+      home: const AuthGate(),
       routes: {
-        NavigationRoute.homeScreen.name: (context) => const HomeScreen(),
         NavigationRoute.loginScreen.name: (context) => const LoginScreen(),
         NavigationRoute.registerScreen.name: (context) =>
             const RegisterScreen(),

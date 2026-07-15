@@ -30,12 +30,19 @@ class Api {
     required RequestAction action,
     Map<String, dynamic> body = const {},
   }) async {
+    final token = await _secureStorageService.getToken();
     final response = await http.post(
       Uri.parse(_baseUrl),
-      headers: _authenticatedHeaders(),
-      body: {'action': action.action, ...body.map(
-        (key, value) => MapEntry(key, value.toString()),
-      )},
+      headers: {
+        ..._headers(),
+        'Authorization': 'Bearer $token',
+      },
+      body: {
+        'action': action.action,
+        ...body.map(
+          (key, value) => MapEntry(key, value.toString()),
+        )
+      },
     );
 
     return jsonDecode(response.body) as Map<String, dynamic>;
@@ -46,9 +53,5 @@ class Api {
       'Content-Type': 'application/x-www-form-urlencoded',
       'Accept': 'application/json',
     };
-  }
-
-  Map<String, String> _authenticatedHeaders() {
-    return {..._headers(), 'Authorization': 'Bearer TEMPORARY'};
   }
 }
