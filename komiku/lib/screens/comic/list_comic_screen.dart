@@ -1,11 +1,16 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:komiku/components/list_comic_screen/comic_card.dart';
 import 'package:komiku/components/list_comic_screen/search_field.dart';
 import 'package:komiku/models/category.dart';
 import 'package:komiku/models/comic.dart';
+import 'package:komiku/models/user.dart';
 import 'package:komiku/services/api_service.dart';
+import 'package:komiku/services/secure_storage_service.dart';
 import 'package:komiku/static/error_message.dart';
 import 'package:komiku/static/navigation_route.dart';
+import 'package:provider/provider.dart';
 
 class ListComicScreen extends StatefulWidget {
   final int? categoryId;
@@ -23,6 +28,7 @@ class _ListComicScreenState extends State<ListComicScreen> {
 
   List<Comic> _allComics = [];
   List<Comic> _filteredComics = [];
+  User? _currentUser;
 
   List<Category> _categories = [];
 
@@ -46,6 +52,12 @@ class _ListComicScreenState extends State<ListComicScreen> {
   Future<void> _loadData() async {
     final comicsResponse = await ApiService.getComics();
     final categoriesResponse = await ApiService.getCategories();
+    
+    final secureStorage = context.read<SecureStorageService>();
+    final userJson = await secureStorage.getUser();
+    if (userJson != null) {
+      _currentUser = User.fromJson(jsonDecode(userJson));
+    }
 
     _allComics = (comicsResponse['data'] as List)
         .map((e) => Comic.fromJson(e))
@@ -74,6 +86,36 @@ class _ListComicScreenState extends State<ListComicScreen> {
     }).toList();
 
     setState(() {});
+  }
+
+  Future<void> _deleteComic(int id) async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete Comic?'),
+        content: const Text('Are you sure you want to delete this comic? This will remove all chapters and comments.'),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Delete', style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm == true) {
+      final response = await ApiService.deleteComic(id);
+      if (response['status'] == 'SUCCESS') {
+        _loadData(); // Refresh list
+      } else {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(response['error_message']?.toString() ?? 'Failed to delete comic')),
+          );
+        }
+      }
+    }
   }
 
   @override
@@ -146,7 +188,14 @@ class _ListComicScreenState extends State<ListComicScreen> {
               ),
             ),
 
-            Expanded(child: ListComicWidget(comics: _filteredComics)),
+            Expanded(
+              child: ListComicWidget(
+                comics: _filteredComics,
+                currentUser: _currentUser,
+                onDelete: _deleteComic,
+                onUpdate: () => _loadData(), // Refresh when coming back
+              ),
+            ),
           ],
         );
       },
@@ -155,9 +204,18 @@ class _ListComicScreenState extends State<ListComicScreen> {
 }
 
 class ListComicWidget extends StatelessWidget {
-  const ListComicWidget({super.key, required this.comics});
+  const ListComicWidget({
+    super.key,
+    required this.comics,
+    this.currentUser,
+    this.onDelete,
+    this.onUpdate,
+  });
 
   final List<Comic> comics;
+  final User? currentUser;
+  final Function(int)? onDelete;
+  final VoidCallback? onUpdate;
 
   @override
   Widget build(BuildContext context) {
@@ -170,8 +228,11 @@ class ListComicWidget extends StatelessWidget {
       itemCount: comics.length,
       itemBuilder: (context, index) {
         final comic = comics[index];
-        return InkWell(
-          borderRadius: BorderRadius.circular(12),
+        final isOwner = currentUser?.username == comic.creatorName;
+
+        return ComicCard(
+          comic: comic,
+          isOwner: isOwner,
           onTap: () {
             Navigator.pushNamed(
               context,
@@ -179,7 +240,17 @@ class ListComicWidget extends StatelessWidget {
               arguments: comic.id,
             );
           },
-          child: ComicCard(comic: comic),
+          onUpdate: () async {
+            final refresh = await Navigator.pushNamed(
+              context,
+              NavigationRoute.updateComicScreen.name,
+              arguments: comic.id,
+            );
+            if (refresh == true && onUpdate != null) {
+              onUpdate!();
+            }
+          },
+          onDelete: () => onDelete?.call(comic.id!),
         );
       },
     );
