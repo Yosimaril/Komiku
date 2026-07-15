@@ -85,8 +85,9 @@ class _ComicDetailScreenState extends State<ComicDetailScreen> {
   }
 
   Future<void> _refreshData() async {
+    final newData = _getComicDetail(widget.comicId);
     setState(() {
-      _futureComic = _getComicDetail(widget.comicId);
+      _futureComic = newData;
     });
   }
 
@@ -111,9 +112,26 @@ class _ComicDetailScreenState extends State<ComicDetailScreen> {
   }
 
   Future<void> _deleteComment(int id) async {
-    final response = await ApiService.deleteComment(id);
-    if (response['status'] == 'SUCCESS') {
-      _refreshData();
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete Comment?'),
+        content: const Text('Are you sure you want to delete this comment?'),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Delete', style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm == true) {
+      final response = await ApiService.deleteComment(id);
+      if (response['status'] == 'SUCCESS') {
+        _refreshData();
+      }
     }
   }
 
@@ -176,9 +194,26 @@ class _ComicDetailScreenState extends State<ComicDetailScreen> {
   }
 
   Future<void> _deleteReply(int id) async {
-    final response = await ApiService.deleteReply(id);
-    if (response['status'] == 'SUCCESS') {
-      _refreshData();
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete Reply?'),
+        content: const Text('Are you sure you want to delete this reply?'),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Delete', style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm == true) {
+      final response = await ApiService.deleteReply(id);
+      if (response['status'] == 'SUCCESS') {
+        _refreshData();
+      }
     }
   }
 
