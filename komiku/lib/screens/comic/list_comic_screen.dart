@@ -78,81 +78,78 @@ class _ListComicScreenState extends State<ListComicScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Comics')),
-      body: FutureBuilder<void>(
-        future: _future,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState != ConnectionState.done) {
-            return const Center(child: CircularProgressIndicator());
-          }
+    return FutureBuilder<void>(
+      future: _future,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState != ConnectionState.done) {
+          return const Center(child: CircularProgressIndicator());
+        }
 
-          if (snapshot.hasError) {
-            return Center(
-              child: Text('${ErrorMessage.loadComicError}: ${snapshot.error}'),
-            );
-          }
+        if (snapshot.hasError) {
+          return Center(
+            child: Text('${ErrorMessage.loadComicError}: ${snapshot.error}'),
+          );
+        }
 
-          return Column(
-            children: [
-              SearchField(
-                controller: _searchController,
-                onEmpty: () {
-                  _keyword = '';
-                  _applyFilter();
-                },
-                onSearch: (value) {
-                  _keyword = value;
-                  _applyFilter();
-                },
-              ),
+        return Column(
+          children: [
+            SearchField(
+              controller: _searchController,
+              onEmpty: () {
+                _keyword = '';
+                _applyFilter();
+              },
+              onSearch: (value) {
+                _keyword = value;
+                _applyFilter();
+              },
+            ),
 
-              SizedBox(
-                height: 56,
-                child: ListView(
-                  padding: const EdgeInsets.symmetric(horizontal: 12),
-                  scrollDirection: Axis.horizontal,
-                  children: [
-                    FilterChip(
-                      selected: _selectedCategoryIds.isEmpty,
-                      label: const Text('All'),
-                      onSelected: (_) {
-                        _selectedCategoryIds.clear();
-                        _applyFilter();
-                      },
-                    ),
+            SizedBox(
+              height: 56,
+              child: ListView(
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                scrollDirection: Axis.horizontal,
+                children: [
+                  FilterChip(
+                    selected: _selectedCategoryIds.isEmpty,
+                    label: const Text('All'),
+                    onSelected: (_) {
+                      _selectedCategoryIds.clear();
+                      _applyFilter();
+                    },
+                  ),
 
-                    const SizedBox(width: 8),
+                  const SizedBox(width: 8),
 
-                    ..._categories.map(
-                      (category) => Padding(
-                        padding: const EdgeInsets.only(right: 8),
-                        child: FilterChip(
-                          selected: _selectedCategoryIds.contains(category.id),
-                          label: Text(category.name),
-                          onSelected: (selected) {
-                            setState(() {
-                              if (selected) {
-                                _selectedCategoryIds.add(category.id!);
-                              } else {
-                                _selectedCategoryIds.remove(category.id);
-                              }
+                  ..._categories.map(
+                    (category) => Padding(
+                      padding: const EdgeInsets.only(right: 8),
+                      child: FilterChip(
+                        selected: _selectedCategoryIds.contains(category.id),
+                        label: Text(category.name),
+                        onSelected: (selected) {
+                          setState(() {
+                            if (selected) {
+                              _selectedCategoryIds.add(category.id!);
+                            } else {
+                              _selectedCategoryIds.remove(category.id);
+                            }
 
-                              _applyFilter();
-                            });
-                          },
-                        ),
+                            _applyFilter();
+                          });
+                        },
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
+            ),
 
-              Expanded(child: ListComicWidget(comics: _filteredComics)),
-            ],
-          );
-        },
-      ),
+            Expanded(child: ListComicWidget(comics: _filteredComics)),
+          ],
+        );
+      },
     );
   }
 }

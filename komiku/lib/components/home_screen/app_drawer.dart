@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:komiku/services/secure_storage_service.dart';
+import 'package:komiku/static/navigation_route.dart';
+import 'package:provider/provider.dart';
 
 class AppDrawer extends StatelessWidget {
   const AppDrawer({super.key});
@@ -53,7 +56,22 @@ class AppDrawer extends StatelessWidget {
             onChanged: (value) {},
           ),
           Divider(),
-          ListTile(leading: Icon(Icons.logout), title: Text('Logout')),
+          ListTile(
+            leading: const Icon(Icons.logout),
+            title: const Text('Logout'),
+            onTap: () async {
+              final secureStorage = context.read<SecureStorageService>();
+              await secureStorage.deleteToken();
+
+              if (context.mounted) {
+                Navigator.pushNamedAndRemoveUntil(
+                  context,
+                  NavigationRoute.loginScreen.name,
+                  (route) => false,
+                );
+              }
+            },
+          ),
         ],
       ),
     );

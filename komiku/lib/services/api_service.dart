@@ -43,7 +43,7 @@ class ApiService {
   static Future<Map<String, dynamic>> getCategories({String? keyword}) {
     return _api.post(
       action: RequestAction.getCategories,
-      body: {'keyword': ?keyword},
+      body: {'keyword': keyword},
     );
   }
 
@@ -72,7 +72,7 @@ class ApiService {
   static Future<Map<String, dynamic>> getComics({String? keyword}) {
     return _api.post(
       action: RequestAction.getComics,
-      body: {'keyword': ?keyword},
+      body: {'keyword': keyword},
     );
   }
 
@@ -108,7 +108,7 @@ class ApiService {
   }) {
     return _api.post(
       action: RequestAction.getComicChapters,
-      body: {'comic_id': comicId, 'keyword': ?keyword},
+      body: {'comic_id': comicId, 'keyword': keyword},
     );
   }
 
