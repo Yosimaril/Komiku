@@ -1,4 +1,5 @@
-import 'package:flutter/material.dart';
+import 'dart:io';
+
 import 'package:komiku/models/api.dart';
 import 'package:komiku/models/category.dart';
 import 'package:komiku/models/chapter.dart';
@@ -80,17 +81,42 @@ class ApiService {
     return _api.post(action: RequestAction.getComicDetail, body: {'id': id});
   }
 
-  static Future<Map<String, dynamic>> insertComic(Comic comic) {
-    return _api.postAuthenticated(
+  static Future<Map<String, dynamic>> insertComic(
+    Comic comic, {
+    File? poster,
+  }) {
+    return _api.postMultipartAuthenticated(
       action: RequestAction.insertComic,
-      body: {'comic': comic.toJson()},
+      body: {
+        'comic': {
+          'title': comic.title,
+          'description': comic.description,
+          'categories': comic.categories.map((e) => e.id).toList(),
+        },
+      },
+      files: {
+        if (poster != null) 'poster': poster,
+      },
     );
   }
 
-  static Future<Map<String, dynamic>> updateComic(Comic comic) {
-    return _api.postAuthenticated(
+  static Future<Map<String, dynamic>> updateComic(
+    Comic comic, {
+    File? poster,
+  }) {
+    return _api.postMultipartAuthenticated(
       action: RequestAction.updateComic,
-      body: {'comic': comic.toJson()},
+      body: {
+        'comic': {
+          'id': comic.id,
+          'title': comic.title,
+          'description': comic.description,
+          'categories': comic.categories.map((e) => e.id).toList(),
+        },
+      },
+      files: {
+        if (poster != null) 'poster': poster,
+      },
     );
   }
 

@@ -5,6 +5,7 @@ namespace App\Controllers;
 use App\Database\Database;
 use App\Middleware\AuthMiddleware;
 use App\Response;
+use App\Service\UploadService;
 use App\Validator;
 
 class ComicController extends BaseController
@@ -83,7 +84,7 @@ class ComicController extends BaseController
                     $comics[$id] = [
                         'id' => (int)$row['id'],
                         'title' => $row['title'],
-                        'poster' => $row['poster'],
+                        'poster' => "https://ubaya.cloud/flutter/160423120/app/" . $row['poster'],
                         'description' => $row['description'],
                         'average_rating' => round((float)$row['average_rating'], 2),
                         'rating_count' => (int)$row['rating_count'],
@@ -261,6 +262,7 @@ class ComicController extends BaseController
      * Payload:
      * comic[
      *      title,
+     *      categories (optional),
      *      poster (optional),
      *      description (optional)
      * ]
@@ -271,6 +273,7 @@ class ComicController extends BaseController
     {
         self::execute(function () {
             $payload = static::getRequestPayload();
+
             $comic = Validator::payload(
                 $payload,
                 "comic"
@@ -281,15 +284,21 @@ class ComicController extends BaseController
 
             $creatorId = AuthMiddleware::getUserId();
 
-            $poster = Validator::nullableString(
-                $comic,
-                "poster"
-            );
-
             $description = Validator::nullableString(
                 $comic,
                 "description"
             );
+
+            $poster = null;
+
+            if (
+                isset($_FILES["poster"]) &&
+                $_FILES["poster"]["error"] !== UPLOAD_ERR_NO_FILE
+            ) {
+                $poster = UploadService::saveComicPoster(
+                    Validator::image($_FILES, "poster")
+                );
+            }
 
             $statement = Database::prepare("
                 INSERT INTO comics
@@ -312,13 +321,40 @@ class ComicController extends BaseController
 
             Database::execute($statement);
 
+            $comicId = Database::getConnection()->insert_id;
+
+            if (
+                isset($comic["categories"]) &&
+                is_array($comic["categories"])
+            ) {
+                $statement = Database::prepare("
+                    INSERT INTO category_comic
+                    (
+                        comic_id,
+                        category_id
+                    )
+                    VALUES (?, ?)
+                ");
+
+                foreach ($comic["categories"] as $categoryId) {
+                    $statement->bind_param(
+                        "ii",
+                        $comicId,
+                        $categoryId
+                    );
+
+                    Database::execute($statement);
+                }
+            }
+
             Response::success([
                 "comic" => [
-                    "id" => Database::getConnection()->insert_id,
+                    "id" => $comicId,
                     "creator_id" => $creatorId,
                     "title" => $comic["title"],
-                    "poster" => $poster,
-                    "description" => $description
+                    "poster" => "https://ubaya.cloud/flutter/160423120/app/" . $poster,
+                    "description" => $description,
+                    "categories" => $comic["categories"] ?? []
                 ]
             ], 201);
         });
@@ -331,6 +367,7 @@ class ComicController extends BaseController
      * comic[
      *      id,
      *      title,
+     *      categories (optional),
      *      poster (optional),
      *      description (optional)
      * ]
@@ -341,6 +378,7 @@ class ComicController extends BaseController
     {
         self::execute(function () {
             $payload = static::getRequestPayload();
+
             $comic = Validator::payload(
                 $payload,
                 "comic"
@@ -354,9 +392,10 @@ class ComicController extends BaseController
             $creatorId = AuthMiddleware::getUserId();
 
             $statement = Database::prepare("
-                SELECT id
+                SELECT poster
                 FROM comics
-                WHERE id = ?
+                WHERE
+                    id = ?
                     AND creator_id = ?
             ");
 
@@ -368,16 +407,28 @@ class ComicController extends BaseController
 
             Database::execute($statement);
 
-            if (!Database::first($statement)) {
+            $currentComic = Database::first($statement);
+
+            if (!$currentComic) {
                 Response::error([
                     "Comic not found or permission denied."
                 ], 403);
             }
 
-            $poster = Validator::nullableString(
-                $comic,
-                "poster"
-            );
+            $poster = $currentComic["poster"];
+
+            if (
+                isset($_FILES["poster"]) &&
+                $_FILES["poster"]["error"] !== UPLOAD_ERR_NO_FILE
+            ) {
+                $newPoster = UploadService::saveComicPoster(
+                    Validator::image($_FILES, "poster")
+                );
+
+                UploadService::delete($poster);
+
+                $poster = $newPoster;
+            }
 
             $description = Validator::nullableString(
                 $comic,
@@ -403,6 +454,50 @@ class ComicController extends BaseController
 
             Database::execute($statement);
 
+            if (isset($comic["categories"])) {
+                if (!is_array($comic["categories"])) {
+                    Response::error([
+                        "categories must be an array."
+                    ]);
+                }
+
+                $statement = Database::prepare("
+                    DELETE
+                    FROM category_comic
+                    WHERE comic_id = ?
+                ");
+
+                $statement->bind_param(
+                    "i",
+                    $comic["id"]
+                );
+
+                Database::execute($statement);
+
+                $categories = array_unique($comic["categories"]);
+
+                if (!empty($categories)) {
+                    $statement = Database::prepare("
+                        INSERT INTO category_comic
+                        (
+                            comic_id,
+                            category_id
+                        )
+                        VALUES (?, ?)
+                    ");
+
+                    foreach ($categories as $categoryId) {
+                        $statement->bind_param(
+                            "ii",
+                            $comic["id"],
+                            $categoryId
+                        );
+
+                        Database::execute($statement);
+                    }
+                }
+            }
+
             Response::success([
                 "updated" => Database::isRowAffected($statement)
             ]);
@@ -421,6 +516,7 @@ class ComicController extends BaseController
     {
         self::execute(function () {
             $payload = static::getRequestPayload();
+
             Validator::required($payload, ["id"]);
             Validator::integer($payload, ["id"]);
             Validator::positive($payload, ["id"]);
@@ -428,9 +524,10 @@ class ComicController extends BaseController
             $creatorId = AuthMiddleware::getUserId();
 
             $statement = Database::prepare("
-                SELECT id
+                SELECT poster
                 FROM comics
-                WHERE id = ?
+                WHERE
+                    id = ?
                     AND creator_id = ?
             ");
 
@@ -442,14 +539,19 @@ class ComicController extends BaseController
 
             Database::execute($statement);
 
-            if (!Database::first($statement)) {
+            $comic = Database::first($statement);
+
+            if (!$comic) {
                 Response::error([
                     "Comic not found or permission denied."
                 ], 403);
             }
 
+            $poster = $comic["poster"];
+
             $statement = Database::prepare("
-                DELETE FROM comics
+                DELETE
+                FROM comics
                 WHERE id = ?
             ");
 
@@ -460,8 +562,14 @@ class ComicController extends BaseController
 
             Database::execute($statement);
 
+            $deleted = Database::isRowAffected($statement);
+
+            if ($deleted) {
+                UploadService::delete($poster);
+            }
+
             Response::success([
-                "deleted" => Database::isRowAffected($statement)
+                "deleted" => $deleted
             ]);
         });
     }

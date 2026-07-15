@@ -9,6 +9,7 @@ import 'package:komiku/screens/auth/register_screen.dart';
 import 'package:komiku/screens/category/list_category_screen.dart';
 import 'package:komiku/screens/comic/comic_detail_screen.dart';
 import 'package:komiku/screens/comic/list_comic_screen.dart';
+import 'package:komiku/screens/comic/create_comic_screen.dart';
 import 'package:komiku/screens/setting_screen.dart';
 import 'package:komiku/services/api_service.dart';
 import 'package:komiku/services/secure_storage_service.dart';
@@ -79,6 +80,8 @@ class MyApp extends StatelessWidget {
         NavigationRoute.comicDetailScreen.name: (context) => ComicDetailScreen(
           comicId: ModalRoute.of(context)?.settings.arguments as int,
         ),
+        NavigationRoute.createComicScreen.name: (context) =>
+            const CreateComicScreen(),
         NavigationRoute.settingScreen.name: (context) => Scaffold(
           appBar: AppBar(title: const Text('Settings')),
           body: const SettingScreen(),

@@ -31,24 +31,34 @@ abstract class BaseController
             return self::$request;
         }
 
-        // Documentation page / GET request
-        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            self::$request = [];
+        // Multipart/form-data
+        if (!empty($_POST)) {
+
+            self::$request = $_POST;
+
+            foreach (self::$request as $key => $value) {
+
+                $decoded = json_decode($value, true);
+
+                if (json_last_error() === JSON_ERROR_NONE) {
+                    self::$request[$key] = $decoded;
+                }
+            }
+
             return self::$request;
         }
 
-        $input = file_get_contents('php://input');
+        // JSON
+        $input = file_get_contents("php://input");
 
-        // Empty body
-        if (trim($input) === '') {
-            self::$request = [];
-            return self::$request;
+        if (trim($input) === "") {
+            return [];
         }
 
         self::$request = json_decode($input, true);
 
         if (json_last_error() !== JSON_ERROR_NONE) {
-            Response::error(['Invalid JSON payload.'], 400);
+            Response::error(["Invalid JSON payload."], 400);
         }
 
         return self::$request;

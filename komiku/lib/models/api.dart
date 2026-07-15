@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -19,10 +20,7 @@ class Api {
     final response = await http.post(
       Uri.parse(_baseUrl),
       headers: _headers(),
-      body: jsonEncode({
-        'action': action.action,
-        ...body,
-      }),
+      body: jsonEncode({'action': action.action, ...body}),
     );
 
     return jsonDecode(response.body) as Map<String, dynamic>;
@@ -35,15 +33,41 @@ class Api {
     final token = await _secureStorageService.getToken();
     final response = await http.post(
       Uri.parse(_baseUrl),
-      headers: {
-        ..._headers(),
-        'Authorization': 'Bearer $token',
-      },
-      body: jsonEncode({
-        'action': action.action,
-        ...body,
-      }),
+      headers: {..._headers(), 'Authorization': 'Bearer $token'},
+      body: jsonEncode({'action': action.action, ...body}),
     );
+
+    return jsonDecode(response.body) as Map<String, dynamic>;
+  }
+
+  Future<Map<String, dynamic>> postMultipartAuthenticated({
+    required RequestAction action,
+    Map<String, dynamic> body = const {},
+    Map<String, File> files = const {},
+  }) async {
+    final token = await _secureStorageService.getToken();
+
+    final request = http.MultipartRequest('POST', Uri.parse(_baseUrl));
+
+    request.headers.addAll({
+      'Accept': 'application/json',
+      'Authorization': 'Bearer $token',
+    });
+
+    request.fields['action'] = action.action;
+
+    body.forEach((key, value) {
+      request.fields[key] = jsonEncode(value);
+    });
+
+    for (final entry in files.entries) {
+      request.files.add(
+        await http.MultipartFile.fromPath(entry.key, entry.value.path),
+      );
+    }
+
+    final streamedResponse = await request.send();
+    final response = await http.Response.fromStream(streamedResponse);
 
     return jsonDecode(response.body) as Map<String, dynamic>;
   }

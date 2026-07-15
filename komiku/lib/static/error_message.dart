@@ -18,4 +18,5 @@ class ErrorMessage {
   static const String loadCommentError = "Failed to load comments";
   static const String loadCommentEmpty = "No available comments";
 
+  static const String networkError = "Network error";
 }

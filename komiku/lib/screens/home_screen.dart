@@ -4,6 +4,7 @@ import 'package:komiku/provider/index_nav_provider.dart';
 import 'package:komiku/screens/category/list_category_screen.dart';
 import 'package:komiku/screens/comic/list_comic_screen.dart';
 import 'package:komiku/screens/setting_screen.dart';
+import 'package:komiku/static/navigation_route.dart';
 import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -14,6 +15,8 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  Key _comicListKey = UniqueKey();
+
   @override
   Widget build(BuildContext context) {
     final navProvider = context.watch<IndexNavProvider>();
@@ -29,10 +32,26 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       drawer: const AppDrawer(),
       body: switch (navProvider.indexBottomNavBar) {
-        0 => const ListComicScreen(),
+        0 => ListComicScreen(key: _comicListKey),
         1 => const ListCategoryScreen(),
         _ => const SettingScreen(),
       },
+      floatingActionButton: navProvider.indexBottomNavBar == 0
+          ? FloatingActionButton(
+              onPressed: () async {
+                final refresh = await Navigator.pushNamed(
+                  context,
+                  NavigationRoute.createComicScreen.name,
+                );
+                if (refresh == true) {
+                  setState(() {
+                    _comicListKey = UniqueKey();
+                  });
+                }
+              },
+              child: const Icon(Icons.add),
+            )
+          : null,
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: navProvider.indexBottomNavBar,
         onTap: (index) {

@@ -410,6 +410,11 @@ class ApiDocumentation
                 "action" => Action::INSERT_COMIC->value,
                 "comic" => [
                     "title" => "I was reincarnated as a Flutter developer so I whatever...",
+                    "categories" => [
+                        "[optional, id]",
+                        "[optional, id]",
+                        "[optional, id]"
+                    ],
                     "poster" => "[optional]",
                     "description" => "[optional]"
                 ]
@@ -441,6 +446,11 @@ class ApiDocumentation
                 "comic" => [
                     "id" => 9,
                     "title" => "I was reincarnated as a Dart language so I whatever...",
+                    "categories" => [
+                        "[optional, id]",
+                        "[optional, id]",
+                        "[optional, id]"
+                    ],
                     "poster" => "[optional]",
                     "description" => "[optional]"
                 ]
