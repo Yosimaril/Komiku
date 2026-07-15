@@ -75,7 +75,7 @@ class _ChapterDetailScreenState extends State<ChapterDetailScreen> {
                 errorBuilder: (_, __, ___) {
                   return const SizedBox(
                     height: 400,
-                    child: Icon(Icons.broken_image),
+                    child: Icon(Icons.broken_image, size: 160),
                   );
                 },
               );
