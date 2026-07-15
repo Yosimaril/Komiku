@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:komiku/components/list_comic_screen/rating_star.dart';
 import 'package:komiku/models/comic.dart';
 import 'package:komiku/models/comment.dart';
+import 'package:komiku/models/rating.dart';
 import 'package:komiku/models/reply.dart';
 import 'package:komiku/models/user.dart';
 import 'package:komiku/services/api_service.dart';
@@ -23,6 +24,7 @@ class ComicDetailScreen extends StatefulWidget {
 class _ComicDetailScreenState extends State<ComicDetailScreen> {
   late Future<Comic> _futureComic;
   User? _currentUser;
+  int? _userRating;
 
   final _commentController = TextEditingController();
 
@@ -54,6 +56,19 @@ class _ComicDetailScreenState extends State<ComicDetailScreen> {
   Future<Comic> _getComicDetail(int id) async {
     final response = await ApiService.getComicDetail(id);
     Comic comic = Comic.fromJson(response['data']);
+
+    // Check for existing rating
+    try {
+      final ratingResponse = await ApiService.getRating(id);
+      if (ratingResponse['status'] == 'SUCCESS' && ratingResponse['data'] != null) {
+        final ratingData = ratingResponse['data']['rating'];
+        if (ratingData != null) {
+          _userRating = int.tryParse(ratingData['rating'].toString());
+        }
+      }
+    } catch (e) {
+      debugPrint("Error loading rating: $e");
+    }
 
     try {
       final commentsResponse = await ApiService.getComments(id);
@@ -243,6 +258,38 @@ class _ComicDetailScreenState extends State<ComicDetailScreen> {
     }
   }
 
+  Future<void> _saveRating(int rating) async {
+    final response = await ApiService.saveRating(
+      Rating(comicId: widget.comicId, rating: rating),
+    );
+
+    if (response['status'] == 'SUCCESS') {
+      setState(() {
+        _userRating = rating;
+      });
+      _refreshData();
+    } else if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(response['error_message']?.toString() ?? 'Failed to save rating')),
+      );
+    }
+  }
+
+  Future<void> _deleteRating() async {
+    final response = await ApiService.deleteRating(widget.comicId);
+
+    if (response['status'] == 'SUCCESS') {
+      setState(() {
+        _userRating = null;
+      });
+      _refreshData();
+    } else if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(response['error_message']?.toString() ?? 'Failed to delete rating')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<Comic>(
@@ -312,6 +359,49 @@ class _ComicDetailScreenState extends State<ComicDetailScreen> {
                         style: TextStyle(
                           color: Colors.grey.shade700,
                         ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                const Divider(),
+
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Your Rating',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      Row(
+                        children: [
+                          ...List.generate(5, (index) {
+                            final ratingValue = index + 1;
+                            final isSelected = _userRating != null && _userRating! >= ratingValue;
+                            return IconButton(
+                              padding: EdgeInsets.zero,
+                              constraints: const BoxConstraints(),
+                              icon: Icon(
+                                isSelected ? Icons.star : Icons.star_border,
+                                color: Colors.amber,
+                              ),
+                              onPressed: () => _saveRating(ratingValue),
+                            );
+                          }),
+                          const Spacer(),
+                          if (_userRating != null)
+                            TextButton(
+                              onPressed: () {
+                                _deleteRating();
+                                setState(() {
+                                  _userRating = null;
+                                });
+                              },
+                              child: const Text('Clear', style: TextStyle(color: Colors.red)),
+                            ),
+                        ],
                       ),
                     ],
                   ),

@@ -50,6 +50,7 @@ enum Action: string
     case DELETE_REPLY = 'DELETE_REPLY';
 
     // Rating
+    case GET_RATING = 'GET_RATING';
     case SAVE_RATING = 'SAVE_RATING';
     case DELETE_RATING = 'DELETE_RATING';
 }

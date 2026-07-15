@@ -186,10 +186,7 @@ class ApiService {
     return _api.postAuthenticated(
       action: RequestAction.insertComment,
       body: {
-        'comment': {
-          'comic_id': comment.comicId,
-          'content': comment.content,
-        }
+        'comment': {'comic_id': comment.comicId, 'content': comment.content},
       },
     );
   }
@@ -198,10 +195,7 @@ class ApiService {
     return _api.postAuthenticated(
       action: RequestAction.updateComment,
       body: {
-        'comment': {
-          'id': comment.id,
-          'content': comment.content,
-        }
+        'comment': {'id': comment.id, 'content': comment.content},
       },
     );
   }
@@ -228,7 +222,7 @@ class ApiService {
         'reply': {
           'parent_comment_id': reply.parentCommentId,
           'content': reply.content,
-        }
+        },
       },
     );
   }
@@ -237,10 +231,7 @@ class ApiService {
     return _api.postAuthenticated(
       action: RequestAction.updateReply,
       body: {
-        'reply': {
-          'id': reply.id,
-          'content': reply.content,
-        }
+        'reply': {'id': reply.id, 'content': reply.content},
       },
     );
   }
@@ -253,6 +244,13 @@ class ApiService {
   }
 
   // Rating ====================================================================================================
+  static Future<Map<String, dynamic>> getRating(int comicId) {
+    return _api.postAuthenticated(
+      action: RequestAction.getRating,
+      body: {'comic_id': comicId},
+    );
+  }
+
   static Future<Map<String, dynamic>> saveRating(Rating rating) {
     return _api.postAuthenticated(
       action: RequestAction.saveRating,

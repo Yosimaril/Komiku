@@ -10,6 +10,53 @@ use App\Validator;
 class RatingController extends BaseController
 {
     /**
+     * Get the authenticated user's rating for a comic.
+     *
+     * Payload:
+     * - comic_id
+     *
+     * @return void
+     */
+    public static function get(): void
+    {
+        self::execute(function () {
+            $payload = static::getRequestPayload();
+
+            Validator::required($payload, ["comic_id"]);
+            Validator::integer($payload, ["comic_id"]);
+            Validator::positive($payload, ["comic_id"]);
+
+            $userId = AuthMiddleware::getUserId();
+
+            $statement = Database::prepare("
+                SELECT
+                    comic_id,
+                    user_id,
+                    rating
+                FROM comic_rated_by_user
+                WHERE
+                    comic_id = ?
+                    AND user_id = ?
+                LIMIT 1
+            ");
+
+            $statement->bind_param(
+                "ii",
+                $payload["comic_id"],
+                $userId
+            );
+
+            Database::execute($statement);
+
+            $result = Database::first($statement);
+
+            Response::success([
+                "rating" => $result ?: null
+            ]);
+        });
+    }
+
+    /**
      * Insert or update a rating.
      *
      * If the user has never rated the comic,

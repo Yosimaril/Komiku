@@ -941,6 +941,30 @@ class ApiDocumentation
     ];
 
     private const RATING_API = [
+        Action::GET_RATING->value => [
+            "title" => "Get Rating",
+            "description" => "Retrieve the authenticated user's rating for a comic.",
+            "method" => "POST",
+            "auth" => true,
+
+            "request" => [
+                "action" => Action::GET_RATING->value,
+                "comic_id" => 10
+            ],
+
+            "response" => [
+                "status" => "SUCCESS",
+                "data" => [
+                    "rating" => [
+                        "comic_id" => 10,
+                        "user_id" => 13,
+                        "rating" => 5
+                    ]
+                ],
+                "error_message" => []
+            ]
+        ],
+
         Action::SAVE_RATING->value => [
             "title" => "Insert or Update Rating",
             "description" => "Insert or update a rating for a comic.",

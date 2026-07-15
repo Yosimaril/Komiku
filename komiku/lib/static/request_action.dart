@@ -28,6 +28,7 @@ enum RequestAction {
   insertReply('INSERT_REPLY'),
   updateReply('UPDATE_REPLY'),
   deleteReply('DELETE_REPLY'),
+  getRating('GET_RATING'),
   saveRating('SAVE_RATING'),
   deleteRating('DELETE_RATING');
 

@@ -40,6 +40,7 @@ class Router
         Action::UPDATE_REPLY,
         Action::DELETE_REPLY,
 
+        Action::GET_RATING,
         Action::SAVE_RATING,
         Action::DELETE_RATING,
     ];
@@ -83,6 +84,7 @@ class Router
         Action::UPDATE_REPLY->value => [ReplyController::class, 'update'],
         Action::DELETE_REPLY->value => [ReplyController::class, 'delete'],
 
+        Action::GET_RATING->value => [RatingController::class, 'get'],
         Action::SAVE_RATING->value => [RatingController::class, 'save'],
         Action::DELETE_RATING->value => [RatingController::class, 'delete'],
     ];
