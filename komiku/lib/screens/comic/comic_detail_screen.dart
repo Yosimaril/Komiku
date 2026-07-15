@@ -10,6 +10,7 @@ import 'package:komiku/models/user.dart';
 import 'package:komiku/services/api_service.dart';
 import 'package:komiku/services/secure_storage_service.dart';
 import 'package:komiku/static/error_message.dart';
+import 'package:komiku/static/success_message.dart';
 import 'package:komiku/static/navigation_route.dart';
 import 'package:provider/provider.dart';
 
@@ -120,6 +121,11 @@ class _ComicDetailScreenState extends State<ComicDetailScreen> {
     if (response['status'] == 'SUCCESS') {
       _commentController.clear();
       _refreshData();
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text(SuccessMessage.addCommentComic)),
+        );
+      }
     } else if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -154,6 +160,11 @@ class _ComicDetailScreenState extends State<ComicDetailScreen> {
       final response = await ApiService.deleteComment(id);
       if (response['status'] == 'SUCCESS') {
         _refreshData();
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text(SuccessMessage.deleteCommentComic)),
+          );
+        }
       }
     }
   }
@@ -190,6 +201,11 @@ class _ComicDetailScreenState extends State<ComicDetailScreen> {
       );
       if (response['status'] == 'SUCCESS') {
         _refreshData();
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text(SuccessMessage.updateCommentComic)),
+          );
+        }
       }
     }
   }
@@ -225,6 +241,11 @@ class _ComicDetailScreenState extends State<ComicDetailScreen> {
 
       if (response['status'] == 'SUCCESS') {
         _refreshData();
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text(SuccessMessage.addReplyComic)),
+          );
+        }
       }
     }
   }
@@ -252,6 +273,11 @@ class _ComicDetailScreenState extends State<ComicDetailScreen> {
       final response = await ApiService.deleteReply(id);
       if (response['status'] == 'SUCCESS') {
         _refreshData();
+          if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text(SuccessMessage.deleteReplyComic)),
+          );
+        }
       }
     }
   }
@@ -317,6 +343,11 @@ class _ComicDetailScreenState extends State<ComicDetailScreen> {
       );
       if (response['status'] == 'SUCCESS') {
         _refreshData();
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text(SuccessMessage.updateReplyComic)),
+          );
+        }
       }
     }
   }
@@ -331,6 +362,11 @@ class _ComicDetailScreenState extends State<ComicDetailScreen> {
         _userRating = rating;
       });
       _refreshData();
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text(SuccessMessage.addRateComic)),
+        );
+      }
     } else if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -350,6 +386,11 @@ class _ComicDetailScreenState extends State<ComicDetailScreen> {
         _userRating = null;
       });
       _refreshData();
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text(SuccessMessage.deleteRateComic)),
+        );
+      }
     } else if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

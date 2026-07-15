@@ -64,12 +64,6 @@ class _UpdateComicScreenState extends State<UpdateComicScreen> {
           
           _isLoading = false;
         });
-
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text(SuccessMessage.updateComic)),
-          );
-        }
       }
     } catch (e) {
       debugPrint("Error loading data: $e");
@@ -124,7 +118,7 @@ class _UpdateComicScreenState extends State<UpdateComicScreen> {
         if (mounted) {
           Navigator.pop(context, true);
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text("Comic updated successfully")),
+            const SnackBar(content: Text(SuccessMessage.updateComic)),
           );
         }
       } else {
@@ -243,6 +237,7 @@ class _UpdateComicScreenState extends State<UpdateComicScreen> {
                     const SizedBox(height: 8),
                     Wrap(
                       spacing: 8,
+                      runSpacing: 8,
                       children: _allCategories.map((category) {
                         final isSelected =
                             _selectedCategoryIds.contains(category.id);

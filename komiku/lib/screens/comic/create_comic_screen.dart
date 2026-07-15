@@ -209,6 +209,7 @@ class _CreateComicScreenState extends State<CreateComicScreen> {
                     const SizedBox(height: 8),
                     Wrap(
                       spacing: 8,
+                      runSpacing: 8,
                       children: _allCategories.map((category) {
                         final isSelected =
                             _selectedCategoryIds.contains(category.id);
