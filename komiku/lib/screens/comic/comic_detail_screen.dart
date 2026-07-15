@@ -668,10 +668,10 @@ class _ComicDetailScreenState extends State<ComicDetailScreen> {
                   ),
                 ),
 
-                const Padding(
+                Padding(
                   padding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                   child: Text(
-                    'Comments',
+                    'Comments ($commentCount) | Replies ($replyCount)',
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                 ),
@@ -701,14 +701,6 @@ class _ComicDetailScreenState extends State<ComicDetailScreen> {
                 ),
 
                 const SizedBox(height: 12),
-
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                  child: Text(
-                    'Comments ($commentCount) | Replies ($replyCount)',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                ),
 
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 12),
