@@ -197,11 +197,11 @@ class ComicController extends BaseController
 
             $statement = Database::prepare("
                 SELECT
-                    cat.id,
-                    cat.name
-                FROM categories cat
-                JOIN comic_categories cc
-                    ON cc.category_id = cat.id
+                    c.id,
+                    c.name
+                FROM categories c
+                JOIN category_comic cc
+                    ON cc.category_id = c.id
                 WHERE cc.comic_id = ?
             ");
 
