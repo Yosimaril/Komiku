@@ -29,8 +29,9 @@ class RatingController extends BaseController
     public static function save(): void
     {
         self::execute(function () {
+            $payload = static::getRequestPayload();
             $rating = Validator::payload(
-                $_POST,
+                $payload,
                 "rating"
             );
 
@@ -83,9 +84,10 @@ class RatingController extends BaseController
     public static function delete(): void
     {
         self::execute(function () {
-            Validator::required($_POST, ["comic_id"]);
-            Validator::integer($_POST, ["comic_id"]);
-            Validator::positive($_POST, ["comic_id"]);
+            $payload = static::getRequestPayload();
+            Validator::required($payload, ["comic_id"]);
+            Validator::integer($payload, ["comic_id"]);
+            Validator::positive($payload, ["comic_id"]);
 
             $userId = AuthMiddleware::getUserId();
 
@@ -98,7 +100,7 @@ class RatingController extends BaseController
 
             $statement->bind_param(
                 "ii",
-                $_POST["comic_id"],
+                $payload["comic_id"],
                 $userId
             );
 

@@ -20,7 +20,8 @@ class ComicController extends BaseController
     public static function get(): void
     {
         self::execute(function () {
-            $keyword = trim($_POST['keyword'] ?? '');
+            $payload = static::getRequestPayload();
+            $keyword = trim($payload['keyword'] ?? '');
 
             $query = "
                 SELECT
@@ -118,11 +119,12 @@ class ComicController extends BaseController
     public static function getDetail(): void
     {
         self::execute(function () {
-            Validator::required($_POST, ['id']);
-            Validator::integer($_POST, ['id']);
-            Validator::positive($_POST, ['id']);
+            $payload = static::getRequestPayload();
+            Validator::required($payload, ['id']);
+            Validator::integer($payload, ['id']);
+            Validator::positive($payload, ['id']);
 
-            $id = $_POST['id'];
+            $id = $payload['id'];
 
             $statement = Database::prepare("
                 SELECT
@@ -268,8 +270,9 @@ class ComicController extends BaseController
     public static function insert(): void
     {
         self::execute(function () {
+            $payload = static::getRequestPayload();
             $comic = Validator::payload(
-                $_POST,
+                $payload,
                 "comic"
             );
 
@@ -337,8 +340,9 @@ class ComicController extends BaseController
     public static function update(): void
     {
         self::execute(function () {
+            $payload = static::getRequestPayload();
             $comic = Validator::payload(
-                $_POST,
+                $payload,
                 "comic"
             );
 
@@ -416,9 +420,10 @@ class ComicController extends BaseController
     public static function delete(): void
     {
         self::execute(function () {
-            Validator::required($_POST, ["id"]);
-            Validator::integer($_POST, ["id"]);
-            Validator::positive($_POST, ["id"]);
+            $payload = static::getRequestPayload();
+            Validator::required($payload, ["id"]);
+            Validator::integer($payload, ["id"]);
+            Validator::positive($payload, ["id"]);
 
             $creatorId = AuthMiddleware::getUserId();
 
@@ -431,7 +436,7 @@ class ComicController extends BaseController
 
             $statement->bind_param(
                 "ii",
-                $_POST["id"],
+                $payload["id"],
                 $creatorId
             );
 
@@ -450,7 +455,7 @@ class ComicController extends BaseController
 
             $statement->bind_param(
                 "i",
-                $_POST["id"]
+                $payload["id"]
             );
 
             Database::execute($statement);

@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:komiku/services/secure_storage_service.dart';
 import 'package:komiku/static/request_action.dart';
@@ -18,9 +19,10 @@ class Api {
     final response = await http.post(
       Uri.parse(_baseUrl),
       headers: _headers(),
-      body: {'action': action.action, ...body.map(
-        (key, value) => MapEntry(key, value.toString()),
-      )},
+      body: jsonEncode({
+        'action': action.action,
+        ...body,
+      }),
     );
 
     return jsonDecode(response.body) as Map<String, dynamic>;
@@ -37,12 +39,10 @@ class Api {
         ..._headers(),
         'Authorization': 'Bearer $token',
       },
-      body: {
+      body: jsonEncode({
         'action': action.action,
-        ...body.map(
-          (key, value) => MapEntry(key, value.toString()),
-        )
-      },
+        ...body,
+      }),
     );
 
     return jsonDecode(response.body) as Map<String, dynamic>;
@@ -50,7 +50,7 @@ class Api {
 
   Map<String, String> _headers() {
     return const {
-      'Content-Type': 'application/x-www-form-urlencoded',
+      'Content-Type': 'application/json',
       'Accept': 'application/json',
     };
   }

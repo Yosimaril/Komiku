@@ -2,6 +2,7 @@
 
 namespace App\Middleware;
 
+use App\Controllers\BaseController;
 use App\Enums\Action;
 use App\Response;
 
@@ -9,7 +10,8 @@ class RequestMiddleware
 {
     public static function getAction(): Action
     {
-        $action = $_POST['action'] ?? 'OPTIONS';
+        $payload = BaseController::getRequestPayload();
+        $action = $payload['action'] ?? 'OPTIONS';
 
         $enum = Action::tryFrom($action);
 

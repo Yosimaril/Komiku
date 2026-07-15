@@ -44,8 +44,11 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
       );
 
-      if (response['success'] && mounted) {
-        final token = response['token'];
+      final success = response['status'] == 'SUCCESS';
+
+      if (success && mounted) {
+        final data = response['data'] as Map<String, dynamic>?;
+        final token = data?['token'];
         if (token != null) {
           final secureStorage = context.read<SecureStorageService>();
           await secureStorage.saveToken(token);
@@ -58,8 +61,12 @@ class _LoginScreenState extends State<LoginScreen> {
           }
         }
       } else if (mounted) {
+        final errorMessages = response['error_message'] as List?;
+        final message = errorMessages != null && errorMessages.isNotEmpty
+            ? errorMessages.join(", ")
+            : 'Login failed';
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(response['message'] ?? 'Login failed')),
+          SnackBar(content: Text(message)),
         );
       }
     } catch (e) {

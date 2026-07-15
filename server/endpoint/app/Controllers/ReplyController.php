@@ -20,9 +20,10 @@ class ReplyController extends BaseController
     public static function get(): void
     {
         self::execute(function () {
-            Validator::required($_POST, ["parent_comment_id"]);
-            Validator::integer($_POST, ["parent_comment_id"]);
-            Validator::positive($_POST, ["parent_comment_id"]);
+            $payload = static::getRequestPayload();
+            Validator::required($payload, ["parent_comment_id"]);
+            Validator::integer($payload, ["parent_comment_id"]);
+            Validator::positive($payload, ["parent_comment_id"]);
 
             $statement = Database::prepare("
                 SELECT
@@ -42,7 +43,7 @@ class ReplyController extends BaseController
 
             $statement->bind_param(
                 "i",
-                $_POST["parent_comment_id"]
+                $payload["parent_comment_id"]
             );
 
             Database::execute($statement);
@@ -67,8 +68,9 @@ class ReplyController extends BaseController
     public static function insert(): void
     {
         self::execute(function () {
+            $payload = static::getRequestPayload();
             $reply = Validator::payload(
-                $_POST,
+                $payload,
                 "reply"
             );
 
@@ -148,8 +150,9 @@ class ReplyController extends BaseController
     public static function update(): void
     {
         self::execute(function () {
+            $payload = static::getRequestPayload();
             $reply = Validator::payload(
-                $_POST,
+                $payload,
                 "reply"
             );
 
@@ -215,9 +218,10 @@ class ReplyController extends BaseController
     public static function delete(): void
     {
         self::execute(function () {
-            Validator::required($_POST, ["id"]);
-            Validator::integer($_POST, ["id"]);
-            Validator::positive($_POST, ["id"]);
+            $payload = static::getRequestPayload();
+            Validator::required($payload, ["id"]);
+            Validator::integer($payload, ["id"]);
+            Validator::positive($payload, ["id"]);
 
             $userId = AuthMiddleware::getUserId();
 
@@ -232,7 +236,7 @@ class ReplyController extends BaseController
 
             $statement->bind_param(
                 "ii",
-                $_POST["id"],
+                $payload["id"],
                 $userId
             );
 
@@ -251,7 +255,7 @@ class ReplyController extends BaseController
 
             $statement->bind_param(
                 "i",
-                $_POST["id"]
+                $payload["id"]
             );
 
             Database::execute($statement);

@@ -21,12 +21,13 @@ class ChapterController extends BaseController
     public static function get(): void
     {
         self::execute(function () {
-            Validator::required($_POST, ['comic_id']);
-            Validator::integer($_POST, ['comic_id']);
-            Validator::positive($_POST, ['comic_id']);
+            $payload = static::getRequestPayload();
+            Validator::required($payload, ['comic_id']);
+            Validator::integer($payload, ['comic_id']);
+            Validator::positive($payload, ['comic_id']);
 
-            $comicId = (int)$_POST['comic_id'];
-            $keyword = trim($_POST['keyword'] ?? '');
+            $comicId = (int)$payload['comic_id'];
+            $keyword = trim($payload['keyword'] ?? '');
 
             $query = "
                 SELECT
@@ -90,20 +91,21 @@ class ChapterController extends BaseController
     public static function insert(): void
     {
         self::execute(function () {
-            Validator::required($_POST, ["comic_id", "chapters"]);
-            Validator::integer($_POST, ["comic_id"]);
-            Validator::positive($_POST, ["comic_id"]);
+            $payload = static::getRequestPayload();
+            Validator::required($payload, ["comic_id", "chapters"]);
+            Validator::integer($payload, ["comic_id"]);
+            Validator::positive($payload, ["comic_id"]);
 
             if (
-                !is_array($_POST["chapters"]) ||
-                empty($_POST["chapters"])
+                !is_array($payload["chapters"]) ||
+                empty($payload["chapters"])
             ) {
                 Response::error([
                     "chapters must be a non-empty array."
                 ]);
             }
 
-            $comicId = (int)$_POST["comic_id"];
+            $comicId = (int)$payload["comic_id"];
             $creatorId = AuthMiddleware::getUserId();
 
             $statement = Database::prepare("
@@ -135,7 +137,7 @@ class ChapterController extends BaseController
                 ], 403);
             }
 
-            $chapters = $_POST["chapters"];
+            $chapters = $payload["chapters"];
 
             $inserted = Database::transaction(
                 function () use ($chapters, $comicId){
@@ -199,8 +201,9 @@ class ChapterController extends BaseController
     public static function update(): void
     {
         self::execute(function () {
+            $payload = static::getRequestPayload();
             $chapter = Validator::payload(
-                $_POST,
+                $payload,
                 "chapter"
             );
 
@@ -269,9 +272,10 @@ class ChapterController extends BaseController
     public static function delete(): void
     {
         self::execute(function () {
-            Validator::required($_POST, ["id"]);
-            Validator::integer($_POST, ["id"]);
-            Validator::positive($_POST, ["id"]);
+            $payload = static::getRequestPayload();
+            Validator::required($payload, ["id"]);
+            Validator::integer($payload, ["id"]);
+            Validator::positive($payload, ["id"]);
 
             $creatorId = AuthMiddleware::getUserId();
 
@@ -287,7 +291,7 @@ class ChapterController extends BaseController
 
             $statement->bind_param(
                 "ii",
-                $_POST["id"],
+                $payload["id"],
                 $creatorId
             );
 
@@ -306,7 +310,7 @@ class ChapterController extends BaseController
 
             $statement->bind_param(
                 "i",
-                $_POST["id"]
+                $payload["id"]
             );
 
             Database::execute($statement);

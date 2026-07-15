@@ -20,11 +20,12 @@ class CommentController extends BaseController
     public static function get(): void
     {
         self::execute(function () {
-            Validator::required($_POST, ['comic_id']);
-            Validator::integer($_POST, ['comic_id']);
-            Validator::positive($_POST, ['comic_id']);
+            $payload = static::getRequestPayload();
+            Validator::required($payload, ['comic_id']);
+            Validator::integer($payload, ['comic_id']);
+            Validator::positive($payload, ['comic_id']);
 
-            $comicId = (int)$_POST['comic_id'];
+            $comicId = (int)$payload['comic_id'];
 
             $statement = Database::prepare("
                 SELECT
@@ -70,8 +71,9 @@ class CommentController extends BaseController
     public static function insert(): void
     {
         self::execute(function () {
+            $payload = static::getRequestPayload();
             $comment = Validator::payload(
-                $_POST,
+                $payload,
                 "comment"
             );
 
@@ -126,8 +128,9 @@ class CommentController extends BaseController
     public static function update(): void
     {
         self::execute(function () {
+            $payload = static::getRequestPayload();
             $comment = Validator::payload(
-                $_POST,
+                $payload,
                 "comment"
             );
 
@@ -193,9 +196,10 @@ class CommentController extends BaseController
     public static function delete(): void
     {
         self::execute(function () {
-            Validator::required($_POST, ["id"]);
-            Validator::integer($_POST, ["id"]);
-            Validator::positive($_POST, ["id"]);
+            $payload = static::getRequestPayload();
+            Validator::required($payload, ["id"]);
+            Validator::integer($payload, ["id"]);
+            Validator::positive($payload, ["id"]);
 
             $userId = AuthMiddleware::getUserId();
 
@@ -210,7 +214,7 @@ class CommentController extends BaseController
 
             $statement->bind_param(
                 "ii",
-                $_POST["id"],
+                $payload["id"],
                 $userId
             );
 
@@ -229,7 +233,7 @@ class CommentController extends BaseController
 
             $statement->bind_param(
                 "i",
-                $_POST["id"]
+                $payload["id"]
             );
 
             Database::execute($statement);

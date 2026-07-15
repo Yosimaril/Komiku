@@ -20,11 +20,12 @@ class ChapterPageController extends BaseController
     public static function get(): void
     {
         self::execute(function () {
-            Validator::required($_POST, ['chapter_id']);
-            Validator::integer($_POST, ['chapter_id']);
-            Validator::positive($_POST, ['chapter_id']);
+            $payload = static::getRequestPayload();
+            Validator::required($payload, ['chapter_id']);
+            Validator::integer($payload, ['chapter_id']);
+            Validator::positive($payload, ['chapter_id']);
 
-            $chapterId = (int)$_POST['chapter_id'];
+            $chapterId = (int)$payload['chapter_id'];
 
             $statement = Database::prepare("
                 SELECT
@@ -72,20 +73,21 @@ class ChapterPageController extends BaseController
     public static function insert(): void
     {
         self::execute(function () {
-            Validator::required($_POST, ["chapter_id", "pages"]);
-            Validator::integer($_POST, ["chapter_id"]);
-            Validator::positive($_POST, ["chapter_id"]);
+            $payload = static::getRequestPayload();
+            Validator::required($payload, ["chapter_id", "pages"]);
+            Validator::integer($payload, ["chapter_id"]);
+            Validator::positive($payload, ["chapter_id"]);
 
             if (
-                !is_array($_POST["pages"]) ||
-                empty($_POST["pages"])
+                !is_array($payload["pages"]) ||
+                empty($payload["pages"])
             ) {
                 Response::error([
                     "pages must be a non-empty array."
                 ]);
             }
 
-            $chapterId = (int)$_POST["chapter_id"];
+            $chapterId = (int)$payload["chapter_id"];
             $creatorId = AuthMiddleware::getUserId();
 
             $statement = Database::prepare("
@@ -119,7 +121,7 @@ class ChapterPageController extends BaseController
                 ], 403);
             }
 
-            $pages = $_POST["pages"];
+            $pages = $payload["pages"];
 
             $inserted = Database::transaction(
                 function () use ($pages, $chapterId) {
@@ -135,7 +137,7 @@ class ChapterPageController extends BaseController
 
                     $inserted = [];
 
-                    foreach ($_POST["pages"] as $page) {
+                    foreach ($pages as $page) {
                         Validator::required($page, ["page_number", "image"]);
                         Validator::integer($page, ["page_number"]);
                         Validator::positive($page, ["page_number"]);
@@ -183,8 +185,9 @@ class ChapterPageController extends BaseController
     public static function update(): void
     {
         self::execute(function () {
+            $payload = static::getRequestPayload();
             $page = Validator::payload(
-                $_POST,
+                $payload,
                 "page"
             );
 
@@ -255,9 +258,10 @@ class ChapterPageController extends BaseController
     public static function delete(): void
     {
         self::execute(function () {
-            Validator::required($_POST, ["id"]);
-            Validator::integer($_POST, ["id"]);
-            Validator::positive($_POST, ["id"]);
+            $payload = static::getRequestPayload();
+            Validator::required($payload, ["id"]);
+            Validator::integer($payload, ["id"]);
+            Validator::positive($payload, ["id"]);
 
             $creatorId = AuthMiddleware::getUserId();
 
@@ -275,7 +279,7 @@ class ChapterPageController extends BaseController
 
             $statement->bind_param(
                 "ii",
-                $_POST["id"],
+                $payload["id"],
                 $creatorId
             );
 
@@ -294,7 +298,7 @@ class ChapterPageController extends BaseController
 
             $statement->bind_param(
                 "i",
-                $_POST["id"]
+                $payload["id"]
             );
 
             Database::execute($statement);

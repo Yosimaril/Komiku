@@ -24,7 +24,8 @@ class UserController extends BaseController
     public static function login(): void
     {
         self::execute(function () {
-            $user = Validator::payload($_POST, 'user');
+            $payload = static::getRequestPayload();
+            $user = Validator::payload($payload, 'user');
 
             Validator::required($user, ['username', 'password']);
             Validator::string($user, ['username', 'password']);
@@ -89,7 +90,8 @@ class UserController extends BaseController
     public static function register(): void
     {
         self::execute(function () {
-            $user = Validator::payload($_POST, 'user');
+            $payload = static::getRequestPayload();
+            $user = Validator::payload($payload, 'user');
 
             Validator::required($user, ['username', 'password']);
             Validator::string($user, ['username', 'password']);
@@ -165,7 +167,8 @@ class UserController extends BaseController
     public static function update(): void
     {
         self::execute(function () {
-            $user = Validator::payload($_POST, "user");
+            $payload = static::getRequestPayload();
+            $user = Validator::payload($payload, "user");
 
             Validator::required($user, ["username", "password"]);
             Validator::string($user, ["username", "password"]);
@@ -232,7 +235,8 @@ class UserController extends BaseController
     public static function delete(): void
     {
         self::execute(function () {
-            $user = Validator::payload($_POST, "user");
+            $payload = static::getRequestPayload();
+            $user = Validator::payload($payload, "user");
 
             Validator::required($user, ["password"]);
             Validator::string($user, ["password"]);

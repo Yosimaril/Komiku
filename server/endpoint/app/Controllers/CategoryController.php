@@ -19,7 +19,8 @@ class CategoryController extends BaseController
     public static function get(): void
     {
         self::execute(function () {
-            $keyword = trim($_POST['keyword'] ?? '');
+            $payload = static::getRequestPayload();
+            $keyword = trim($payload['keyword'] ?? '');
 
             $query = "
                 SELECT *
@@ -64,8 +65,9 @@ class CategoryController extends BaseController
     public static function insert(): void
     {
         self::execute(function () {
+            $payload = static::getRequestPayload();
             $category = Validator::payload(
-                $_POST,
+                $payload,
                 'category'
             );
 
@@ -119,8 +121,9 @@ class CategoryController extends BaseController
     public static function update(): void
     {
         self::execute(function () {
+            $payload = static::getRequestPayload();
             $category = Validator::payload(
-                $_POST,
+                $payload,
                 'category'
             );
 
@@ -167,9 +170,10 @@ class CategoryController extends BaseController
     public static function delete(): void
     {
         self::execute(function () {
-            Validator::required($_POST, ['id']);
-            Validator::integer($_POST, ['id']);
-            Validator::positive($_POST, ['id']);
+            $payload = static::getRequestPayload();
+            Validator::required($payload, ['id']);
+            Validator::integer($payload, ['id']);
+            Validator::positive($payload, ['id']);
 
             $statement = Database::prepare("
                 DELETE FROM categories
@@ -178,7 +182,7 @@ class CategoryController extends BaseController
 
             $statement->bind_param(
                 "i",
-                $_POST['id']
+                $payload['id']
             );
 
             Database::execute($statement);
