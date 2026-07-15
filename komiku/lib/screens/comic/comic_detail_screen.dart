@@ -469,6 +469,9 @@ class _ComicDetailScreenState extends State<ComicDetailScreen> {
           );
         }
 
+        final commentCount = comic.comments.length;
+        final replyCount = comic.comments.fold<int>(0, (sum, comment) => sum + comment.replies.length);
+
         return Scaffold(
           appBar: AppBar(
             title: Text(comic.title),
@@ -698,6 +701,14 @@ class _ComicDetailScreenState extends State<ComicDetailScreen> {
                 ),
 
                 const SizedBox(height: 12),
+
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                  child: Text(
+                    'Comments ($commentCount) | Replies ($replyCount)',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ),
 
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 12),
