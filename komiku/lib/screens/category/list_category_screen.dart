@@ -73,7 +73,7 @@ class _ListCategoryScreenState extends State<ListCategoryScreen> {
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(12),
-                    color: Colors.white,
+                    color: Colors.grey.shade200,
                     border: Border.all(color: Colors.grey.shade300),
                   ),
                   child: Column(
@@ -85,6 +85,7 @@ class _ListCategoryScreenState extends State<ListCategoryScreen> {
                         style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
+                          color: Colors.black
                         ),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
