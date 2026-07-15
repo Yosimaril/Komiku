@@ -50,9 +50,22 @@ class ChapterPageController extends BaseController
 
             Database::execute($statement);
 
-            Response::success(
-                Database::all($statement)
-            );
+            $pages = Database::all($statement);
+
+            $result = [];
+
+            foreach ($pages as $page) {
+                $result[] = [
+                    "id" => (int)$page["id"],
+                    "chapter_title" => $page["chapter_title"],
+                    "page_number" => (int)$page["page_number"],
+                    "image" => "https://ubaya.cloud/flutter/160423120/app/" . $page["image"],
+                    "created_at" => $page["created_at"],
+                    "updated_at" => $page["updated_at"],
+                ];
+            }
+
+            Response::success($result);
         });
     }
 
