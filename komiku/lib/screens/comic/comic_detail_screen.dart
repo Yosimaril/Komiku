@@ -661,7 +661,11 @@ class _ComicDetailScreenState extends State<ComicDetailScreen> {
                           ],
                         ),
                         onTap: () {
-                          // TODO: Readerscreen navigation
+                          Navigator.pushNamed(
+                            context,
+                            NavigationRoute.chapterDetailScreen.name,
+                            arguments: chapter.id,
+                          );
                         },
                       );
                     },

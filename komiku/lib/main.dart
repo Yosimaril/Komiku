@@ -7,6 +7,7 @@ import 'package:komiku/screens/auth/auth_gate.dart';
 import 'package:komiku/screens/auth/login_screen.dart';
 import 'package:komiku/screens/auth/register_screen.dart';
 import 'package:komiku/screens/category/list_category_screen.dart';
+import 'package:komiku/screens/chapter/chapter_detail_screen.dart';
 import 'package:komiku/screens/comic/comic_detail_screen.dart';
 import 'package:komiku/screens/comic/list_comic_screen.dart';
 import 'package:komiku/screens/chapter/create_comic_chapter_screen.dart';
@@ -88,6 +89,9 @@ class MyApp extends StatelessWidget {
             const CreateComicChapterScreen(),
         NavigationRoute.updateComicScreen.name: (context) => UpdateComicScreen(
           comicId: ModalRoute.of(context)?.settings.arguments as int,
+        ),
+        NavigationRoute.chapterDetailScreen.name: (context) => ChapterDetailScreen(
+          chapterId: ModalRoute.of(context)?.settings.arguments as int,
         ),
         NavigationRoute.settingScreen.name: (context) => Scaffold(
           appBar: AppBar(title: const Text('Settings')),

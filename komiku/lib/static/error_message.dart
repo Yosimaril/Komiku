@@ -11,9 +11,11 @@ class ErrorMessage {
   static const String loadChapterError = "Failed to load chapters";
   static const String loadChapterEmpty = "No available chapters";
 
+  static const String loadChapterPageError = "Failed to load chapter pages";
+  static const String loadChapterPageEmpty = "No available chapter pages";
+
   static const String loadCategoryError = "Failed to load categories";
   static const String loadCategoryEmpty = "No available categories";
-
 
   static const String loadCommentError = "Failed to load comments";
   static const String loadCommentEmpty = "No available comments";
