@@ -196,6 +196,25 @@ class ComicController extends BaseController
             $comments = Database::all($statement);
 
             $statement = Database::prepare("
+                SELECT
+                    cat.id,
+                    cat.name
+                FROM categories cat
+                JOIN comic_categories cc
+                    ON cc.category_id = cat.id
+                WHERE cc.comic_id = ?
+            ");
+
+            $statement->bind_param(
+                "i",
+                $id
+            );
+
+            Database::execute($statement);
+
+            $categories = Database::all($statement);
+
+            $statement = Database::prepare("
                 SELECT *
                 FROM chapters
                 WHERE comic_id = ?
@@ -250,6 +269,7 @@ class ComicController extends BaseController
                     2
                 ),
                 'rating_count' => (int)$rating['rating_count'],
+                'categories' => $categories,
                 'comments' => $comments,
                 'chapters' => $chapters
             ]);
