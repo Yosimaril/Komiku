@@ -40,11 +40,10 @@ class _ListComicScreenState extends State<ListComicScreen> {
   void initState() {
     super.initState();
 
-    // _selectedCategoryIds.add(widget.categoryId ?? 0);
     if (widget.categoryId != null) {
       _selectedCategoryIds.add(widget.categoryId!);
     }
-    
+
     _future = _loadData();
   }
 
