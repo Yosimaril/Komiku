@@ -1,27 +1,40 @@
 import 'package:flutter/material.dart';
-import 'package:komiku/components/list_comic_screen/rating_star.dart';
+import 'package:komiku/components/list_comic_screen/comic_card.dart';
 import 'package:komiku/components/list_comic_screen/search_field.dart';
+import 'package:komiku/models/category.dart';
 import 'package:komiku/models/comic.dart';
 import 'package:komiku/screens/comic/comic_detail_screen.dart';
 import 'package:komiku/services/api_service.dart';
 import 'package:komiku/static/error_message.dart';
 
 class ListComicScreen extends StatefulWidget {
-  const ListComicScreen({super.key});
+  final int? categoryId;
+
+  const ListComicScreen({super.key, this.categoryId});
 
   @override
   State<ListComicScreen> createState() => _ListComicScreenState();
 }
 
 class _ListComicScreenState extends State<ListComicScreen> {
-  late Future<List<Comic>> _futureComics;
+  late Future<void> _future;
 
   final _searchController = TextEditingController();
+
+  List<Comic> _allComics = [];
+  List<Comic> _filteredComics = [];
+
+  List<Category> _categories = [];
+
+  String _keyword = '';
+  final Set<int> _selectedCategoryIds = {};
 
   @override
   void initState() {
     super.initState();
-    _futureComics = getComics(null);
+
+    _selectedCategoryIds.add(widget.categoryId ?? -1);
+    _future = _loadData();
   }
 
   @override
@@ -30,162 +43,145 @@ class _ListComicScreenState extends State<ListComicScreen> {
     super.dispose();
   }
 
-  Future<List<Comic>> getComics(String? keyword) async {
-    final response = await ApiService.getComics(keyword: keyword);
-    return response['data'].map<Comic>((c) => Comic.fromJson(c)).toList();
+  Future<void> _loadData() async {
+    final comicsResponse = await ApiService.getComics();
+    final categoriesResponse = await ApiService.getCategories();
+
+    _allComics = (comicsResponse['data'] as List)
+        .map((e) => Comic.fromJson(e))
+        .toList();
+
+    _categories = (categoriesResponse['data'] as List)
+        .map((e) => Category.fromJson(e))
+        .toList();
+
+    _applyFilter();
+  }
+
+  void _applyFilter() {
+    _filteredComics = _allComics.where((comic) {
+      final keywordMatch =
+          _keyword.isEmpty ||
+          comic.title.toLowerCase().contains(_keyword.toLowerCase());
+
+      final categoryMatch =
+          _selectedCategoryIds.isEmpty ||
+          comic.categories.any(
+            (category) => _selectedCategoryIds.contains(category.id),
+          );
+
+      return keywordMatch && categoryMatch;
+    }).toList();
+
+    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Comics')),
-      body: Column(
-        children: [
-          SearchField(
-            controller: _searchController,
-            onEmpty: () {
-              setState(() {
-                _futureComics = getComics(null);
-              });
-            },
-            onSearch: (value) {
-              setState(() {
-                _futureComics = getComics(value);
-              });
-            },
-          ),
-          Expanded(child: ListComicWidget(futureComics: _futureComics)),
-        ],
+      body: FutureBuilder<void>(
+        future: _future,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState != ConnectionState.done) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          if (snapshot.hasError) {
+            return Center(
+              child: Text('${ErrorMessage.loadComicError}: ${snapshot.error}'),
+            );
+          }
+
+          return Column(
+            children: [
+              SearchField(
+                controller: _searchController,
+                onEmpty: () {
+                  _keyword = '';
+                  _applyFilter();
+                },
+                onSearch: (value) {
+                  _keyword = value;
+                  _applyFilter();
+                },
+              ),
+
+              SizedBox(
+                height: 56,
+                child: ListView(
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  scrollDirection: Axis.horizontal,
+                  children: [
+                    FilterChip(
+                      selected: _selectedCategoryIds.isEmpty,
+                      label: const Text('All'),
+                      onSelected: (_) {
+                        _selectedCategoryIds.clear();
+                        _applyFilter();
+                      },
+                    ),
+
+                    const SizedBox(width: 8),
+
+                    ..._categories.map(
+                      (category) => Padding(
+                        padding: const EdgeInsets.only(right: 8),
+                        child: FilterChip(
+                          selected: _selectedCategoryIds.contains(category.id),
+                          label: Text(category.name),
+                          onSelected: (selected) {
+                            setState(() {
+                              if (selected) {
+                                _selectedCategoryIds.add(category.id!);
+                              } else {
+                                _selectedCategoryIds.remove(category.id);
+                              }
+
+                              _applyFilter();
+                            });
+                          },
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              Expanded(child: ListComicWidget(comics: _filteredComics)),
+            ],
+          );
+        },
       ),
     );
   }
 }
 
 class ListComicWidget extends StatelessWidget {
-  const ListComicWidget({super.key, required Future<List<Comic>> futureComics})
-    : _futureComics = futureComics;
+  const ListComicWidget({super.key, required this.comics});
 
-  final Future<List<Comic>> _futureComics;
+  final List<Comic> comics;
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<Comic>>(
-      future: _futureComics,
-      builder: (context, snapshot) {
-        if (snapshot.connectionState != ConnectionState.done) {
-          return const Center(child: CircularProgressIndicator());
-        }
+    if (comics.isEmpty) {
+      return const Center(child: Text(ErrorMessage.loadComicEmpty));
+    }
 
-        if (snapshot.hasError) {
-          return Center(
-            child: Text('${ErrorMessage.loadComicError}: ${snapshot.error}'),
-          );
-        }
-
-        final comics = snapshot.data ?? const [];
-        if (comics.isEmpty) {
-          return const Center(child: Text(ErrorMessage.loadComicEmpty));
-        }
-
-        return ListView.builder(
-          padding: const EdgeInsets.all(12),
-          itemCount: comics.length,
-          itemBuilder: (context, index) {
-            final comic = comics[index];
-            return InkWell(
-              borderRadius: BorderRadius.circular(12),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => ComicDetailScreen()),
-                );
-              },
-              child: Card(
-                margin: const EdgeInsets.only(bottom: 12),
-                elevation: 3,
-                child: Padding(
-                  padding: const EdgeInsets.all(12),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(10),
-                        child: SizedBox(
-                          width: 90,
-                          height: 120,
-                          child:
-                              comic.poster != null && comic.poster!.isNotEmpty
-                              ? Image.network(
-                                  comic.poster!,
-                                  fit: BoxFit.cover,
-                                  errorBuilder: (context, error, stackTrace) {
-                                    return Container(
-                                      color: Colors.grey.shade200,
-                                      child: const Icon(
-                                        Icons.broken_image,
-                                        color: Colors.grey,
-                                      ),
-                                    );
-                                  },
-                                  loadingBuilder:
-                                      (context, child, loadingProgress) {
-                                        if (loadingProgress == null) {
-                                          return child;
-                                        }
-                                        return Container(
-                                          color: Colors.grey.shade100,
-                                          child: const Center(
-                                            child: CircularProgressIndicator(
-                                              strokeWidth: 2,
-                                            ),
-                                          ),
-                                        );
-                                      },
-                                )
-                              : Container(
-                                  color: Colors.grey.shade200,
-                                  child: const Icon(
-                                    Icons.image,
-                                    color: Colors.grey,
-                                  ),
-                                ),
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              comic.title,
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                              ),
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            const SizedBox(height: 6),
-                            RatingStar(ratingAverage: comic.averageRating ?? 0),
-                            const SizedBox(height: 6),
-                            Text(
-                              comic.description ?? '',
-                              style: TextStyle(
-                                color: Colors.grey.shade700,
-                                fontSize: 13,
-                              ),
-                              maxLines: 3,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
+    return ListView.builder(
+      padding: const EdgeInsets.all(12),
+      itemCount: comics.length,
+      itemBuilder: (context, index) {
+        final comic = comics[index];
+        return InkWell(
+          borderRadius: BorderRadius.circular(12),
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => ComicDetailScreen()),
             );
           },
+          child: ComicCard(comic: comic),
         );
       },
     );

@@ -30,10 +30,16 @@ class ComicController extends BaseController
                     c.description,
                     u.username AS creator_name,
                     c.created_at,
-                    c.updated_at
+                    c.updated_at,
+                    cat.id AS category_id,
+                    cat.name AS category_name
                 FROM comics c
                 JOIN users u
                     ON u.id = c.creator_id
+                LEFT JOIN category_comic cc
+                    ON cc.comic_id = c.id
+                LEFT JOIN categories cat
+                    ON cat.id = cc.category_id
             ";
 
             if ($keyword !== '') {
@@ -54,8 +60,36 @@ class ComicController extends BaseController
 
             Database::execute($statement);
 
+            $rows = Database::all($statement);
+
+            $comics = [];
+
+            foreach ($rows as $row) {
+                $id = $row['id'];
+
+                if (!isset($comics[$id])) {
+                    $comics[$id] = [
+                        'id' => (int)$row['id'],
+                        'title' => $row['title'],
+                        'poster' => $row['poster'],
+                        'description' => $row['description'],
+                        'categories' => [],
+                        'creator_name' => $row['creator_name'],
+                        'created_at' => $row['created_at'],
+                        'updated_at' => $row['updated_at'],
+                    ];
+                }
+
+                if ($row['category_id'] !== null) {
+                    $comics[$id]['categories'][] = [
+                        'id' => (int)$row['category_id'],
+                        'name' => $row['category_name'],
+                    ];
+                }
+            }
+
             Response::success(
-                Database::all($statement)
+                array_values($comics)
             );
         });
     }

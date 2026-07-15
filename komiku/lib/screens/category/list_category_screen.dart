@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:komiku/models/category.dart';
+import 'package:komiku/screens/comic/list_comic_screen.dart';
 import 'package:komiku/services/api_service.dart';
 import 'package:komiku/static/error_message.dart';
 
@@ -62,7 +63,16 @@ class _ListCategoryScreenState extends State<ListCategoryScreen> {
                 final c = categories[index];
                 return InkWell(
                   borderRadius: BorderRadius.circular(12),
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => ListComicScreen(
+                          categoryId: c.id,
+                        ),
+                      ),
+                    );
+                  },
                   child: Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(

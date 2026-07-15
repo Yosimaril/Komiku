@@ -265,6 +265,16 @@ class ApiDocumentation
                         "title" => "Chronicles of Flutter",
                         "poster" => "...",
                         "description" => "...",
+                        "categories" => [
+                            [
+                              "id"=> 1,
+                              "name" => "Action"
+                            ],
+                            [
+                              "id"=> 2,
+                              "name" => "Adventure"
+                            ]
+                        ],
                         "creator_name" => "Adam",
                         "created_at" => "...",
                         "updated_at" => "..."
@@ -274,6 +284,16 @@ class ApiDocumentation
                         "title" => "Adventure of Dart",
                         "poster" => "...",
                         "description" => "...",
+                        "categories" => [
+                            [
+                              "id"=> 1,
+                              "name" => "Action"
+                            ],
+                            [
+                              "id"=> 2,
+                              "name" => "Adventure"
+                            ]
+                        ],
                         "creator_name" => "Eve",
                         "created_at" => "...",
                         "updated_at" => "..."

@@ -14,20 +14,23 @@ class SearchField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TextField(
-      controller: controller,
-      decoration: InputDecoration(
-        hintText: "Search comics by title",
-        prefixIcon: const Icon(Icons.search),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 12),
+      child: TextField(
+        controller: controller,
+        decoration: InputDecoration(
+          hintText: "Search comics by title",
+          prefixIcon: const Icon(Icons.search),
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+        ),
+        onSubmitted: (value) {
+          if (value.trim().isNotEmpty) {
+            onSearch(value);
+          } else {
+            onEmpty();
+          }
+        },
       ),
-      onSubmitted: (value) {
-        if (value.trim().isNotEmpty) {
-          onSearch(value);
-        } else {
-          onEmpty();
-        }
-      },
     );
   }
 }
