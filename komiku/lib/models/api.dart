@@ -18,7 +18,9 @@ class Api {
     final response = await http.post(
       Uri.parse(_baseUrl),
       headers: _headers(),
-      body: {'action': action.action, ...body},
+      body: {'action': action.action, ...body.map(
+        (key, value) => MapEntry(key, value.toString()),
+      )},
     );
 
     return jsonDecode(response.body) as Map<String, dynamic>;
@@ -31,8 +33,11 @@ class Api {
     final response = await http.post(
       Uri.parse(_baseUrl),
       headers: _authenticatedHeaders(),
-      body: {'action': action.action, ...body},
+      body: {'action': action.action, ...body.map(
+        (key, value) => MapEntry(key, value.toString()),
+      )},
     );
+
     return jsonDecode(response.body) as Map<String, dynamic>;
   }
 

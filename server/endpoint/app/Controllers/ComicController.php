@@ -32,7 +32,9 @@ class ComicController extends BaseController
                     c.created_at,
                     c.updated_at,
                     cat.id AS category_id,
-                    cat.name AS category_name
+                    cat.name AS category_name,
+                    COALESCE(r.average_rating, 0) AS average_rating,
+                    COALESCE(r.rating_count, 0) AS rating_count
                 FROM comics c
                 JOIN users u
                     ON u.id = c.creator_id
@@ -40,6 +42,15 @@ class ComicController extends BaseController
                     ON cc.comic_id = c.id
                 LEFT JOIN categories cat
                     ON cat.id = cc.category_id
+                LEFT JOIN (
+                    SELECT
+                        comic_id,
+                        AVG(rating) AS average_rating,
+                        COUNT(*) AS rating_count
+                    FROM comic_rated_by_user
+                    GROUP BY comic_id
+                ) r
+                    ON r.comic_id = c.id
             ";
 
             if ($keyword !== '') {
@@ -73,6 +84,8 @@ class ComicController extends BaseController
                         'title' => $row['title'],
                         'poster' => $row['poster'],
                         'description' => $row['description'],
+                        'average_rating' => round((float)$row['average_rating'], 2),
+                        'rating_count' => (int)$row['rating_count'],
                         'categories' => [],
                         'creator_name' => $row['creator_name'],
                         'created_at' => $row['created_at'],

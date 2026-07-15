@@ -3,9 +3,9 @@ import 'package:komiku/components/list_comic_screen/comic_card.dart';
 import 'package:komiku/components/list_comic_screen/search_field.dart';
 import 'package:komiku/models/category.dart';
 import 'package:komiku/models/comic.dart';
-import 'package:komiku/screens/comic/comic_detail_screen.dart';
 import 'package:komiku/services/api_service.dart';
 import 'package:komiku/static/error_message.dart';
+import 'package:komiku/static/navigation_route.dart';
 
 class ListComicScreen extends StatefulWidget {
   final int? categoryId;
@@ -33,7 +33,7 @@ class _ListComicScreenState extends State<ListComicScreen> {
   void initState() {
     super.initState();
 
-    _selectedCategoryIds.add(widget.categoryId ?? -1);
+    _selectedCategoryIds.add(widget.categoryId ?? 0);
     _future = _loadData();
   }
 
@@ -176,9 +176,10 @@ class ListComicWidget extends StatelessWidget {
         return InkWell(
           borderRadius: BorderRadius.circular(12),
           onTap: () {
-            Navigator.push(
+            Navigator.pushNamed(
               context,
-              MaterialPageRoute(builder: (_) => ComicDetailScreen()),
+              NavigationRoute.comicDetailScreen.name,
+              arguments: comic.id,
             );
           },
           child: ComicCard(comic: comic),

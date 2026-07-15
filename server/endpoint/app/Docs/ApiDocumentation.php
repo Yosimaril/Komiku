@@ -265,6 +265,8 @@ class ApiDocumentation
                         "title" => "Chronicles of Flutter",
                         "poster" => "...",
                         "description" => "...",
+                        "average_rating" => 4.67,
+                        "rating_count" => 10,
                         "categories" => [
                             [
                               "id"=> 1,
@@ -284,6 +286,8 @@ class ApiDocumentation
                         "title" => "Adventure of Dart",
                         "poster" => "...",
                         "description" => "...",
+                        "average_rating" => 4,
+                        "rating_count" => 5,
                         "categories" => [
                             [
                               "id"=> 1,

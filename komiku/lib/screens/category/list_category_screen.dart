@@ -3,6 +3,7 @@ import 'package:komiku/models/category.dart';
 import 'package:komiku/screens/comic/list_comic_screen.dart';
 import 'package:komiku/services/api_service.dart';
 import 'package:komiku/static/error_message.dart';
+import 'package:komiku/static/navigation_route.dart';
 
 class ListCategoryScreen extends StatefulWidget {
   const ListCategoryScreen({super.key});
@@ -64,13 +65,10 @@ class _ListCategoryScreenState extends State<ListCategoryScreen> {
                 return InkWell(
                   borderRadius: BorderRadius.circular(12),
                   onTap: () {
-                    Navigator.pushReplacement(
+                    Navigator.pushNamed(
                       context,
-                      MaterialPageRoute(
-                        builder: (_) => ListComicScreen(
-                          categoryId: c.id,
-                        ),
-                      ),
+                      NavigationRoute.listComicScreen.name,
+                      arguments: c.id,
                     );
                   },
                   child: Container(

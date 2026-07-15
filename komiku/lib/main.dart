@@ -64,13 +64,16 @@ class MyApp extends StatelessWidget {
       routes: {
         NavigationRoute.homeScreen.name: (context) => const HomeScreen(),
         NavigationRoute.loginScreen.name: (context) => const LoginScreen(),
-        NavigationRoute.registerScreen.name: (context) => const RegisterScreen(),
-        NavigationRoute.listComicScreen.name: (context) =>
-            const ListComicScreen(),
+        NavigationRoute.registerScreen.name: (context) =>
+            const RegisterScreen(),
+        NavigationRoute.listComicScreen.name: (context) => ListComicScreen(
+          categoryId: ModalRoute.of(context)?.settings.arguments as int?,
+        ),
         NavigationRoute.listCategoryScreen.name: (context) =>
             const ListCategoryScreen(),
-        NavigationRoute.comicDetailScreen.name: (context) =>
-            const ComicDetailScreen(),
+        NavigationRoute.comicDetailScreen.name: (context) => ComicDetailScreen(
+          comicId: ModalRoute.of(context)?.settings.arguments as int,
+        ),
         NavigationRoute.settingScreen.name: (context) => const SettingScreen(),
       },
     );

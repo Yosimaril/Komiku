@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:komiku/models/api.dart';
 import 'package:komiku/models/category.dart';
 import 'package:komiku/models/chapter.dart';
