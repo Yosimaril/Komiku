@@ -5,6 +5,7 @@ namespace App\Controllers;
 use App\Database\Database;
 use App\Middleware\AuthMiddleware;
 use App\Response;
+use App\Service\UploadService;
 use App\Validator;
 
 class ChapterPageController extends BaseController
@@ -74,6 +75,7 @@ class ChapterPageController extends BaseController
     {
         self::execute(function () {
             $payload = static::getRequestPayload();
+
             Validator::required($payload, ["chapter_id", "pages"]);
             Validator::integer($payload, ["chapter_id"]);
             Validator::positive($payload, ["chapter_id"]);
@@ -113,9 +115,7 @@ class ChapterPageController extends BaseController
                 ], 404);
             }
 
-            if (
-                (int)$chapter["creator_id"] !== $creatorId
-            ) {
+            if ((int)$chapter["creator_id"] !== $creatorId) {
                 Response::error([
                     "Permission denied."
                 ], 403);
@@ -125,6 +125,7 @@ class ChapterPageController extends BaseController
 
             $inserted = Database::transaction(
                 function () use ($pages, $chapterId) {
+
                     $statement = Database::prepare("
                         INSERT INTO chapter_pages
                         (
@@ -137,17 +138,37 @@ class ChapterPageController extends BaseController
 
                     $inserted = [];
 
-                    foreach ($pages as $page) {
-                        Validator::required($page, ["page_number", "image"]);
-                        Validator::integer($page, ["page_number"]);
-                        Validator::positive($page, ["page_number"]);
-                        Validator::string($page, ["image"]);
+                    foreach ($pages as $index => $page) {
+
+                        Validator::required(
+                            $page,
+                            ["page_number"]
+                        );
+
+                        Validator::integer(
+                            $page,
+                            ["page_number"]
+                        );
+
+                        Validator::positive(
+                            $page,
+                            ["page_number"]
+                        );
+
+                        $fileKey = "image_$index";
+
+                        $image = UploadService::saveChapterPage(
+                            Validator::image(
+                                $_FILES,
+                                $fileKey
+                            )
+                        );
 
                         $statement->bind_param(
                             "iis",
                             $chapterId,
                             $page["page_number"],
-                            $page["image"]
+                            $image
                         );
 
                         Database::execute($statement);
@@ -155,7 +176,7 @@ class ChapterPageController extends BaseController
                         $inserted[] = [
                             "id" => Database::getConnection()->insert_id,
                             "page_number" => $page["page_number"],
-                            "image" => $page["image"]
+                            "image" => "https://ubaya.cloud/flutter/160423120/app/" . $image
                         ];
                     }
 
@@ -186,20 +207,33 @@ class ChapterPageController extends BaseController
     {
         self::execute(function () {
             $payload = static::getRequestPayload();
+
             $page = Validator::payload(
                 $payload,
                 "page"
             );
 
-            Validator::required($page, ["id", "page_number", "image"]);
-            Validator::integer($page, ["id", "page_number"]);
-            Validator::positive($page, ["id", "page_number"]);
-            Validator::string($page, ["image"]);
+            Validator::required($page, [
+                "id",
+                "page_number"
+            ]);
+
+            Validator::integer($page, [
+                "id",
+                "page_number"
+            ]);
+
+            Validator::positive($page, [
+                "id",
+                "page_number"
+            ]);
 
             $creatorId = AuthMiddleware::getUserId();
 
             $statement = Database::prepare("
-                SELECT p.id
+                SELECT
+                    p.id,
+                    p.image
                 FROM comics c
                 JOIN chapters ch
                     ON ch.comic_id = c.id
@@ -218,11 +252,19 @@ class ChapterPageController extends BaseController
 
             Database::execute($statement);
 
-            if (!Database::first($statement)) {
+            $oldPage = Database::first($statement);
+
+            if (!$oldPage) {
                 Response::error([
                     "Page not found or permission denied."
                 ], 403);
             }
+
+            $image = UploadService::saveChapterPage(
+                Validator::image($_FILES, "image")
+            );
+
+            UploadService::delete($oldPage["image"]);
 
             $statement = Database::prepare("
                 UPDATE chapter_pages
@@ -235,7 +277,7 @@ class ChapterPageController extends BaseController
             $statement->bind_param(
                 "isi",
                 $page["page_number"],
-                $page["image"],
+                $image,
                 $page["id"]
             );
 
@@ -259,6 +301,7 @@ class ChapterPageController extends BaseController
     {
         self::execute(function () {
             $payload = static::getRequestPayload();
+
             Validator::required($payload, ["id"]);
             Validator::integer($payload, ["id"]);
             Validator::positive($payload, ["id"]);
@@ -266,7 +309,9 @@ class ChapterPageController extends BaseController
             $creatorId = AuthMiddleware::getUserId();
 
             $statement = Database::prepare("
-                SELECT p.id
+                SELECT
+                    p.id,
+                    p.image
                 FROM chapter_pages p
                 JOIN chapters ch
                     ON ch.id = p.chapter_id
@@ -285,7 +330,9 @@ class ChapterPageController extends BaseController
 
             Database::execute($statement);
 
-            if (!Database::first($statement)) {
+            $page = Database::first($statement);
+
+            if (!$page) {
                 Response::error([
                     "Page not found or permission denied."
                 ], 403);
@@ -303,8 +350,14 @@ class ChapterPageController extends BaseController
 
             Database::execute($statement);
 
+            $deleted = Database::isRowAffected($statement);
+
+            if ($deleted) {
+                UploadService::delete($page["image"]);
+            }
+
             Response::success([
-                "deleted" => Database::isRowAffected($statement)
+                "deleted" => $deleted
             ]);
         });
     }

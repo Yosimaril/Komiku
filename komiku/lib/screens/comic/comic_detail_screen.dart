@@ -10,6 +10,7 @@ import 'package:komiku/models/user.dart';
 import 'package:komiku/services/api_service.dart';
 import 'package:komiku/services/secure_storage_service.dart';
 import 'package:komiku/static/error_message.dart';
+import 'package:komiku/static/navigation_route.dart';
 import 'package:provider/provider.dart';
 
 class ComicDetailScreen extends StatefulWidget {
@@ -232,6 +233,30 @@ class _ComicDetailScreenState extends State<ComicDetailScreen> {
     }
   }
 
+  Future<void> _deleteChapter(int id) async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete Chapter?'),
+        content: const Text('Are you sure you want to delete this chapter? This will remove all its pages.'),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Delete', style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm == true) {
+      final response = await ApiService.deleteComicChapter(id);
+      if (response['status'] == 'SUCCESS') {
+        _refreshData();
+      }
+    }
+  }
+
   Future<void> _editReply(Reply reply) async {
     final controller = TextEditingController(text: reply.content);
     final newContent = await showDialog<String>(
@@ -290,6 +315,36 @@ class _ComicDetailScreenState extends State<ComicDetailScreen> {
     }
   }
 
+  Future<void> _deleteComic() async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete Comic?'),
+        content: const Text('Are you sure you want to delete this comic? This will remove all chapters and comments.'),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Delete', style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm == true) {
+      final response = await ApiService.deleteComic(widget.comicId);
+      if (response['status'] == 'SUCCESS') {
+        if (mounted) {
+          Navigator.pop(context, true); // Go back to list and signal refresh
+        }
+      } else if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(response['error_message']?.toString() ?? 'Failed to delete comic')),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<Comic>(
@@ -311,6 +366,29 @@ class _ComicDetailScreenState extends State<ComicDetailScreen> {
         return Scaffold(
           appBar: AppBar(
             title: Text(comic.title),
+            actions: [
+              if (_currentUser?.username == comic.creatorName) ...[
+                IconButton(
+                  icon: const Icon(Icons.edit),
+                  onPressed: () async {
+                    final refresh = await Navigator.pushNamed(
+                      context,
+                      NavigationRoute.updateComicScreen.name,
+                      arguments: comic.id,
+                    );
+                    if (refresh == true) {
+                      _refreshData();
+                    }
+                  },
+                  tooltip: 'Edit Comic',
+                ),
+                IconButton(
+                  icon: const Icon(Icons.delete, color: Colors.red),
+                  onPressed: _deleteComic,
+                  tooltip: 'Delete Comic',
+                ),
+              ],
+            ],
           ),
           body: SingleChildScrollView(
             child: Column(
@@ -407,13 +485,34 @@ class _ComicDetailScreenState extends State<ComicDetailScreen> {
                   ),
                 ),
 
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                  child: Text(
-                    'Chapters',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                    ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        'Chapters',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      // if (_currentUser?.username == comic.creatorName)
+                      if(true)
+                        TextButton.icon(
+                          onPressed: () async {
+                            final refresh = await Navigator.pushNamed(
+                              context,
+                              NavigationRoute.createComicChapterScreen.name,
+                              arguments: comic.id,
+                            );
+                            if (refresh == true) {
+                              _refreshData();
+                            }
+                          },
+                          icon: const Icon(Icons.add, size: 18),
+                          label: const Text('Add Chapter'),
+                        ),
+                    ],
                   ),
                 ),
 
@@ -430,7 +529,17 @@ class _ComicDetailScreenState extends State<ComicDetailScreen> {
                         title: Text(
                           'Chapter ${chapter.chapterNumber}: ${chapter.title}',
                         ),
-                        trailing: const Icon(Icons.chevron_right),
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            if (_currentUser?.username == comic.creatorName)
+                              IconButton(
+                                icon: const Icon(Icons.delete, color: Colors.red, size: 20),
+                                onPressed: () => _deleteChapter(chapter.id!),
+                              ),
+                            const Icon(Icons.chevron_right),
+                          ],
+                        ),
                         onTap: () {
                           // TODO: Readerscreen navigation
                         },

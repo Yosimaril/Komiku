@@ -6,6 +6,7 @@ enum NavigationRoute {
   listComicScreen('/comic'),
   comicDetailScreen('/comic-detail'),
   createComicScreen('/create-comic'),
+  createComicChapterScreen('/create-chapter'),
   updateComicScreen('/update-comic'),
   settingScreen('/setting');
 

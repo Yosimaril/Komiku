@@ -175,14 +175,27 @@ class ApiService {
 
   static Future<Map<String, dynamic>> insertComicChapterPages(
     int chapterId,
-    List<ChapterPage> pages,
+    List<File> imageFiles,
   ) {
-    return _api.postAuthenticated(
+    final List<Map<String, dynamic>> pages = [];
+    final Map<String, File> files = {};
+
+    for (int i = 0; i < imageFiles.length; i++) {
+      final key = 'image_$i';
+      pages.add({
+        'page_number': i + 1,
+        'image': key,
+      });
+      files[key] = imageFiles[i];
+    }
+
+    return _api.postMultipartAuthenticated(
       action: RequestAction.insertComicChapterPages,
       body: {
         'chapter_id': chapterId,
-        'pages': pages.map((e) => e.toJson()).toList(),
+        'pages': pages,
       },
+      files: files,
     );
   }
 
