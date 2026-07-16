@@ -56,7 +56,7 @@ class _ListComicScreenState extends State<ListComicScreen> {
   Future<void> _loadData() async {
     final comicsResponse = await ApiService.getComics();
     final categoriesResponse = await ApiService.getCategories();
-    
+
     final secureStorage = context.read<SecureStorageService>();
     final userJson = await secureStorage.getUser();
     if (userJson != null) {
@@ -97,9 +97,14 @@ class _ListComicScreenState extends State<ListComicScreen> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Delete Comic?'),
-        content: const Text('Are you sure you want to delete this comic? This will remove all chapters and comments.'),
+        content: const Text(
+          'Are you sure you want to delete this comic? This will remove all chapters and comments.',
+        ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
             child: const Text('Delete', style: TextStyle(color: Colors.red)),
@@ -112,15 +117,20 @@ class _ListComicScreenState extends State<ListComicScreen> {
       final response = await ApiService.deleteComic(id);
       if (response['status'] == 'SUCCESS') {
         _loadData(); // Refresh list
-          if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text(SuccessMessage.deleteComic)),
-            );
-          }
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text(SuccessMessage.deleteComic)),
+          );
+        }
       } else {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(response['error_message']?.toString() ?? 'Failed to delete comic')),
+            SnackBar(
+              content: Text(
+                response['error_message']?.toString() ??
+                    'Failed to delete comic',
+              ),
+            ),
           );
         }
       }
@@ -203,6 +213,16 @@ class _ListComicScreenState extends State<ListComicScreen> {
                 currentUser: _currentUser,
                 onDelete: _deleteComic,
                 onUpdate: () => _loadData(), // Refresh when coming back
+                onComicTap: (id) async {
+                  await ApiService.addComicView(id);
+                  if (mounted) {
+                    Navigator.pushNamed(
+                      context,
+                      NavigationRoute.comicDetailScreen.name,
+                      arguments: id,
+                    );
+                  }
+                },
               ),
             ),
           ],
@@ -219,12 +239,14 @@ class ListComicWidget extends StatelessWidget {
     this.currentUser,
     this.onDelete,
     this.onUpdate,
+    this.onComicTap,
   });
 
   final List<Comic> comics;
   final User? currentUser;
   final Function(int)? onDelete;
   final VoidCallback? onUpdate;
+  final Future<void> Function(int id)? onComicTap;
 
   @override
   Widget build(BuildContext context) {
@@ -243,11 +265,9 @@ class ListComicWidget extends StatelessWidget {
           comic: comic,
           isOwner: isOwner,
           onTap: () {
-            Navigator.pushNamed(
-              context,
-              NavigationRoute.comicDetailScreen.name,
-              arguments: comic.id,
-            );
+              if (onComicTap != null) {
+                onComicTap!(comic.id!);
+              }
           },
           onUpdate: () async {
             final refresh = await Navigator.pushNamed(

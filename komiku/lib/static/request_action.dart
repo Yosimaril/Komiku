@@ -12,6 +12,7 @@ enum RequestAction {
   insertComic('INSERT_COMIC'),
   updateComic('UPDATE_COMIC'),
   deleteComic('DELETE_COMIC'),
+  addComicView("ADD_COMIC_VIEW"),
   getComicChapters('GET_COMIC_CHAPTERS'),
   insertComicChapters('INSERT_COMIC_CHAPTERS'),
   updateComicChapter('UPDATE_COMIC_CHAPTER'),

@@ -24,6 +24,7 @@ enum Action: string
     case INSERT_COMIC = 'INSERT_COMIC';
     case UPDATE_COMIC = 'UPDATE_COMIC';
     case DELETE_COMIC = 'DELETE_COMIC';
+    case ADD_COMIC_VIEW = 'ADD_COMIC_VIEW';
 
     // Comic chapter
     case GET_COMIC_CHAPTERS = 'GET_COMIC_CHAPTERS';

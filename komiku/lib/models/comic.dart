@@ -11,6 +11,7 @@ class Comic {
   final String title;
   final String? poster;
   final String? description;
+  final int? views;
   final double? averageRating;
   final int? ratingCount;
   final List<Category> categories;
@@ -27,6 +28,7 @@ class Comic {
     required this.title,
     this.poster,
     this.description,
+    this.views,
     this.averageRating,
     this.ratingCount,
     this.categories = const [],
@@ -44,6 +46,7 @@ class Comic {
     String? title,
     String? poster,
     String? description,
+    int? views,
     double? averageRating,
     int? ratingCount,
     List<Category>? categories,
@@ -60,6 +63,7 @@ class Comic {
       title: title ?? this.title,
       poster: poster ?? this.poster,
       description: description ?? this.description,
+      views: views ?? this.views,
       averageRating: averageRating ?? this.averageRating,
       ratingCount: ratingCount ?? this.ratingCount,
       categories: categories ?? this.categories,
@@ -87,6 +91,7 @@ class Comic {
               json['description'].toString().toLowerCase() == 'null'
           ? null
           : json['description'] as String,
+      views: json['views'] as int?,
       averageRating: json['average_rating'] != null
           ? (json['average_rating'] as num).toDouble()
           : null,
@@ -124,6 +129,7 @@ class Comic {
       'title': title,
       'poster': poster,
       'description': description,
+      'views': views,
       'average_rating': averageRating,
       'rating_count': ratingCount,
       'categories': categories.map((e) => e.toJson()).toList(),

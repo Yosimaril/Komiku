@@ -127,6 +127,13 @@ class ApiService {
     );
   }
 
+  static Future<Map<String, dynamic>> addComicView(int id) {
+    return _api.postAuthenticated(
+      action: RequestAction.addComicView,
+      body: {'id': id},
+    );
+  }
+
   // Chapter ====================================================================================================
   static Future<Map<String, dynamic>> getComicChapters(
     int comicId, {

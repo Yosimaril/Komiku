@@ -33,6 +33,7 @@ class ComicController extends BaseController
                     u.username AS creator_name,
                     c.created_at,
                     c.updated_at,
+                    c.views,
                     cat.id AS category_id,
                     cat.name AS category_name,
                     COALESCE(r.average_rating, 0) AS average_rating,
@@ -262,6 +263,7 @@ class ComicController extends BaseController
                 'title' => $comic['title'],
                 'poster' => $comic['poster'],
                 'description' => $comic['description'],
+                'views' => $comic['views'],
                 'created_at' => $comic['created_at'],
                 'updated_at' => $comic['updated_at'],
                 'average_rating' => round(
@@ -590,6 +592,33 @@ class ComicController extends BaseController
 
             Response::success([
                 "deleted" => $deleted
+            ]);
+        });
+    }
+
+    public static function addView(): void
+    {
+        self::execute(function () {
+
+            $payload = static::getRequestPayload();
+            Validator::required($payload, ["id"]);
+            Validator::integer($payload, ["id"]);
+
+            $statement = Database::prepare("
+                UPDATE comics
+                SET views = views + 1
+                WHERE id = ?
+            ");
+
+            $statement->bind_param(
+                "i",
+                $payload["id"]
+            );
+
+            Database::execute($statement);
+
+            Response::success([
+                "updated" => true
             ]);
         });
     }

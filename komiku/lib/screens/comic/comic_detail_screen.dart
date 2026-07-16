@@ -273,7 +273,7 @@ class _ComicDetailScreenState extends State<ComicDetailScreen> {
       final response = await ApiService.deleteReply(id);
       if (response['status'] == 'SUCCESS') {
         _refreshData();
-          if (mounted) {
+        if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text(SuccessMessage.deleteReplyComic)),
           );
@@ -470,7 +470,10 @@ class _ComicDetailScreenState extends State<ComicDetailScreen> {
         }
 
         final commentCount = comic.comments.length;
-        final replyCount = comic.comments.fold<int>(0, (sum, comment) => sum + comment.replies.length);
+        final replyCount = comic.comments.fold<int>(
+          0,
+          (sum, comment) => sum + comment.replies.length,
+        );
 
         return Scaffold(
           appBar: AppBar(
@@ -538,7 +541,15 @@ class _ComicDetailScreenState extends State<ComicDetailScreen> {
                       ),
                       const SizedBox(height: 8),
 
-                      RatingStar(ratingAverage: comic.averageRating ?? 0),
+                      Row(
+                        children: [
+                          Icon(Icons.remove_red_eye, size: 18),
+                          const SizedBox(width: 4),
+                          Text('${comic.views ?? 0} views'),
+                          const SizedBox(width: 8),
+                          RatingStar(ratingAverage: comic.averageRating ?? 0),
+                        ],
+                      ),
 
                       const SizedBox(height: 8),
 

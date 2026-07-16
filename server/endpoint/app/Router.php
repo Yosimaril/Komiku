@@ -23,6 +23,7 @@ class Router
         Action::INSERT_COMIC,
         Action::UPDATE_COMIC,
         Action::DELETE_COMIC,
+        Action::ADD_COMIC_VIEW,
 
         Action::INSERT_COMIC_CHAPTERS,
         Action::UPDATE_COMIC_CHAPTER,
@@ -63,6 +64,7 @@ class Router
         Action::INSERT_COMIC->value => [ComicController::class, 'insert'],
         Action::UPDATE_COMIC->value => [ComicController::class, 'update'],
         Action::DELETE_COMIC->value => [ComicController::class, 'delete'],
+        Action::ADD_COMIC_VIEW->value => [ComicController::class, 'addView'],
 
         Action::GET_COMIC_CHAPTERS->value => [ChapterController::class, 'get'],
         Action::INSERT_COMIC_CHAPTERS->value => [ChapterController::class, 'insert'],
