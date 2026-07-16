@@ -213,27 +213,30 @@ class ApiService {
     int chapterId,
     List<File> imageFiles, {
     List<Uint8List>? pagesBytesWeb,
+    int pageNumberOffset = 0,
   }) {
     final List<Map<String, dynamic>> pages = [];
     final Map<String, dynamic> files = {};
 
     if (pagesBytesWeb != null) {
       for (int i = 0; i < pagesBytesWeb.length; i++) {
+        final pageNumber = pageNumberOffset + i + 1;
         final key = 'image_$i';
         pages.add({
-          'page_number': i + 1,
+          'page_number': pageNumber,
           'image': key,
         });
         files[key] = {
           'bytes': pagesBytesWeb[i],
-          'filename': 'page_${i + 1}.png',
+          'filename': 'page_${pageNumber}.png',
         };
       }
     } else {
       for (int i = 0; i < imageFiles.length; i++) {
+        final pageNumber = pageNumberOffset + i + 1;
         final key = 'image_$i';
         pages.add({
-          'page_number': i + 1,
+          'page_number': pageNumber,
           'image': key,
         });
         files[key] = imageFiles[i];
@@ -249,6 +252,7 @@ class ApiService {
       files: files,
     );
   }
+
 
 
   static Future<Map<String, dynamic>> updateComicChapterPage(ChapterPage page) {

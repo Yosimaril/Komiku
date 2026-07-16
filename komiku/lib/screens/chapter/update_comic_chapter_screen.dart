@@ -185,12 +185,16 @@ class _UpdateComicChapterScreenState extends State<UpdateComicChapterScreen> {
         return;
       }
 
-      // 2. Add new pages if any (Week 12 - Image Upload)
-      if (_newPages.isNotEmpty) {
+
+      if (kIsWeb ? _newPagesBytesWeb.isNotEmpty : _newPages.isNotEmpty) {
         final pagesResponse = await ApiService.insertComicChapterPages(
           widget.chapterId,
           _newPages,
+          pagesBytesWeb: kIsWeb ? _newPagesBytesWeb : null,
+          pageNumberOffset: _existingPages.length,
         );
+
+
 
         if (pagesResponse['status'] != 'SUCCESS') {
           if (mounted) {
