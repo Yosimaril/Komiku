@@ -23,15 +23,20 @@ class CategoryController extends BaseController
             $keyword = trim($payload['keyword'] ?? '');
 
             $query = "
-                SELECT *
-                FROM categories
+                SELECT c.*, COUNT(cc.comic_id) AS comic_count
+                FROM categories c
+                LEFT JOIN category_comic cc
+                    ON c.id = cc.category_id
             ";
 
             if ($keyword !== '') {
                 $query .= " WHERE name LIKE ?";
             }
 
-            $query .= " ORDER BY name ASC";
+            $query .= " 
+                GROUP BY c.id 
+                ORDER BY c.name ASC
+            ";
 
             $statement = Database::prepare($query);
 

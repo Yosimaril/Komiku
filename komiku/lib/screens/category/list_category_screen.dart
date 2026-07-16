@@ -37,9 +37,7 @@ class _ListCategoryScreenState extends State<ListCategoryScreen> {
 
         if (snapshot.hasError) {
           return Center(
-            child: Text(
-              '${ErrorMessage.loadCategoryError}: ${snapshot.error}',
-            ),
+            child: Text('${ErrorMessage.loadCategoryError}: ${snapshot.error}'),
           );
         }
 
@@ -60,49 +58,51 @@ class _ListCategoryScreenState extends State<ListCategoryScreen> {
             ),
             itemBuilder: (context, index) {
               final c = categories[index];
-              return InkWell(
-                borderRadius: BorderRadius.circular(12),
-                onTap: () {
-                  Navigator.pushNamed(
-                    context,
-                    NavigationRoute.listComicScreen.name,
-                    arguments: c.id,
-                  );
-                },
-                child: Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
-                    color: Colors.grey.shade200,
-                    border: Border.all(color: Colors.grey.shade300),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        c.name,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black
-                        ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      if (c.description != null && c.description!.isNotEmpty)
-                        const SizedBox(height: 6),
-                      if (c.description != null && c.description!.isNotEmpty)
+              return Card(
+                elevation: 1,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                clipBehavior: Clip.antiAlias,
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(12),
+                  onTap: () {
+                    Navigator.pushNamed(
+                      context,
+                      NavigationRoute.listComicScreen.name,
+                      arguments: c.id,
+                    );
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.all(12),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
                         Text(
-                          c.description!,
-                          style: TextStyle(
-                            color: Colors.grey.shade700,
-                            fontSize: 12,
-                          ),
-                          maxLines: 2,
+                          c.name,
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                          maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
-                    ],
+                        const SizedBox(height: 6),
+                        Row(
+                          children: [
+                            const Icon(Icons.library_books, size: 16),
+                            const SizedBox(width: 4),
+                            Text('${c.comicCount} comics'),
+                          ],
+                        ),
+                        if (c.description?.isNotEmpty ?? false) ...[
+                          const SizedBox(height: 6),
+                          Text(
+                            c.description!,
+                            maxLines: 4,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
+                      ],
+                    ),
                   ),
                 ),
               );
