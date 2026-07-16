@@ -261,7 +261,7 @@ class ComicController extends BaseController
                     'username' => $comic['username']
                 ],
                 'title' => $comic['title'],
-                'poster' => $comic['poster'],
+                'poster' => "https://ubaya.cloud/flutter/160423120/app/" . $comic['poster'],
                 'description' => $comic['description'],
                 'views' => $comic['views'],
                 'created_at' => $comic['created_at'],
