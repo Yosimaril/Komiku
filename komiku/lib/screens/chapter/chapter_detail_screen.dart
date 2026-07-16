@@ -40,15 +40,15 @@ class _ChapterDetailScreenState extends State<ChapterDetailScreen> {
       future: _futurePages,
       builder: (context, snapshot) {
         if (snapshot.connectionState != ConnectionState.done) {
-          return const Scaffold(
-            body: Center(
-              child: CircularProgressIndicator(),
-            ),
+          return Scaffold(
+            appBar: AppBar(title: const Text("Loading...")),
+            body: const Center(child: CircularProgressIndicator()),
           );
         }
 
         if (snapshot.hasError) {
           return Scaffold(
+            appBar: AppBar(title: const Text("Chapter")),
             body: Center(
               child: Text(
                 '${ErrorMessage.loadChapterPageError}: ${snapshot.error}',
@@ -58,16 +58,15 @@ class _ChapterDetailScreenState extends State<ChapterDetailScreen> {
         }
 
         final pages = snapshot.data;
-        if (pages == null) {
-          return const Scaffold(
-            body: Center(child: Text(ErrorMessage.loadChapterPageEmpty)),
+        if (pages == null || pages.isEmpty) {
+          return Scaffold(
+            appBar: AppBar(title: const Text("Chapter")),
+            body: const Center(child: Text(ErrorMessage.loadChapterPageEmpty)),
           );
         }
 
         return Scaffold(
-          appBar: AppBar(
-            title: Text(pages.first.chapterTitle ?? "Chapter"),
-          ),
+          appBar: AppBar(title: Text(pages.first.chapterTitle ?? "Chapter")),
           body: ListView.builder(
             itemCount: pages.length,
             itemBuilder: (context, index) {
@@ -86,7 +85,7 @@ class _ChapterDetailScreenState extends State<ChapterDetailScreen> {
                       child: CircularProgressIndicator(
                         value: loadingProgress.expectedTotalBytes != null
                             ? loadingProgress.cumulativeBytesLoaded /
-                                loadingProgress.expectedTotalBytes!
+                                  loadingProgress.expectedTotalBytes!
                             : null,
                       ),
                     ),
