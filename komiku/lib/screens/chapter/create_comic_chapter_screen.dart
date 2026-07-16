@@ -1,5 +1,7 @@
 import 'dart:io';
+import 'dart:typed_data';
 
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:komiku/models/chapter.dart';
@@ -10,6 +12,7 @@ class ChapterInput {
   final TextEditingController titleController = TextEditingController();
   final TextEditingController numberController = TextEditingController();
   List<File> pages = [];
+  List<Uint8List> pagesBytesWeb = []; // For web preview (Week 3 - Image Widget)
 
   ChapterInput({int? nextNumber}) {
     if (nextNumber != null) {
@@ -75,17 +78,32 @@ class _CreateComicChapterScreenState extends State<CreateComicChapterScreen> {
     );
 
     if (pickedFiles.isNotEmpty) {
-      setState(() {
-        _chapters[chapterIndex].pages.addAll(
-              pickedFiles.map((e) => File(e.path)),
-            );
-      });
+      if (kIsWeb) {
+        // Web: read each file as bytes for preview (Week 3 - Image Widget)
+        for (final pickedFile in pickedFiles) {
+          final bytes = await pickedFile.readAsBytes();
+          setState(() {
+            _chapters[chapterIndex].pages.add(File(pickedFile.path));
+            _chapters[chapterIndex].pagesBytesWeb.add(bytes);
+          });
+        }
+      } else {
+        // Mobile/Desktop: use File directly
+        setState(() {
+          _chapters[chapterIndex].pages.addAll(
+                pickedFiles.map((e) => File(e.path)),
+              );
+        });
+      }
     }
   }
 
   void _removePage(int chapterIndex, int pageIndex) {
     setState(() {
       _chapters[chapterIndex].pages.removeAt(pageIndex);
+      if (kIsWeb && pageIndex < _chapters[chapterIndex].pagesBytesWeb.length) {
+        _chapters[chapterIndex].pagesBytesWeb.removeAt(pageIndex);
+      }
     });
   }
 
@@ -127,9 +145,14 @@ class _CreateComicChapterScreenState extends State<CreateComicChapterScreen> {
         bool allPagesSuccess = true;
         for (int i = 0; i < createdChapters.length; i++) {
           final chapterId = createdChapters[i]['id'];
-          final imageFiles = _chapters[i].pages;
-          
-          final pagesResponse = await ApiService.insertComicChapterPages(chapterId, imageFiles);
+          // For web, ApiService expects bytes payload (pagesBytesWeb).
+          final pagesResponse = await ApiService.insertComicChapterPages(
+            chapterId,
+            _chapters[i].pages,
+            pagesBytesWeb: kIsWeb ? _chapters[i].pagesBytesWeb : null,
+          );
+
+
           if (pagesResponse['status'] != 'SUCCESS') {
             allPagesSuccess = false;
             break;
@@ -255,7 +278,9 @@ class _CreateComicChapterScreenState extends State<CreateComicChapterScreen> {
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(8),
                                       image: DecorationImage(
-                                        image: FileImage(chapter.pages[pIndex]),
+                                        image: kIsWeb && pIndex < chapter.pagesBytesWeb.length
+                                            ? MemoryImage(chapter.pagesBytesWeb[pIndex])
+                                            : FileImage(chapter.pages[pIndex]) as ImageProvider,
                                         fit: BoxFit.cover,
                                       ),
                                     ),

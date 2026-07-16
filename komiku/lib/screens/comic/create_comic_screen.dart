@@ -1,5 +1,7 @@
 import 'dart:io';
+import 'dart:typed_data';
 
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:komiku/models/category.dart';
@@ -22,6 +24,9 @@ class _CreateComicScreenState extends State<CreateComicScreen> {
   final _descriptionController = TextEditingController();
 
   File? _posterImage;
+  Uint8List? _posterBytesWeb; // For web preview
+  String? _posterFilenameWeb;
+
   final List<Category> _allCategories = [];
   final Set<int> _selectedCategoryIds = {};
 
@@ -69,9 +74,32 @@ class _CreateComicScreenState extends State<CreateComicScreen> {
     );
 
     if (pickedFile != null) {
-      setState(() {
-        _posterImage = File(pickedFile.path);
-      });
+      if (kIsWeb) {
+        // Web: read file as bytes for preview using Image.memory
+        final bytes = await pickedFile.readAsBytes();
+        setState(() {
+          _posterBytesWeb = bytes;
+          _posterImage = File(pickedFile.path); // Keep for preview if needed
+          // Preserve original extension to satisfy server validation.
+          // On web, `pickedFile.path` may be a generated name; to be safe,
+          // derive extension from the MIME type if available.
+          final path = pickedFile.path;
+          final name = path.split('/').last;
+          final lower = name.toLowerCase();
+          final hasAllowedExt = lower.endsWith('.jpg') ||
+              lower.endsWith('.jpeg') ||
+              lower.endsWith('.png') ||
+              lower.endsWith('.webp');
+          _posterFilenameWeb = hasAllowedExt ? name : 'poster.jpg';
+
+        });
+
+      } else {
+        // Mobile/Desktop: use File directly
+        setState(() {
+          _posterImage = File(pickedFile.path);
+        });
+      }
     }
   }
 
@@ -93,8 +121,12 @@ class _CreateComicScreenState extends State<CreateComicScreen> {
 
       final response = await ApiService.insertComic(
         comic,
-        poster: _posterImage,
+        poster: kIsWeb ? null : _posterImage,
+        posterBytes: kIsWeb ? _posterBytesWeb : null,
+        posterFilename: kIsWeb ? _posterFilenameWeb : null,
       );
+
+
 
       if (response['status'] == 'SUCCESS') {
         if (mounted) {
@@ -117,8 +149,19 @@ class _CreateComicScreenState extends State<CreateComicScreen> {
     } catch (e) {
       debugPrint("Error creating comic: $e");
       if (mounted) {
+        String errorMsg = e.toString();
+        // Ambil pesan error yang lebih user-friendly
+        if (errorMsg.contains("status 401") || errorMsg.contains("status 403")) {
+          errorMsg = "Please login first to create a comic";
+        } else if (errorMsg.contains("status 500")) {
+          errorMsg = "Server error. Check if API is deployed correctly";
+        } else if (errorMsg.contains("Failed to parse")) {
+          errorMsg = "Server returned invalid response. Check API deployment";
+        } else {
+          errorMsg = ErrorMessage.networkError;
+        }
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text(ErrorMessage.networkError)),
+          SnackBar(content: Text(errorMsg)),
         );
       }
     } finally {
@@ -185,11 +228,17 @@ class _CreateComicScreenState extends State<CreateComicScreen> {
                         child: _posterImage != null
                             ? ClipRRect(
                                 borderRadius: BorderRadius.circular(8),
-                                child: Image.file(
-                                  _posterImage!,
-                                  fit: BoxFit.cover,
-                                  width: double.infinity,
-                                ),
+                                child: kIsWeb && _posterBytesWeb != null
+                                    ? Image.memory(
+                                        _posterBytesWeb!,
+                                        fit: BoxFit.cover,
+                                        width: double.infinity,
+                                      )
+                                    : Image.file(
+                                        _posterImage!,
+                                        fit: BoxFit.cover,
+                                        width: double.infinity,
+                                      ),
                               )
                             : const Column(
                                 mainAxisAlignment: MainAxisAlignment.center,

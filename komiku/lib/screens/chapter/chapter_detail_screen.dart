@@ -29,6 +29,11 @@ class _ChapterDetailScreenState extends State<ChapterDetailScreen> {
         .toList();
   }
 
+  /// Convert relative image path to full URL using ApiService helper (Week 8 - Web Service)
+  String _getFullImageUrl(String imagePath) {
+    return ApiService.getImageUrl(imagePath);
+  }
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<List<ChapterPage>>(
@@ -67,11 +72,26 @@ class _ChapterDetailScreenState extends State<ChapterDetailScreen> {
             itemCount: pages.length,
             itemBuilder: (context, index) {
               final page = pages[index];
+              final fullImageUrl = _getFullImageUrl(page.image);
 
               return Image.network(
-                page.image,
+                fullImageUrl,
                 width: double.infinity,
                 fit: BoxFit.fitWidth,
+                loadingBuilder: (context, child, loadingProgress) {
+                  if (loadingProgress == null) return child;
+                  return SizedBox(
+                    height: 300,
+                    child: Center(
+                      child: CircularProgressIndicator(
+                        value: loadingProgress.expectedTotalBytes != null
+                            ? loadingProgress.cumulativeBytesLoaded /
+                                loadingProgress.expectedTotalBytes!
+                            : null,
+                      ),
+                    ),
+                  );
+                },
                 errorBuilder: (_, __, ___) {
                   return const SizedBox(
                     height: 400,

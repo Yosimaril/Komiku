@@ -1,7 +1,10 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
+
 import 'package:image_picker/image_picker.dart';
 import 'package:komiku/models/category.dart';
 import 'package:komiku/models/comic.dart';
@@ -25,7 +28,10 @@ class _UpdateComicScreenState extends State<UpdateComicScreen> {
   final _descriptionController = TextEditingController();
 
   File? _posterImage;
+  Uint8List? _posterBytesWeb;
+  String? _posterFilenameWeb;
   String? _existingPosterUrl;
+
   final List<Category> _allCategories = [];
   final Set<int> _selectedCategoryIds = {};
 
@@ -60,7 +66,11 @@ class _UpdateComicScreenState extends State<UpdateComicScreen> {
           _existingPosterUrl = comic.poster;
           
           _allCategories.addAll(categoryData.map((e) => Category.fromJson(e)));
-          _selectedCategoryIds.addAll(comic.categories.map((e) => e.id!));
+          _selectedCategoryIds.addAll(
+            comic.categories
+                .where((e) => e.id != null)
+                .map((e) => e.id!),
+          );
           
           _isLoading = false;
         });
@@ -85,14 +95,40 @@ class _UpdateComicScreenState extends State<UpdateComicScreen> {
       maxHeight: 800,
     );
 
-    if (pickedFile != null) {
-      setState(() {
+    if (pickedFile == null) return;
+
+    setState(() {
+      if (kIsWeb) {
+        _posterBytesWeb = null; // will be set async below
+        // We'll load bytes + filename in async block below.
+      } else {
         _posterImage = File(pickedFile.path);
+      }
+    });
+
+    if (kIsWeb) {
+      final bytes = await pickedFile.readAsBytes();
+      final path = pickedFile.path;
+      final name = path.split('/').last;
+      final lower = name.toLowerCase();
+      final hasAllowedExt = lower.endsWith('.jpg') ||
+          lower.endsWith('.jpeg') ||
+          lower.endsWith('.png') ||
+          lower.endsWith('.webp');
+      final filename = hasAllowedExt ? name : 'poster.jpg';
+
+      setState(() {
+        _posterBytesWeb = bytes;
+        _posterFilenameWeb = filename;
+        _posterImage = null; // ensure we don't use Image.file on web
       });
     }
   }
 
+
+
   Future<void> _submit() async {
+
     if (!_formKey.currentState!.validate()) return;
 
     setState(() {
@@ -111,8 +147,11 @@ class _UpdateComicScreenState extends State<UpdateComicScreen> {
 
       final response = await ApiService.updateComic(
         comic,
-        poster: _posterImage,
+        poster: kIsWeb ? null : _posterImage,
+        posterBytes: kIsWeb ? _posterBytesWeb : null,
+        posterFilename: kIsWeb ? _posterFilenameWeb : null,
       );
+
 
       if (response['status'] == 'SUCCESS') {
         if (mounted) {
@@ -200,34 +239,77 @@ class _UpdateComicScreenState extends State<UpdateComicScreen> {
                           borderRadius: BorderRadius.circular(8),
                           border: Border.all(color: Colors.grey.shade400),
                         ),
-                        child: _posterImage != null
-                            ? ClipRRect(
-                                borderRadius: BorderRadius.circular(8),
-                                child: Image.file(
-                                  _posterImage!,
-                                  fit: BoxFit.cover,
-                                  width: double.infinity,
-                                ),
-                              )
-                            : _existingPosterUrl != null
+                        child: kIsWeb
+                            ? (_posterBytesWeb != null
                                 ? ClipRRect(
                                     borderRadius: BorderRadius.circular(8),
-                                    child: Image.network(
-                                      _existingPosterUrl!,
+                                    child: Image.memory(
+                                      _posterBytesWeb!,
                                       fit: BoxFit.cover,
                                       width: double.infinity,
-                                      errorBuilder: (_, __, ___) => const Icon(Icons.broken_image),
                                     ),
                                   )
-                                : const Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Icon(Icons.add_a_photo, size: 48),
-                                      SizedBox(height: 8),
-                                      Text("Tap to change poster"),
-                                    ],
-                                  ),
+                                : (_existingPosterUrl != null
+                                    ? ClipRRect(
+                                        borderRadius:
+                                            BorderRadius.circular(8),
+                                        child: Image.network(
+                                          _existingPosterUrl!,
+                                          fit: BoxFit.cover,
+                                          width: double.infinity,
+                                          errorBuilder: (_, __, ___) =>
+                                              const Icon(
+                                            Icons.broken_image,
+                                          ),
+                                        ),
+                                      )
+                                    : const Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Icon(Icons.add_a_photo, size: 48),
+                                          SizedBox(height: 8),
+                                          Text("Tap to change poster"),
+                                        ],
+                                      )))
+                            : _posterImage != null
+                                ? kIsWeb
+                                    ? const SizedBox.shrink()
+                                    : ClipRRect(
+                                        borderRadius:
+                                            BorderRadius.circular(8),
+                                        child: Image.file(
+                                          _posterImage!,
+                                          fit: BoxFit.cover,
+                                          width: double.infinity,
+                                        ),
+                                      )
+                                : _existingPosterUrl != null
+
+                                    ? ClipRRect(
+                                        borderRadius:
+                                            BorderRadius.circular(8),
+                                        child: Image.network(
+                                          _existingPosterUrl!,
+                                          fit: BoxFit.cover,
+                                          width: double.infinity,
+                                          errorBuilder:
+                                              (_, __, ___) => const Icon(
+                                                  Icons.broken_image),
+                                        ),
+                                      )
+                                    : const Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Icon(Icons.add_a_photo,
+                                              size: 48),
+                                          SizedBox(height: 8),
+                                          Text("Tap to change poster"),
+                                        ],
+                                      ),
                       ),
+
                     ),
                     const SizedBox(height: 24),
                     const Text(

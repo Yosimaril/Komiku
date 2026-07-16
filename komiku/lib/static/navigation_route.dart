@@ -8,6 +8,7 @@ enum NavigationRoute {
   createComicScreen('/create-comic'),
   createComicChapterScreen('/create-chapter'),
   updateComicScreen('/update-comic'),
+  updateComicChapterScreen('/update-chapter'),
   chapterDetailScreen('/chapter-detail'),
   settingScreen('/setting');
 

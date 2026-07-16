@@ -11,6 +11,7 @@ import 'package:komiku/screens/chapter/chapter_detail_screen.dart';
 import 'package:komiku/screens/comic/comic_detail_screen.dart';
 import 'package:komiku/screens/comic/list_comic_screen.dart';
 import 'package:komiku/screens/chapter/create_comic_chapter_screen.dart';
+import 'package:komiku/screens/chapter/update_comic_chapter_screen.dart';
 import 'package:komiku/screens/comic/create_comic_screen.dart';
 import 'package:komiku/screens/comic/update_comic_screen.dart';
 import 'package:komiku/screens/setting_screen.dart';
@@ -73,24 +74,32 @@ class MyApp extends StatelessWidget {
         NavigationRoute.listComicScreen.name: (context) => Scaffold(
           appBar: AppBar(title: const Text('Comics')),
           body: ListComicScreen(
-            categoryId: ModalRoute.of(context)?.settings.arguments as int?,
+            // Web sometimes sends null/undefined arguments; avoid hard-casting.
+            categoryId: (ModalRoute.of(context)?.settings.arguments as int?) ?? null,
           ),
         ),
+
         NavigationRoute.listCategoryScreen.name: (context) => Scaffold(
           appBar: AppBar(title: const Text('Categories')),
           body: const ListCategoryScreen(),
         ),
         NavigationRoute.comicDetailScreen.name: (context) => ComicDetailScreen(
-          comicId: ModalRoute.of(context)?.settings.arguments as int,
+          comicId: (ModalRoute.of(context)?.settings.arguments as int?) ?? 0,
         ),
+
         NavigationRoute.createComicScreen.name: (context) =>
             const CreateComicScreen(),
         NavigationRoute.createComicChapterScreen.name: (context) =>
             const CreateComicChapterScreen(),
         NavigationRoute.updateComicScreen.name: (context) => UpdateComicScreen(
-          comicId: ModalRoute.of(context)?.settings.arguments as int,
+          comicId: (ModalRoute.of(context)?.settings.arguments as int?) ?? 0,
         ),
+
         NavigationRoute.chapterDetailScreen.name: (context) => ChapterDetailScreen(
+          chapterId: ModalRoute.of(context)?.settings.arguments as int,
+        ),
+        NavigationRoute.updateComicChapterScreen.name: (context) =>
+            UpdateComicChapterScreen(
           chapterId: ModalRoute.of(context)?.settings.arguments as int,
         ),
         NavigationRoute.settingScreen.name: (context) => Scaffold(

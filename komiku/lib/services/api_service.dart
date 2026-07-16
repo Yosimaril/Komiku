@@ -1,4 +1,6 @@
 import 'dart:io';
+import 'dart:typed_data';
+
 
 import 'package:komiku/models/api.dart';
 import 'package:komiku/models/category.dart';
@@ -84,6 +86,8 @@ class ApiService {
   static Future<Map<String, dynamic>> insertComic(
     Comic comic, {
     File? poster,
+    Uint8List? posterBytes,
+    String? posterFilename,
   }) {
     return _api.postMultipartAuthenticated(
       action: RequestAction.insertComic,
@@ -96,15 +100,24 @@ class ApiService {
       },
       files: {
         if (poster != null) 'poster': poster,
+        if (posterBytes != null)
+          'poster': {
+            'bytes': posterBytes,
+            'filename': posterFilename ?? 'poster',
+          },
       },
     );
   }
 
+
   static Future<Map<String, dynamic>> updateComic(
     Comic comic, {
     File? poster,
+    Uint8List? posterBytes,
+    String? posterFilename,
   }) {
     return _api.postMultipartAuthenticated(
+
       action: RequestAction.updateComic,
       body: {
         'comic': {
@@ -116,9 +129,15 @@ class ApiService {
       },
       files: {
         if (poster != null) 'poster': poster,
+        if (posterBytes != null)
+          'poster': {
+            'bytes': posterBytes,
+            'filename': posterFilename ?? 'poster',
+          },
       },
     );
   }
+
 
   static Future<Map<String, dynamic>> deleteComic(int id) {
     return _api.postAuthenticated(
@@ -172,6 +191,16 @@ class ApiService {
     );
   }
 
+  // Helper: get full image URL (Week 8 - Web Service)
+  static String getImageUrl(String relativePath) {
+    if (relativePath.startsWith('http://') || relativePath.startsWith('https://')) {
+      return relativePath; // Already absolute URL
+    }
+    // Remove leading slash if any, then prepend base URL
+    final cleanPath = relativePath.startsWith('/') ? relativePath.substring(1) : relativePath;
+    return 'https://ubaya.cloud/flutter/160423120/$cleanPath';
+  }
+
   // Chapter Page ====================================================================================================
   static Future<Map<String, dynamic>> getComicChapterPages(int chapterId) {
     return _api.post(
@@ -182,18 +211,33 @@ class ApiService {
 
   static Future<Map<String, dynamic>> insertComicChapterPages(
     int chapterId,
-    List<File> imageFiles,
-  ) {
+    List<File> imageFiles, {
+    List<Uint8List>? pagesBytesWeb,
+  }) {
     final List<Map<String, dynamic>> pages = [];
-    final Map<String, File> files = {};
+    final Map<String, dynamic> files = {};
 
-    for (int i = 0; i < imageFiles.length; i++) {
-      final key = 'image_$i';
-      pages.add({
-        'page_number': i + 1,
-        'image': key,
-      });
-      files[key] = imageFiles[i];
+    if (pagesBytesWeb != null) {
+      for (int i = 0; i < pagesBytesWeb.length; i++) {
+        final key = 'image_$i';
+        pages.add({
+          'page_number': i + 1,
+          'image': key,
+        });
+        files[key] = {
+          'bytes': pagesBytesWeb[i],
+          'filename': 'page_${i + 1}.png',
+        };
+      }
+    } else {
+      for (int i = 0; i < imageFiles.length; i++) {
+        final key = 'image_$i';
+        pages.add({
+          'page_number': i + 1,
+          'image': key,
+        });
+        files[key] = imageFiles[i];
+      }
     }
 
     return _api.postMultipartAuthenticated(
@@ -205,6 +249,7 @@ class ApiService {
       files: files,
     );
   }
+
 
   static Future<Map<String, dynamic>> updateComicChapterPage(ChapterPage page) {
     return _api.postAuthenticated(

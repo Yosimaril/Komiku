@@ -659,7 +659,24 @@ class _ComicDetailScreenState extends State<ComicDetailScreen> {
                         trailing: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            if (_currentUser?.id == comic.creator?.id)
+                            if (_currentUser?.id == comic.creator?.id) ...[
+                              IconButton(
+                                icon: const Icon(
+                                  Icons.edit,
+                                  color: Colors.blue,
+                                  size: 20,
+                                ),
+                                onPressed: () async {
+                                  final refresh = await Navigator.pushNamed(
+                                    context,
+                                    NavigationRoute.updateComicChapterScreen.name,
+                                    arguments: chapter.id,
+                                  );
+                                  if (refresh == true) {
+                                    _refreshData();
+                                  }
+                                },
+                              ),
                               IconButton(
                                 icon: const Icon(
                                   Icons.delete,
@@ -668,6 +685,7 @@ class _ComicDetailScreenState extends State<ComicDetailScreen> {
                                 ),
                                 onPressed: () => _deleteChapter(chapter.id!),
                               ),
+                            ],
                             const Icon(Icons.chevron_right),
                           ],
                         ),
