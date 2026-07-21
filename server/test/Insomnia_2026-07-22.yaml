@@ -1,0 +1,2745 @@
+type: collection.insomnia.rest/5.0
+schema_version: "5.1"
+name: Komiku API
+meta:
+  id: wrk_c3c2ad504e0542898693777123cae2f5
+  created: 1783264927918
+  modified: 1783264927918
+  description: ""
+collection:
+  - name: Komiku API
+    meta:
+      id: fld_82919a0b2bc54801911b115f73d0db14
+      created: 1783264927925
+      modified: 1784655621899
+      sortKey: -1783264926336
+      description: >-
+        This collection contains the API endpoints for the Komiku application.
+        It is organized around the main resources of the system, including
+        users, categories, comics, chapters, chapter pages, comments, replies,
+        and ratings.
+
+
+        The collection supports common application workflows such as user
+        registration and login, content management, comic browsing, chapter and
+        page retrieval, and community interactions through comments, replies,
+        and ratings. It also includes a dedicated end-to-end section for testing
+        complete multi-step scenarios across the API.
+
+
+        Overall, this collection is intended to help with development, manual
+        testing, and validation of the full Komiku backend workflow from
+        authentication to content and interaction management.
+    children:
+      - name: Web
+        meta:
+          id: fld_f43515fe2373453c931db6db3e342575
+          created: 1783264927928
+          modified: 1784648008033
+          sortKey: -1783264926335
+          description: ""
+        children:
+          - url: "{{ _.BASE_URL }}"
+            name: API Page
+            meta:
+              id: req_6bbd0ae4bba64f18b52c0258651a7715
+              created: 1783264927931
+              modified: 1784648007413
+              isPrivate: false
+              description: ""
+              sortKey: -1783264926334
+            method: GET
+            body:
+              mimeType: application/json
+              text: ""
+            headers:
+              - name: Content-Type
+                value: application/json
+            scripts:
+              afterResponse: |-
+                insomnia.test('Check if status is 200', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(200);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+      - name: User
+        meta:
+          id: fld_47da64cd39e04bc8be42582a7549e17c
+          created: 1783264927933
+          modified: 1784650407019
+          sortKey: -1783264926333
+          description: ""
+        children:
+          - url: "{{ _.BASE_URL }}"
+            name: Register
+            meta:
+              id: req_72f6a577435e49d4abca758f1f748d39
+              created: 1783264927935
+              modified: 1784650401402
+              isPrivate: false
+              description: ""
+              sortKey: -1783264926332
+            method: POST
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                    "action": "REGISTER",
+                  	"user": {
+                    	"username": "{% faker 'randomUserName' %}",
+                	  	"password": "1234567890"
+                  	}
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+            scripts:
+              afterResponse: |-
+                const json = insomnia.response.json();
+
+                const username = json.data.user.username;
+                insomnia.environment.set(
+                    "USERNAME",
+                    username
+                );
+
+                const token = json.data.token;
+                insomnia.environment.set(
+                    "TOKEN",
+                    token
+                );
+
+                insomnia.test('Check if status is 201', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(201);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.BASE_URL }}"
+            name: Login
+            meta:
+              id: req_f8a7faed2477438c89bd2ade4b894eb3
+              created: 1783264927938
+              modified: 1784650399197
+              isPrivate: false
+              description: ""
+              sortKey: -1783264926331
+            method: POST
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                    "action": "LOGIN",
+                    "user": {
+                        "username": "{{ _.USERNAME }}",
+                        "password": "1234567890"
+                    }
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+            scripts:
+              afterResponse: |-
+                const json = insomnia.response.json();
+
+                const token = json.data.token;
+                insomnia.environment.set(
+                    "TOKEN",
+                    token
+                );
+
+                insomnia.test('Check if status is 200', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(200);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.BASE_URL }}"
+            name: Update User
+            meta:
+              id: req_ebbfe62d537d4de99b3f1bd24b5f85ed
+              created: 1783264927940
+              modified: 1784650281197
+              isPrivate: false
+              description: ""
+              sortKey: -1783264926330
+            method: POST
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                    "action": "UPDATE_USER",
+                    "user": {
+                        "username": "{% faker 'randomUserName' %}",
+                        "password": "1234567890"
+                    }
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+            scripts:
+              afterResponse: |-
+                insomnia.test('Check if status is 200', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(200);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.BASE_URL }}"
+            name: Delete User
+            meta:
+              id: req_69cdcfb8c9a4445f8735277188007318
+              created: 1783264927943
+              modified: 1784650299442
+              isPrivate: false
+              description: ""
+              sortKey: -1783264926329
+            method: POST
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                    "action": "DELETE_USER",
+                    "user": {
+                        "password": "1234567890"
+                    }
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+            scripts:
+              afterResponse: |-
+                insomnia.test('Check if status is 200', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(200);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+      - name: Category
+        meta:
+          id: fld_404b4c31922a4e13aaa03a015e204561
+          created: 1783264927945
+          modified: 1784650727202
+          sortKey: -1783264926328
+          description: ""
+        children:
+          - url: "{{ _.BASE_URL }}"
+            name: Get Categories
+            meta:
+              id: req_a758db1ac9d34785a0ded529ea0db5e5
+              created: 1783264927946
+              modified: 1784650412356
+              isPrivate: false
+              description: ""
+              sortKey: -1783264926327
+            method: POST
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                    "action": "GET_CATEGORIES",
+                    "keyword": null
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+            scripts:
+              afterResponse: |
+                insomnia.test('Check if status is 200', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(200);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.BASE_URL }}"
+            name: Insert Category
+            meta:
+              id: req_68a914d4cc95409c8d3e58c91baea97e
+              created: 1784655267353
+              modified: 1784655267353
+              isPrivate: false
+              description: ""
+              sortKey: -1783264926325.75
+            method: POST
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                    "action": "INSERT_CATEGORY",
+                    "category": {
+                        "name": "{% faker 'randomWord' %}",
+                        "description": "{% faker 'randomPhrase' %}"
+                    }
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+            scripts:
+              afterResponse: |-
+                const json = insomnia.response.json();
+
+                const categoryId = json.data.category.id;
+                insomnia.environment.set(
+                    "RECENT_CATEGORY_ID",
+                   	categoryId
+                );
+
+                insomnia.test('Check if status is 201', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(201);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.BASE_URL }}"
+            name: Update Category
+            meta:
+              id: req_2915f8c3df0148e9ab5b69415b010f18
+              created: 1784655278800
+              modified: 1784655278800
+              isPrivate: false
+              description: ""
+              sortKey: -1783264926324.5
+            method: POST
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                    "action": "UPDATE_CATEGORY",
+                    "category": {
+                        "id": {{ _.RECENT_CATEGORY_ID }},
+                        "name": "{% faker 'randomWord' %}",
+                        "description": "{% faker 'randomPhrase' %}"
+                    }
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+            scripts:
+              afterResponse: |-
+                insomnia.test('Check if status is 200', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(200);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.BASE_URL }}"
+            name: Delete Category
+            meta:
+              id: req_bf53e18d7ab04aa1ace4553739447ab3
+              created: 1784655282801
+              modified: 1784655282801
+              isPrivate: false
+              description: ""
+              sortKey: -1783264926323
+            method: POST
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                    "action": "DELETE_CATEGORY",
+                    "id": {{ _.RECENT_CATEGORY_ID }}
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+            scripts:
+              afterResponse: |-
+                insomnia.test('Check if status is 200', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(200);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+      - name: Comic
+        meta:
+          id: fld_b73276bf7f9d4c40a9c6f346ab0e500e
+          created: 1783264927954
+          modified: 1784655621899
+          sortKey: -1783264926323
+          description: ""
+        children:
+          - url: "{{ _.BASE_URL }}"
+            name: Get Comics
+            meta:
+              id: req_b2198e1dd556453b98dff9fa50ec9796
+              created: 1783264927955
+              modified: 1784650754229
+              isPrivate: false
+              description: ""
+              sortKey: -1783264926322
+            method: POST
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                    "action": "GET_COMICS",
+                    "keyword": null
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+            scripts:
+              afterResponse: |-
+                insomnia.test('Check if status is 200', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(200);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.BASE_URL }}"
+            name: Insert Comic
+            meta:
+              id: req_10b74d7d4d024235892e1e43315e1479
+              created: 1783264927960
+              modified: 1784655623432
+              isPrivate: false
+              description: ""
+              sortKey: -1783264926320
+            method: POST
+            body:
+              mimeType: multipart/form-data
+              params:
+                - name: action
+                  value: INSERT_COMIC
+                  description: ""
+                  disabled: false
+                - name: comic[title]
+                  value: "{% faker 'randomPhrase' %}"
+                  description: ""
+                  disabled: false
+                - name: comic[categories][]
+                  value: "1"
+                  description: ""
+                  disabled: false
+                - name: comic[categories][]
+                  value: "2"
+                  description: ""
+                  disabled: false
+                - name: comic[categories][]
+                  value: "3"
+                  description: ""
+                  disabled: false
+                - name: comic[description]
+                  value: "{% faker 'randomPhrase' %}"
+                  description: ""
+                  disabled: false
+                - name: poster
+                  value: ""
+                  description: ""
+                  disabled: false
+                  fileName: C:\Users\BrokenChord\Documents\GitHub\Komiku\komiku\assets\icon\icon_komiku.png
+                  type: file
+            headers:
+              - name: Content-Type
+                value: multipart/form-data
+            scripts:
+              afterResponse: |
+                const json = insomnia.response.json();
+
+                const comicId = json.data.comic.id;
+                insomnia.environment.set(
+                    "RECENT_COMIC_ID",
+                   	comicId
+                );
+
+                insomnia.test('Check if status is 201', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(201);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.BASE_URL }}"
+            name: Update Comic
+            meta:
+              id: req_473439ed80594e14ad4fc13260a95e07
+              created: 1783264927961
+              modified: 1784651621954
+              isPrivate: false
+              description: ""
+              sortKey: -1783264926319
+            method: POST
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                    "action": "UPDATE_COMIC",
+                    "comic": {
+                        "id": {{ _.RECENT_COMIC_ID }},
+                        "title": "{% faker 'randomPhrase' %}",
+                        "categories": [
+                            "4",
+                            "5",
+                            "6"
+                        ],
+                        "description": "{% faker 'randomPhrase' %}"
+                    }
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+            scripts:
+              afterResponse: |-
+                insomnia.test('Check if status is 200', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(200);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.BASE_URL }}"
+            name: Delete Comic
+            meta:
+              id: req_792ff2482a9c4ac68f69d96a3766e141
+              created: 1783264927963
+              modified: 1784651644534
+              isPrivate: false
+              description: ""
+              sortKey: -1783264926318
+            method: POST
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                    "action": "DELETE_COMIC",
+                    "id": {{ _.RECENT_COMIC_ID }}
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+            scripts:
+              afterResponse: |-
+                insomnia.test('Check if status is 200', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(200);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.BASE_URL }}"
+            name: Add Comic View
+            meta:
+              id: req_a1758acae8f74c769ab3e995803de037
+              created: 1784651805111
+              modified: 1784651822255
+              isPrivate: false
+              description: ""
+              sortKey: -1783264926319.5
+            method: POST
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                    "action": "ADD_COMIC_VIEW",
+                    "id": {{ _.RECENT_COMIC_ID }}
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+            scripts:
+              afterResponse: |-
+                insomnia.test('Check if status is 200', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(200);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.BASE_URL }}"
+            name: Get Comic Detail
+            meta:
+              id: req_27203b4b53264f9187976a7b37151cc2
+              created: 1784655326940
+              modified: 1784655326940
+              isPrivate: false
+              description: ""
+              sortKey: -1783264926320.5
+            method: POST
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                    "action": "GET_COMIC_DETAIL",
+                    "id": 1
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+            scripts:
+              afterResponse: |-
+                insomnia.test('Check if status is 200', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(200);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+      - name: Chapter
+        meta:
+          id: fld_ba725153a0454be38143649a9068786e
+          created: 1783264927965
+          modified: 1784654634587
+          sortKey: -1783264926317
+          description: ""
+        children:
+          - url: "{{ _.BASE_URL }}"
+            name: Get Comic Chapters
+            meta:
+              id: req_5353bec237744d578912d7cc6b1bc847
+              created: 1783264927967
+              modified: 1784651892853
+              isPrivate: false
+              description: ""
+              sortKey: -1783264926316
+            method: POST
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                    "action": "GET_COMIC_CHAPTERS",
+                    "comic_id": 1,
+                    "keyword": null
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+            scripts:
+              afterResponse: |-
+                insomnia.test('Check if status is 200', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(200);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.BASE_URL }}"
+            name: Update Comic Chapter
+            meta:
+              id: req_6b329295d5f24fed83c8367d5690c3eb
+              created: 1783264927971
+              modified: 1784652065822
+              isPrivate: false
+              description: ""
+              sortKey: -1783264926314
+            method: POST
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                    "action": "UPDATE_COMIC_CHAPTER",
+                    "chapter": {
+                        "id": {{ _.RECENT_COMIC_CHAPTER_ID }},
+                        "chapter_number": 10,
+                        "title": "In the beginning"
+                    }
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+            scripts:
+              afterResponse: |-
+                insomnia.test('Check if status is 200', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(200);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.BASE_URL }}"
+            name: Delete Comic Chapter
+            meta:
+              id: req_466ab483424b4b47b43291df41b60b95
+              created: 1783264927973
+              modified: 1784652087026
+              isPrivate: false
+              description: ""
+              sortKey: -1783264926313
+            method: POST
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                    "action": "DELETE_COMIC_CHAPTER",
+                    "id": {{ _.RECENT_COMIC_CHAPTER_ID }}
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+            scripts:
+              afterResponse: |-
+                insomnia.test('Check if status is 200', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(200);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.BASE_URL }}"
+            name: Insert Comic Chapters
+            meta:
+              id: req_76ee98c904ad4ac0aa7c6fbbd3cbaf65
+              created: 1784655677010
+              modified: 1784655677010
+              isPrivate: false
+              description: ""
+              sortKey: -1783264926314.5
+            method: POST
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                    "action": "INSERT_COMIC_CHAPTERS",
+                    "comic_id": {{ _.RECENT_COMIC_ID }},
+                    "chapters": [
+                        {
+                            "chapter_number": 1,
+                            "title": "Ini the beninging"
+                        },
+                        {
+                            "chapter_number": 2,
+                            "title": "Ini the second aftermath"
+                        }
+                    ]
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+            scripts:
+              afterResponse: |
+                const json = insomnia.response.json();
+
+                const comicChapterId = json.data.chapters[0].id;
+                insomnia.environment.set(
+                    "RECENT_COMIC_CHAPTER_ID",
+                   	comicChapterId
+                );
+
+                insomnia.test('Check if status is 201', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(201);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+      - name: Chapter Page
+        meta:
+          id: fld_d18f0c90ce0e49ca874ea6df37da7c8c
+          created: 1783264927974
+          modified: 1784654665649
+          sortKey: -1783264926312
+          description: ""
+        children:
+          - url: "{{ _.BASE_URL }}"
+            name: Insert Comic Chapter Pages
+            meta:
+              id: req_606bec937c8341b391e6f4121ff2f79e
+              created: 1783264927978
+              modified: 1784654558690
+              isPrivate: false
+              description: ""
+              sortKey: -1783264926310
+            method: POST
+            body:
+              mimeType: multipart/form-data
+              params:
+                - name: action
+                  value: INSERT_COMIC_CHAPTER_PAGES
+                  disabled: false
+                - name: chapter_id
+                  value: "{{ _.RECENT_COMIC_CHAPTER_ID }}"
+                  disabled: false
+                - name: pages[0][page_number]
+                  value: "1"
+                  disabled: false
+                - name: pages[1][page_number]
+                  value: "2"
+                  disabled: false
+                - name: image_0
+                  value: faker
+                  description: ""
+                  disabled: false
+                  fileName: C:\Users\BrokenChord\Documents\GitHub\Komiku\komiku\assets\icon\icon_komiku.png
+                  type: file
+                - name: image_1
+                  value: ""
+                  description: ""
+                  disabled: false
+                  fileName: C:\Users\BrokenChord\Documents\GitHub\Komiku\komiku\assets\icon\icon_komiku.png
+                  type: file
+            headers:
+              - name: Content-Type
+                value: multipart/form-data
+            scripts:
+              afterResponse: |
+                const json = insomnia.response.json();
+
+                const comicChapterPageId = json.data.pages[0].id;
+                insomnia.environment.set(
+                    "RECENT_COMIC_CHAPTER_PAGE_ID",
+                   	comicChapterPageId
+                );
+
+                insomnia.test('Check if status is 201', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(201);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.BASE_URL }}"
+            name: Delete Comic Chapter Page
+            meta:
+              id: req_69b8aaa783b74b3e88ae6599cb18a3c9
+              created: 1783264927981
+              modified: 1784654662952
+              isPrivate: false
+              description: ""
+              sortKey: -1783264926308
+            method: POST
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                    "action": "DELETE_COMIC_CHAPTER_PAGE",
+                    "id": {{ _.RECENT_COMIC_CHAPTER_PAGE_ID }}
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+            scripts:
+              afterResponse: |-
+                insomnia.test('Check if status is 200', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(200);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.BASE_URL }}"
+            name: Get Comic Chapter Pages
+            meta:
+              id: req_160416fff3514ded8dc07effb1648154
+              created: 1784655719855
+              modified: 1784655719855
+              isPrivate: false
+              description: ""
+              sortKey: -1783264926310.5
+            method: POST
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                    "action": "GET_COMIC_CHAPTER_PAGES",
+                    "chapter_id": 1
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+            scripts:
+              afterResponse: |-
+                insomnia.test('Check if status is 200', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(200);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.BASE_URL }}"
+            name: Update Comic Chapter Page
+            meta:
+              id: req_bb521948930246fb8ba3c978ac6cf8b1
+              created: 1784655729946
+              modified: 1784655729946
+              isPrivate: false
+              description: ""
+              sortKey: -1783264926308.5
+            method: POST
+            body:
+              mimeType: multipart/form-data
+              params:
+                - name: action
+                  value: UPDATE_COMIC_CHAPTER_PAGE
+                  disabled: false
+                - name: page[id]
+                  value: "{{ _.RECENT_COMIC_CHAPTER_PAGE_ID }}"
+                  disabled: false
+                - name: page[page_number]
+                  value: "3"
+                  disabled: false
+                - name: image
+                  value: TEST_UPDATE_COMIC_CHAPTER_PAGE
+                  disabled: false
+                  fileName: C:\Users\BrokenChord\Documents\GitHub\Komiku\komiku\assets\icon\icon_komiku.png
+                  type: file
+            headers:
+              - name: Content-Type
+                value: multipart/form-data
+            scripts:
+              afterResponse: |-
+                insomnia.test('Check if status is 200', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(200);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+      - name: Comment
+        meta:
+          id: fld_0f9eb99943e249e4a769d28c9c54cc82
+          created: 1783264927983
+          modified: 1784654818308
+          sortKey: -1783264926307
+          description: ""
+        children:
+          - url: "{{ _.BASE_URL }}"
+            name: Get Comments
+            meta:
+              id: req_5bb997a396d54b3d8a06a1223880e228
+              created: 1783264927984
+              modified: 1784654679754
+              isPrivate: false
+              description: ""
+              sortKey: -1783264926306
+            method: POST
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                    "action": "GET_COMMENTS",
+                    "comic_id": 1
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+            scripts:
+              afterResponse: |-
+                insomnia.test('Check if status is 200', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(200);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.BASE_URL }}"
+            name: Insert Comment
+            meta:
+              id: req_bd0bb8e67d104990ad176c2201e2e5f0
+              created: 1783264927987
+              modified: 1784654761702
+              isPrivate: false
+              description: ""
+              sortKey: -1783264926305
+            method: POST
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                    "action": "INSERT_COMMENT",
+                    "comment": {
+                        "comic_id": 1,
+                        "content": "Hello"
+                    }
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+            scripts:
+              afterResponse: |
+                const json = insomnia.response.json();
+
+                const commentId = json.data.comment.id;
+                insomnia.environment.set(
+                    "RECENT_COMMENT_ID",
+                   	commentId
+                );
+
+                insomnia.test('Check if status is 201', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(201);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.BASE_URL }}"
+            name: Update Comment
+            meta:
+              id: req_6edb56bc783346d8acb7b480f3fb28ff
+              created: 1783264927988
+              modified: 1784654788798
+              isPrivate: false
+              description: ""
+              sortKey: -1783264926304
+            method: POST
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                    "action": "UPDATE_COMMENT",
+                    "comment": {
+                        "id": {{ _.RECENT_COMMENT_ID }},
+                        "content": "Hello World"
+                    }
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+            scripts:
+              afterResponse: |-
+                insomnia.test('Check if status is 200', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(200);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.BASE_URL }}"
+            name: Delete Comment
+            meta:
+              id: req_0a14edc0d94f4e5ba137e590f95ae780
+              created: 1783264927991
+              modified: 1784654809175
+              isPrivate: false
+              description: ""
+              sortKey: -1783264926303
+            method: POST
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                    "action": "DELETE_COMMENT",
+                    "id": {{ _.RECENT_COMMENT_ID }}
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+            scripts:
+              afterResponse: |-
+                insomnia.test('Check if status is 200', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(200);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+      - name: Reply
+        meta:
+          id: fld_5fa52a6b0e194e9291e3bd492a6216b6
+          created: 1783264927992
+          modified: 1784654930437
+          sortKey: -1783264926302
+          description: ""
+        children:
+          - url: "{{ _.BASE_URL }}"
+            name: Update Reply
+            meta:
+              id: req_d7c072534d264685b7b2a346985519b7
+              created: 1783264927999
+              modified: 1784654909542
+              isPrivate: false
+              description: ""
+              sortKey: -1783264926299
+            method: POST
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                    "action": "UPDATE_REPLY",
+                    "reply": {
+                        "id": {{ _.RECENT_REPLY_ID }},
+                        "content": "Hello Again"
+                    }
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+            scripts:
+              afterResponse: |-
+                insomnia.test('Check if status is 200', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(200);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.BASE_URL }}"
+            name: Delete Reply
+            meta:
+              id: req_4c1bfb29c30543278b83a4d0b85c59a0
+              created: 1783264928001
+              modified: 1784654928361
+              isPrivate: false
+              description: ""
+              sortKey: -1783264926298
+            method: POST
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                    "action": "DELETE_REPLY",
+                    "id": {{ _.RECENT_REPLY_ID }}
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+            scripts:
+              afterResponse: |-
+                insomnia.test('Check if status is 200', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(200);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.BASE_URL }}"
+            name: Get Replies
+            meta:
+              id: req_e77193cf4072492b82b6252596e46f01
+              created: 1784655796922
+              modified: 1784655796922
+              isPrivate: false
+              description: ""
+              sortKey: -1783264926300.5
+            method: POST
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                    "action": "GET_REPLIES",
+                    "parent_comment_id": 1
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+            scripts:
+              afterResponse: |-
+                insomnia.test('Check if status is 200', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(200);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.BASE_URL }}"
+            name: Insert Reply
+            meta:
+              id: req_a8bca8255c0d49778c9c16aef51537a5
+              created: 1784655808117
+              modified: 1784655808117
+              isPrivate: false
+              description: ""
+              sortKey: -1783264926299.25
+            method: POST
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                    "action": "INSERT_REPLY",
+                    "reply": {
+                        "parent_comment_id": {{ _.RECENT_COMMENT_ID }},
+                        "content": "Hello, what's your name?"
+                    }
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+            scripts:
+              afterResponse: |
+                const json = insomnia.response.json();
+
+                const replyId = json.data.reply.id;
+                insomnia.environment.set(
+                    "RECENT_REPLY_ID",
+                   	replyId
+                );
+
+                insomnia.test('Check if status is 201', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(201);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+      - name: Rating
+        meta:
+          id: fld_4528e1adbaf840b9bd5860036add7a68
+          created: 1783264928003
+          modified: 1784655043330
+          sortKey: -1783264926297
+          description: ""
+        children:
+          - url: "{{ _.BASE_URL }}"
+            name: Get Rating
+            meta:
+              id: req_fca36b8b1c8e4755bfb3c92835c9d023
+              created: 1784655855983
+              modified: 1784655855983
+              isPrivate: false
+              description: ""
+              sortKey: -1783264926365
+            method: POST
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                    "action": "GET_RATING",
+                    "comic_id": 1
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+            scripts:
+              afterResponse: |-
+                insomnia.test('Check if status is 200', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(200);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.BASE_URL }}"
+            name: Save Rating
+            meta:
+              id: req_d4d889611a844cad9058c7120a11f007
+              created: 1784655860924
+              modified: 1784655860924
+              isPrivate: false
+              description: ""
+              sortKey: -1783264926295.5
+            method: POST
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                    "action": "SAVE_RATING",
+                    "rating": {
+                        "comic_id": 1,
+                        "rating": 5
+                    }
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+            scripts:
+              afterResponse: >-
+                insomnia.test('Check if status is 200 or 201', () => {
+                    insomnia.expect(insomnia.response.code).to.be.oneOf([200, 201]);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.BASE_URL }}"
+            name: Delete Rating
+            meta:
+              id: req_4a7ae1604f834002ab8abb09e7c12188
+              created: 1784655866087
+              modified: 1784655866087
+              isPrivate: false
+              description: ""
+              sortKey: -1783264926245
+            method: POST
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                    "action": "DELETE_RATING",
+                    "comic_id": 1
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+            scripts:
+              afterResponse: |-
+                insomnia.test('Check if status is 200', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(200);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+      - name: End-to-end
+        meta:
+          id: fld_4786b6374dec4bfc8498ae240ff89171
+          created: 1784655147621
+          modified: 1784655147621
+          sortKey: -1784655147621
+          description: ""
+        children:
+          - url: "{{ _.BASE_URL }}"
+            name: Insert Category
+            meta:
+              id: req_92df9e4b86044031bad6744a7b2bd2f7
+              created: 1783264927948
+              modified: 1784655301554
+              isPrivate: false
+              description: ""
+              sortKey: -1784655183123.0625
+            method: POST
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                    "action": "INSERT_CATEGORY",
+                    "category": {
+                        "name": "{% faker 'randomWord' %}",
+                        "description": "{% faker 'randomPhrase' %}"
+                    }
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+            scripts:
+              afterResponse: |-
+                const json = insomnia.response.json();
+
+                const categoryId = json.data.category.id;
+                insomnia.environment.set(
+                    "RECENT_CATEGORY_ID",
+                   	categoryId
+                );
+
+                insomnia.test('Check if status is 201', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(201);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.BASE_URL }}"
+            name: Update Category
+            meta:
+              id: req_0a2a4a072b2c4650904bf54279b81523
+              created: 1783264927951
+              modified: 1784655305003
+              isPrivate: false
+              description: ""
+              sortKey: -1784655183122.2812
+            method: POST
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                    "action": "UPDATE_CATEGORY",
+                    "category": {
+                        "id": {{ _.RECENT_CATEGORY_ID }},
+                        "name": "{% faker 'randomWord' %}",
+                        "description": "{% faker 'randomPhrase' %}"
+                    }
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+            scripts:
+              afterResponse: |-
+                insomnia.test('Check if status is 200', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(200);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.BASE_URL }}"
+            name: Delete Category
+            meta:
+              id: req_179a744692854b6e852c68579a1073eb
+              created: 1783264927952
+              modified: 1784655940532
+              isPrivate: false
+              description: ""
+              sortKey: -1784655182796.5
+            method: POST
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                    "action": "DELETE_CATEGORY",
+                    "id": {{ _.RECENT_CATEGORY_ID }}
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+            scripts:
+              afterResponse: |-
+                insomnia.test('Check if status is 200', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(200);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.BASE_URL }}"
+            name: Get Comic Detail
+            meta:
+              id: req_58d34d95cbe14ea78263b65ebb8dccf5
+              created: 1783264927957
+              modified: 1784655369484
+              isPrivate: false
+              description: ""
+              sortKey: -1784655183121.6953
+            method: POST
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                    "action": "GET_COMIC_DETAIL",
+                    "id": 1
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+            scripts:
+              afterResponse: |-
+                insomnia.test('Check if status is 200', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(200);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.BASE_URL }}"
+            name: Insert Comic Chapters
+            meta:
+              id: req_1046848ff17c47029642ac26817f1b13
+              created: 1783264927969
+              modified: 1784655689739
+              isPrivate: false
+              description: ""
+              sortKey: -1784655183121.506
+            method: POST
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                    "action": "INSERT_COMIC_CHAPTERS",
+                    "comic_id": {{ _.RECENT_COMIC_ID }},
+                    "chapters": [
+                        {
+                            "chapter_number": 1,
+                            "title": "Ini the beninging"
+                        },
+                        {
+                            "chapter_number": 2,
+                            "title": "Ini the second aftermath"
+                        }
+                    ]
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+            scripts:
+              afterResponse: |
+                const json = insomnia.response.json();
+
+                const comicChapterId = json.data.chapters[0].id;
+                insomnia.environment.set(
+                    "RECENT_COMIC_CHAPTER_ID",
+                   	comicChapterId
+                );
+
+                insomnia.test('Check if status is 201', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(201);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.BASE_URL }}"
+            name: Get Comic Chapter Pages
+            meta:
+              id: req_ed556b374f0b46049cf67c0602d573db
+              created: 1783264927976
+              modified: 1784655748307
+              isPrivate: false
+              description: ""
+              sortKey: -1784655183121.5015
+            method: POST
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                    "action": "GET_COMIC_CHAPTER_PAGES",
+                    "chapter_id": 1
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+            scripts:
+              afterResponse: |-
+                insomnia.test('Check if status is 200', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(200);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.BASE_URL }}"
+            name: Update Comic Chapter Page
+            meta:
+              id: req_cb0250f9e81e4a92bb910cc1f3970f8e
+              created: 1783264927980
+              modified: 1784655764220
+              isPrivate: false
+              description: ""
+              sortKey: -1784655183121.5005
+            method: POST
+            body:
+              mimeType: multipart/form-data
+              params:
+                - name: action
+                  value: UPDATE_COMIC_CHAPTER_PAGE
+                  disabled: false
+                - name: page[id]
+                  value: "{{ _.RECENT_COMIC_CHAPTER_PAGE_ID }}"
+                  disabled: false
+                - name: page[page_number]
+                  value: "3"
+                  disabled: false
+                - name: image
+                  value: TEST_UPDATE_COMIC_CHAPTER_PAGE
+                  disabled: false
+                  fileName: C:\Users\BrokenChord\Documents\GitHub\Komiku\komiku\assets\icon\icon_komiku.png
+                  type: file
+            headers:
+              - name: Content-Type
+                value: multipart/form-data
+            scripts:
+              afterResponse: |-
+                insomnia.test('Check if status is 200', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(200);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.BASE_URL }}"
+            name: Get Replies
+            meta:
+              id: req_326fcb4e789044b795b6eed5ca9903fd
+              created: 1783264927994
+              modified: 1784655827328
+              isPrivate: false
+              description: ""
+              sortKey: -1784655183121.5
+            method: POST
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                    "action": "GET_REPLIES",
+                    "parent_comment_id": 1
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+            scripts:
+              afterResponse: |-
+                insomnia.test('Check if status is 200', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(200);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.BASE_URL }}"
+            name: Save Rating
+            meta:
+              id: req_505bbe5a9477408eb67b699fbf100a62
+              created: 1783264928005
+              modified: 1784655872099
+              isPrivate: false
+              description: ""
+              sortKey: -1784655182934
+            method: POST
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                    "action": "SAVE_RATING",
+                    "rating": {
+                        "comic_id": 1,
+                        "rating": 5
+                    }
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+            scripts:
+              afterResponse: >-
+                insomnia.test('Check if status is 200 or 201', () => {
+                    insomnia.expect(insomnia.response.code).to.be.oneOf([200, 201]);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.BASE_URL }}"
+            name: Delete Rating
+            meta:
+              id: req_edc1fc30c07d41748eaf1e3b19781930
+              created: 1783264928007
+              modified: 1784655877733
+              isPrivate: false
+              description: ""
+              sortKey: -1784655182927.75
+            method: POST
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                    "action": "DELETE_RATING",
+                    "comic_id": 1
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+            scripts:
+              afterResponse: |-
+                insomnia.test('Check if status is 200', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(200);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.BASE_URL }}"
+            name: Get Rating
+            meta:
+              id: req_a1d754ad97a14c58b70fd57864b7f8c3
+              created: 1784654983757
+              modified: 1784655869042
+              isPrivate: false
+              description: ""
+              sortKey: -1784655182946.5
+            method: POST
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                    "action": "GET_RATING",
+                    "comic_id": 1
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+            scripts:
+              afterResponse: |-
+                insomnia.test('Check if status is 200', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(200);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.BASE_URL }}"
+            name: API Page
+            meta:
+              id: req_8881eb4ad2f64fb79525ca5e5834c1a6
+              created: 1784655177598
+              modified: 1784655183253
+              isPrivate: false
+              description: ""
+              sortKey: -1784655183159
+            method: GET
+            body:
+              mimeType: application/json
+              text: ""
+            headers:
+              - name: Content-Type
+                value: application/json
+            scripts:
+              afterResponse: |-
+                insomnia.test('Check if status is 200', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(200);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.BASE_URL }}"
+            name: Register
+            meta:
+              id: req_d23ffcfb5d4b41a8a07d9967c6ada45d
+              created: 1784655198448
+              modified: 1784655233989
+              isPrivate: false
+              description: ""
+              sortKey: -1784655183134
+            method: POST
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                    "action": "REGISTER",
+                  	"user": {
+                    	"username": "{% faker 'randomUserName' %}",
+                	  	"password": "1234567890"
+                  	}
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+            scripts:
+              afterResponse: |-
+                const json = insomnia.response.json();
+
+                const username = json.data.user.username;
+                insomnia.environment.set(
+                    "USERNAME",
+                    username
+                );
+
+                const token = json.data.token;
+                insomnia.environment.set(
+                    "TOKEN",
+                    token
+                );
+
+                insomnia.test('Check if status is 201', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(201);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.BASE_URL }}"
+            name: Login
+            meta:
+              id: req_59c8471fa9604553abecbd81bd00e43d
+              created: 1784655202112
+              modified: 1784655251056
+              isPrivate: false
+              description: ""
+              sortKey: -1784655183127.75
+            method: POST
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                    "action": "LOGIN",
+                    "user": {
+                        "username": "{{ _.USERNAME }}",
+                        "password": "1234567890"
+                    }
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+            scripts:
+              afterResponse: |-
+                const json = insomnia.response.json();
+
+                const token = json.data.token;
+                insomnia.environment.set(
+                    "TOKEN",
+                    token
+                );
+
+                insomnia.test('Check if status is 200', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(200);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.BASE_URL }}"
+            name: Update User
+            meta:
+              id: req_d7ca5326245044208ae40f703abf7f49
+              created: 1784655208429
+              modified: 1784655954445
+              isPrivate: false
+              description: ""
+              sortKey: -1784655183126.1875
+            method: POST
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                    "action": "UPDATE_USER",
+                    "user": {
+                        "username": "{% faker 'randomUserName' %}",
+                        "password": "1234567890"
+                    }
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+            scripts:
+              afterResponse: |-
+                insomnia.test('Check if status is 200', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(200);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.BASE_URL }}"
+            name: Get Categories
+            meta:
+              id: req_3e610ca40ebd483287332daf7ece8fd1
+              created: 1784655258983
+              modified: 1784655294088
+              isPrivate: false
+              description: ""
+              sortKey: -1784655183124.625
+            method: POST
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                    "action": "GET_CATEGORIES",
+                    "keyword": null
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+            scripts:
+              afterResponse: |
+                insomnia.test('Check if status is 200', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(200);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.BASE_URL }}"
+            name: Delete User
+            meta:
+              id: req_899160c4870542bc9132c6562456a2a5
+              created: 1784655261879
+              modified: 1784655936883
+              isPrivate: false
+              description: ""
+              sortKey: -1784655182771.5
+            method: POST
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                    "action": "DELETE_USER",
+                    "user": {
+                        "password": "1234567890"
+                    }
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+            scripts:
+              afterResponse: |-
+                insomnia.test('Check if status is 200', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(200);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.BASE_URL }}"
+            name: Get Comics
+            meta:
+              id: req_57ed64013e0a4ea3a5c6f0a5286bed7d
+              created: 1784655322142
+              modified: 1784655356236
+              isPrivate: false
+              description: ""
+              sortKey: -1784655183121.8906
+            method: POST
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                    "action": "GET_COMICS",
+                    "keyword": null
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+            scripts:
+              afterResponse: |-
+                insomnia.test('Check if status is 200', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(200);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.BASE_URL }}"
+            name: Insert Comic
+            meta:
+              id: req_d8f88a78c9a348afab603fa5283e516e
+              created: 1784655628464
+              modified: 1784655633468
+              isPrivate: false
+              description: ""
+              sortKey: -1784655183121.5977
+            method: POST
+            body:
+              mimeType: multipart/form-data
+              params:
+                - name: action
+                  value: INSERT_COMIC
+                  description: ""
+                  disabled: false
+                - name: comic[title]
+                  value: "{% faker 'randomPhrase' %}"
+                  description: ""
+                  disabled: false
+                - name: comic[categories][]
+                  value: "1"
+                  description: ""
+                  disabled: false
+                - name: comic[categories][]
+                  value: "2"
+                  description: ""
+                  disabled: false
+                - name: comic[categories][]
+                  value: "3"
+                  description: ""
+                  disabled: false
+                - name: comic[description]
+                  value: "{% faker 'randomPhrase' %}"
+                  description: ""
+                  disabled: false
+                - name: poster
+                  value: ""
+                  description: ""
+                  disabled: false
+                  fileName: C:\Users\BrokenChord\Documents\GitHub\Komiku\komiku\assets\icon\icon_komiku.png
+                  type: file
+            headers:
+              - name: Content-Type
+                value: multipart/form-data
+            scripts:
+              afterResponse: |
+                const json = insomnia.response.json();
+
+                const comicId = json.data.comic.id;
+                insomnia.environment.set(
+                    "RECENT_COMIC_ID",
+                   	comicId
+                );
+
+                insomnia.test('Check if status is 201', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(201);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.BASE_URL }}"
+            name: Add Comic View
+            meta:
+              id: req_f117e1bad69f4909bf8bb1307156d06b
+              created: 1784655643674
+              modified: 1784655662269
+              isPrivate: false
+              description: ""
+              sortKey: -1784655183121.5488
+            method: POST
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                    "action": "ADD_COMIC_VIEW",
+                    "id": {{ _.RECENT_COMIC_ID }}
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+            scripts:
+              afterResponse: |-
+                insomnia.test('Check if status is 200', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(200);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.BASE_URL }}"
+            name: Update Comic
+            meta:
+              id: req_fd97da5c7c40467785cde2c3a0b428b5
+              created: 1784655648922
+              modified: 1784655665906
+              isPrivate: false
+              description: ""
+              sortKey: -1784655183121.5244
+            method: POST
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                    "action": "UPDATE_COMIC",
+                    "comic": {
+                        "id": {{ _.RECENT_COMIC_ID }},
+                        "title": "{% faker 'randomPhrase' %}",
+                        "categories": [
+                            "4",
+                            "5",
+                            "6"
+                        ],
+                        "description": "{% faker 'randomPhrase' %}"
+                    }
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+            scripts:
+              afterResponse: |-
+                insomnia.test('Check if status is 200', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(200);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.BASE_URL }}"
+            name: Delete Comic
+            meta:
+              id: req_fbe8685046e44749bb8fc31320732d64
+              created: 1784655654304
+              modified: 1784655915310
+              isPrivate: false
+              description: ""
+              sortKey: -1784655182821.5
+            method: POST
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                    "action": "DELETE_COMIC",
+                    "id": {{ _.RECENT_COMIC_ID }}
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+            scripts:
+              afterResponse: |-
+                insomnia.test('Check if status is 200', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(200);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.BASE_URL }}"
+            name: Get Comic Chapters
+            meta:
+              id: req_3896aa218d7c42ec8961edd2ccf2f0bb
+              created: 1784655672708
+              modified: 1784655685724
+              isPrivate: false
+              description: ""
+              sortKey: -1784655183121.5122
+            method: POST
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                    "action": "GET_COMIC_CHAPTERS",
+                    "comic_id": 1,
+                    "keyword": null
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+            scripts:
+              afterResponse: |-
+                insomnia.test('Check if status is 200', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(200);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.BASE_URL }}"
+            name: Update Comic Chapter
+            meta:
+              id: req_625e355cb09748289b843affa4ba09da
+              created: 1784655681588
+              modified: 1784655694699
+              isPrivate: false
+              description: ""
+              sortKey: -1784655183121.503
+            method: POST
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                    "action": "UPDATE_COMIC_CHAPTER",
+                    "chapter": {
+                        "id": {{ _.RECENT_COMIC_CHAPTER_ID }},
+                        "chapter_number": 10,
+                        "title": "In the beginning"
+                    }
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+            scripts:
+              afterResponse: |-
+                insomnia.test('Check if status is 200', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(200);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.BASE_URL }}"
+            name: Delete Comic Chapter
+            meta:
+              id: req_ac03ee76197e44b0838f708babaa903c
+              created: 1784655714259
+              modified: 1784655907636
+              isPrivate: false
+              description: ""
+              sortKey: -1784655182921.8906
+            method: POST
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                    "action": "DELETE_COMIC_CHAPTER",
+                    "id": {{ _.RECENT_COMIC_CHAPTER_ID }}
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+            scripts:
+              afterResponse: |-
+                insomnia.test('Check if status is 200', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(200);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.BASE_URL }}"
+            name: Insert Comic Chapter Pages
+            meta:
+              id: req_0cd60b2892c04aafaf0400a4cc40ae45
+              created: 1784655725710
+              modified: 1784655759525
+              isPrivate: false
+              description: ""
+              sortKey: -1784655183121.5007
+            method: POST
+            body:
+              mimeType: multipart/form-data
+              params:
+                - name: action
+                  value: INSERT_COMIC_CHAPTER_PAGES
+                  disabled: false
+                - name: chapter_id
+                  value: "{{ _.RECENT_COMIC_CHAPTER_ID }}"
+                  disabled: false
+                - name: pages[0][page_number]
+                  value: "1"
+                  disabled: false
+                - name: pages[1][page_number]
+                  value: "2"
+                  disabled: false
+                - name: image_0
+                  value: faker
+                  description: ""
+                  disabled: false
+                  fileName: C:\Users\BrokenChord\Documents\GitHub\Komiku\komiku\assets\icon\icon_komiku.png
+                  type: file
+                - name: image_1
+                  value: ""
+                  description: ""
+                  disabled: false
+                  fileName: C:\Users\BrokenChord\Documents\GitHub\Komiku\komiku\assets\icon\icon_komiku.png
+                  type: file
+            headers:
+              - name: Content-Type
+                value: multipart/form-data
+            scripts:
+              afterResponse: |
+                const json = insomnia.response.json();
+
+                const comicChapterPageId = json.data.pages[0].id;
+                insomnia.environment.set(
+                    "RECENT_COMIC_CHAPTER_PAGE_ID",
+                   	comicChapterPageId
+                );
+
+                insomnia.test('Check if status is 201', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(201);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.BASE_URL }}"
+            name: Delete Comic Chapter Page
+            meta:
+              id: req_7a0b442b0edc470eb14a7c0d2aa83027
+              created: 1784655733552
+              modified: 1784655902226
+              isPrivate: false
+              description: ""
+              sortKey: -1784655182922.2812
+            method: POST
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                    "action": "DELETE_COMIC_CHAPTER_PAGE",
+                    "id": {{ _.RECENT_COMIC_CHAPTER_PAGE_ID }}
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+            scripts:
+              afterResponse: |-
+                insomnia.test('Check if status is 200', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(200);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.BASE_URL }}"
+            name: Get Comments
+            meta:
+              id: req_f4b9d0a8b3e949c293551989e86d6e8d
+              created: 1784655772344
+              modified: 1784655784251
+              isPrivate: false
+              description: ""
+              sortKey: -1784655183121.5002
+            method: POST
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                    "action": "GET_COMMENTS",
+                    "comic_id": 1
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+            scripts:
+              afterResponse: |-
+                insomnia.test('Check if status is 200', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(200);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.BASE_URL }}"
+            name: Insert Comment
+            meta:
+              id: req_e2f06c83410747acb3b9b7c394eff40f
+              created: 1784655775470
+              modified: 1784655786837
+              isPrivate: false
+              description: ""
+              sortKey: -1784655183121.5
+            method: POST
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                    "action": "INSERT_COMMENT",
+                    "comment": {
+                        "comic_id": 1,
+                        "content": "Hello"
+                    }
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+            scripts:
+              afterResponse: |
+                const json = insomnia.response.json();
+
+                const commentId = json.data.comment.id;
+                insomnia.environment.set(
+                    "RECENT_COMMENT_ID",
+                   	commentId
+                );
+
+                insomnia.test('Check if status is 201', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(201);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.BASE_URL }}"
+            name: Update Comment
+            meta:
+              id: req_c1a127f8b7994924b81b3151600f9175
+              created: 1784655778435
+              modified: 1784655789922
+              isPrivate: false
+              description: ""
+              sortKey: -1784655183121.5
+            method: POST
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                    "action": "UPDATE_COMMENT",
+                    "comment": {
+                        "id": {{ _.RECENT_COMMENT_ID }},
+                        "content": "Hello World"
+                    }
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+            scripts:
+              afterResponse: |-
+                insomnia.test('Check if status is 200', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(200);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.BASE_URL }}"
+            name: Delete Comment
+            meta:
+              id: req_55647f3461284e53baf276b4ba8ea5f0
+              created: 1784655781523
+              modified: 1784655895926
+              isPrivate: false
+              description: ""
+              sortKey: -1784655182923.0625
+            method: POST
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                    "action": "DELETE_COMMENT",
+                    "id": {{ _.RECENT_COMMENT_ID }}
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+            scripts:
+              afterResponse: |-
+                insomnia.test('Check if status is 200', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(200);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.BASE_URL }}"
+            name: Update Reply
+            meta:
+              id: req_bc40cb6d39b2417cad526fcff70dbc6d
+              created: 1784655799841
+              modified: 1784655842037
+              isPrivate: false
+              description: ""
+              sortKey: -1784655182971.5
+            method: POST
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                    "action": "UPDATE_REPLY",
+                    "reply": {
+                        "id": {{ _.RECENT_REPLY_ID }},
+                        "content": "Hello Again"
+                    }
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+            scripts:
+              afterResponse: |-
+                insomnia.test('Check if status is 200', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(200);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.BASE_URL }}"
+            name: Insert Reply
+            meta:
+              id: req_ebf724fa838d48e1947a31942c39952d
+              created: 1784655804510
+              modified: 1784655832508
+              isPrivate: false
+              description: ""
+              sortKey: -1784655183021.5
+            method: POST
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                    "action": "INSERT_REPLY",
+                    "reply": {
+                        "parent_comment_id": {{ _.RECENT_COMMENT_ID }},
+                        "content": "Hello, what's your name?"
+                    }
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+            scripts:
+              afterResponse: |
+                const json = insomnia.response.json();
+
+                const replyId = json.data.reply.id;
+                insomnia.environment.set(
+                    "RECENT_REPLY_ID",
+                   	replyId
+                );
+
+                insomnia.test('Check if status is 201', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(201);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.BASE_URL }}"
+            name: Delete Reply
+            meta:
+              id: req_a91593277d8d4fd2b905d0539925c14b
+              created: 1784655815528
+              modified: 1784655890893
+              isPrivate: false
+              description: ""
+              sortKey: -1784655182924.625
+            method: POST
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                    "action": "DELETE_REPLY",
+                    "id": {{ _.RECENT_REPLY_ID }}
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+            scripts:
+              afterResponse: |-
+                insomnia.test('Check if status is 200', () => {
+                    insomnia.expect(insomnia.response.code).to.eql(200);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+    authentication:
+      type: bearer
+      disabled: false
+      token: "{{TOKEN}}"
+      prefix: ""
+cookieJar:
+  name: Default Jar
+  meta:
+    id: jar_236bf6549f240a1e3964caf89d812b680955247a
+    created: 1783264928297
+    modified: 1784655621888
+environments:
+  name: Base Environment
+  meta:
+    id: env_236bf6549f240a1e3964caf89d812b680955247a
+    created: 1783264928072
+    modified: 1784655621892
+    isPrivate: false
+  data:
+    BASE_URL: http://localhost:8080
+    USERNAME: Izabella_Ortiz
+    TOKEN: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjE1LCJpYXQiOjE3ODQ2NTA0MDYsImV4cCI6MTc4NDczNjgwNn0.Xg-ZnhaIL-XFb_i5IRob0fEUzSd_wi8vE_LlAqtU2G8
+    RECENT_CATEGORY_ID: 50
+    RECENT_COMIC_ID: 17
+    RECENT_COMIC_CHAPTER_ID: 20
+    RECENT_COMIC_CHAPTER_PAGE_ID: 54
+    RECENT_COMMENT_ID: 28
+    RECENT_REPLY_ID: 30
+    CATEGORY: "{\"id\":49,\"name\":\"program\",\"description\":\"connecting the
+      application won't do anything, we need to hack the neural DRAM sensor!\"}"

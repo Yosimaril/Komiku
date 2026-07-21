@@ -59,7 +59,7 @@ class ChapterPageController extends BaseController
                     "id" => (int)$page["id"],
                     "chapter_title" => $page["chapter_title"],
                     "page_number" => (int)$page["page_number"],
-                    "image" => IMAGE_FOLDER . $page["image"],
+                    "image" => $page["image"] ? IMAGE_URL . $page["image"] : null,
                     "created_at" => $page["created_at"],
                     "updated_at" => $page["updated_at"],
                 ];
@@ -189,7 +189,7 @@ class ChapterPageController extends BaseController
                         $inserted[] = [
                             "id" => Database::getConnection()->insert_id,
                             "page_number" => $page["page_number"],
-                            "image" => IMAGE_FOLDER . $image
+                            "image" => $image
                         ];
                     }
 

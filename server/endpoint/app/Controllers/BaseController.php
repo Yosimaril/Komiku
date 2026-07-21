@@ -38,6 +38,15 @@ abstract class BaseController
 
             foreach (self::$request as $key => $value) {
 
+                // If its already parsed by PHP.
+                if (is_array($value)) {
+                    continue;
+                }
+
+                if (!is_string($value)) {
+                    continue;
+                }
+
                 $decoded = json_decode($value, true);
 
                 if (json_last_error() === JSON_ERROR_NONE) {

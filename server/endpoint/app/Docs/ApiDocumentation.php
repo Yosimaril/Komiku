@@ -706,7 +706,6 @@ class ApiDocumentation
                 "files" => [
                     "image_0" => "image file",
                     "image_1" => "image file",
-                    "..."
                 ]
             ],
 

@@ -9,6 +9,10 @@ class UploadService
         string $directory
     ): string
     {
+        if (!is_dir(STORAGE_PATH . $directory)) {
+            mkdir(STORAGE_PATH . $directory, 0755, true);
+        }
+
         $extension = strtolower(
             pathinfo(
                 $file["name"],
@@ -22,12 +26,14 @@ class UploadService
             . $extension;
 
         $relativePath =
-            IMAGE_FOLDER . "/$directory/"
+            STORAGE_PATH
+            . $directory
+            . "/"
             . $filename;
 
         $absolutePath =
             __DIR__
-            . "/../../../../"
+            . "/../../"
             . $relativePath;
 
         move_uploaded_file(
@@ -35,7 +41,10 @@ class UploadService
             $absolutePath
         );
 
-        return $relativePath;
+        return IMAGE_URL
+        . $directory
+        . "/"
+        . $filename;
     }
 
     public static function saveComicPoster(array $file): string
@@ -56,7 +65,7 @@ class UploadService
 
         $absolutePath =
             __DIR__
-            . "/../../../../"
+            . "/../../"
             . $path;
 
         if (file_exists($absolutePath)) {

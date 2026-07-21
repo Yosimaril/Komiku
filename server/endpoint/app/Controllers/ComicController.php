@@ -85,7 +85,7 @@ class ComicController extends BaseController
                     $comics[$id] = [
                         'id' => (int)$row['id'],
                         'title' => $row['title'],
-                        'poster' => IMAGE_FOLDER . $row['poster'],
+                        'poster' => $row['poster'] ? IMAGE_URL . $row['poster'] : null,
                         'description' => $row['description'],
                         'average_rating' => round((float)$row['average_rating'], 2),
                         'rating_count' => (int)$row['rating_count'],
@@ -261,7 +261,7 @@ class ComicController extends BaseController
                     'username' => $comic['username']
                 ],
                 'title' => $comic['title'],
-                'poster' => IMAGE_FOLDER . $comic['poster'],
+                'poster' => $comic['poster'] ? IMAGE_URL . $comic['poster'] : null,
                 'description' => $comic['description'],
                 'views' => $comic['views'],
                 'created_at' => $comic['created_at'],
@@ -374,7 +374,7 @@ class ComicController extends BaseController
                     "id" => $comicId,
                     "creator_id" => $creatorId,
                     "title" => $comic["title"],
-                    "poster" => IMAGE_FOLDER . $poster,
+                    "poster" => $poster,
                     "description" => $description,
                     "categories" => $comic["categories"] ?? []
                 ]
