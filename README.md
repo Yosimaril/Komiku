@@ -23,6 +23,9 @@
     <img src="https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=mysql&logoColor=white" alt="MySQL Badge" />
     <img src="https://img.shields.io/badge/JWT-000000?style=for-the-badge&logo=jsonwebtokens&logoColor=white" alt="JWT Badge" />
     <img src="https://img.shields.io/badge/Shared_Preferences-4285F4?style=for-the-badge&logo=google&logoColor=white" alt="Shared Preferences Badge" />
+    <img src="https://img.shields.io/badge/Apache-D22128?style=for-the-badge&logo=apache&logoColor=white" alt="Apache Badge" />
+    <img src="https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white" alt="Docker Badge" />
+    <img src="https://img.shields.io/badge/Insomnia-4000BF?style=for-the-badge&logo=insomnia&logoColor=white" alt="Insomnia Badge" />
   </div>
 </header>
 
@@ -87,15 +90,40 @@
 <br>
 
 <section id="prerequisites">
-  <header>
+ <header>
     <h2>Prerequisites</h2>
   </header>
-  <ul>
-    <li>Flutter SDK (latest stable version)</li>
-    <li>Dart SDK</li>
-    <li>Android Studio / VS Code with Flutter extension</li>
-    <li>A physical device or emulator for testing</li>
-  </ul>
+  <table>
+    <thead>
+      <tr>
+        <th>Component</th>
+        <th>Requirements</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Flutter Application</strong></td>
+        <td>
+          <ul>
+            <li>Flutter SDK (latest stable version)</li>
+            <li>Dart SDK</li>
+            <li>Android Studio or VS Code with Flutter extension</li>
+            <li>Android Emulator or a physical device</li>
+          </ul>
+        </td>
+      </tr>
+      <tr>
+        <td><strong>Backend API</strong></td>
+        <td>
+          <ul>
+            <li>Docker Desktop</li>
+            <li>Docker Compose</li>
+            <li>Git (recommended)</li>
+          </ul>
+        </td>
+      </tr>
+    </tbody>
+  </table>
   <p align="right"><a href="#readme-top">Back to top</a></p>
 </section>
 
@@ -105,23 +133,103 @@
 
 ## Installation
 
+This project consists of two main components:
+
+- **Flutter Mobile Application**
+- **PHP REST API (Dockerized)**
+
+---
+
+### Flutter Application
+
 1. Clone the repository.
 
 ```sh
 git clone <REPOSITORY_URL>
-cd Komiku/komiku
+cd Komiku
 ```
 
-2. Install dependencies.
+2. Navigate to the Flutter project.
+
+```sh
+cd komiku
+```
+
+3. Install dependencies.
 
 ```sh
 flutter pub get
 ```
 
-3. Run the application.
+4. Configure the API endpoint.
+
+Update the base URL inside the API configuration to point to your backend.
+
+Example:
+
+```dart
+const String baseUrl = "http://localhost:8080";
+```
+
+5. Run the application.
 
 ```sh
 flutter run
+```
+
+---
+
+### Backend API (Docker)
+
+The backend API is fully containerized using Docker and Docker Compose.
+
+#### Prerequisites
+
+- Docker Desktop
+- Docker Compose
+
+#### Start the backend
+
+Navigate to the server directory.
+
+```sh
+cd server
+```
+
+Build and start all services.
+
+```sh
+docker compose up --build
+```
+
+This will start:
+
+- PHP 8.3 + Apache
+- MySQL 8
+- Komiku REST API
+
+The API will be available at
+
+```text
+http://localhost:8080
+```
+
+The interactive API documentation is also available at
+
+```text
+http://localhost:8080
+```
+
+#### Stop the backend
+
+```sh
+docker compose down
+```
+
+#### Rebuild after Dockerfile changes
+
+```sh
+docker compose up --build
 ```
 
 <p align="right"><a href="#readme-top">Back to top</a></p>
@@ -226,6 +334,7 @@ flutter run
     <h2>API</h2>
   </header>
   <p>The backend API supports various actions for user management, comic browsing, and social interactions. All requests are made using the <code>POST</code> method to a central endpoint with an <code>action</code> parameter.</p>
+  <p>The API server is also available as a Docker image on Docker Hub: <a href="https://hub.docker.com/repository/docker/yosimaril/komiku-api/general">yosimaril/komiku-api</a>.</p>
 
   <table>
     <thead>
