@@ -22,12 +22,12 @@ class UploadService
             . $extension;
 
         $relativePath =
-            "Storage/$directory/"
+            IMAGE_FOLDER . "/$directory/"
             . $filename;
 
         $absolutePath =
             __DIR__
-            . "/../"
+            . "/../../../../"
             . $relativePath;
 
         move_uploaded_file(
@@ -56,7 +56,7 @@ class UploadService
 
         $absolutePath =
             __DIR__
-            . "/../"
+            . "/../../../../"
             . $path;
 
         if (file_exists($absolutePath)) {

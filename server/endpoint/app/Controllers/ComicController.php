@@ -85,7 +85,7 @@ class ComicController extends BaseController
                     $comics[$id] = [
                         'id' => (int)$row['id'],
                         'title' => $row['title'],
-                        'poster' => "https://ubaya.cloud/flutter/160423120/app/" . $row['poster'],
+                        'poster' => IMAGE_FOLDER . $row['poster'],
                         'description' => $row['description'],
                         'average_rating' => round((float)$row['average_rating'], 2),
                         'rating_count' => (int)$row['rating_count'],
@@ -261,7 +261,7 @@ class ComicController extends BaseController
                     'username' => $comic['username']
                 ],
                 'title' => $comic['title'],
-                'poster' => "https://ubaya.cloud/flutter/160423120/app/" . $comic['poster'],
+                'poster' => IMAGE_FOLDER . $comic['poster'],
                 'description' => $comic['description'],
                 'views' => $comic['views'],
                 'created_at' => $comic['created_at'],
@@ -374,7 +374,7 @@ class ComicController extends BaseController
                     "id" => $comicId,
                     "creator_id" => $creatorId,
                     "title" => $comic["title"],
-                    "poster" => "https://ubaya.cloud/flutter/160423120/app/" . $poster,
+                    "poster" => IMAGE_FOLDER . $poster,
                     "description" => $description,
                     "categories" => $comic["categories"] ?? []
                 ]

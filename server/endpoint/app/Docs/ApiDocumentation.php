@@ -159,14 +159,16 @@ class ApiDocumentation
                         "name" => "Action",
                         "description" => "Stories featuring intense battles, combat, and fast-paced adventures.",
                         "created_at" => "...",
-                        "updated_at" => "..."
+                        "updated_at" => "...",
+                        "comic_count" => 5
                     ],
                     [
                         "id" => 2,
                         "name" => "Adventure",
                         "description" => "Characters embark on exciting journeys to explore new places or achieve a goal.",
                         "created_at" => "...",
-                        "updated_at" => "..."
+                        "updated_at" => "...",
+                        "comic_count" => 3
                     ]
                 ],
                 "error_message" => []
@@ -263,10 +265,11 @@ class ApiDocumentation
                     [
                         "id" => 1,
                         "title" => "Chronicles of Flutter",
-                        "poster" => "...",
+                        "poster" => "<BASE_URL>/app/Storage/...",
                         "description" => "...",
                         "average_rating" => 4.67,
                         "rating_count" => 10,
+                        "views" => 150,
                         "categories" => [
                             [
                               "id"=> 1,
@@ -284,10 +287,11 @@ class ApiDocumentation
                     [
                         "id" => 2,
                         "title" => "Adventure of Dart",
-                        "poster" => "...",
+                        "poster" => "<BASE_URL>/app/Storage/...",
                         "description" => "...",
                         "average_rating" => 4,
                         "rating_count" => 5,
+                        "views" => 75,
                         "categories" => [
                             [
                               "id"=> 1,
@@ -327,12 +331,23 @@ class ApiDocumentation
                         "username" => "Eve"
                     ],
                     "title" => "Adventure of Dart",
-                    "poster" => "...",
+                    "poster" => "<BASE_URL>/app/Storage/...",
                     "description" => "...",
+                    "views" => 120,
                     "created_at" => "...",
                     "updated_at" => "...",
                     "average_rating" => 4,
                     "rating_count" => 5,
+                    "categories" => [
+                        [
+                            "id" => 1,
+                            "name" => "Action"
+                        ],
+                        [
+                            "id" => 2,
+                            "name" => "Adventure"
+                        ]
+                    ],
                     "comments" => [
                         [
                             "id" => 6,
@@ -415,8 +430,10 @@ class ApiDocumentation
                         "[optional, id]",
                         "[optional, id]"
                     ],
-                    "poster" => "[optional]",
                     "description" => "[optional]"
+                ],
+                "files" => [
+                    "poster" => "[optional]"
                 ]
             ],
 
@@ -427,8 +444,9 @@ class ApiDocumentation
                         "id" => 9,
                         "creator_id" => 13,
                         "title" => "I was reincarnated as a Flutter developer so I whatever...",
-                        "poster" => "null",
-                        "description" => "null"
+                        "poster" => "<BASE_URL>/app/Storage/...",
+                        "description" => "null",
+                        "categories" => []
                     ]
                 ],
                 "error_message" => []
@@ -451,8 +469,10 @@ class ApiDocumentation
                         "[optional, id]",
                         "[optional, id]"
                     ],
-                    "poster" => "[optional]",
                     "description" => "[optional]"
+                ],
+                "files" => [
+                    "poster" => "[optional]"
                 ]
             ],
 
@@ -484,6 +504,26 @@ class ApiDocumentation
                 "error_message" => []
             ]
         ],
+
+        Action::ADD_COMIC_VIEW->value => [
+            "title" => "Add Comic View",
+            "description" => "Increments the view count for a comic.",
+            "method" => "POST",
+            "auth" => false,
+
+            "request" => [
+                "action" => Action::ADD_COMIC_VIEW->value,
+                "id" => 1
+            ],
+
+            "response" => [
+                "status" => "SUCCESS",
+                "data" => [
+                    "updated" => true
+                ],
+                "error_message" => []
+            ]
+        ]
     ];
 
     private const COMIC_CHAPTER_API = [
@@ -629,7 +669,7 @@ class ApiDocumentation
                         "id" => 1,
                         "chapter_title" => "The Broken Village",
                         "page_number" => 1,
-                        "image" => "...",
+                        "image" => "<BASE_URL>/app/Storage/...",
                         "created_at" => "...",
                         "updated_at" => "..."
                     ],
@@ -637,7 +677,7 @@ class ApiDocumentation
                         "id" => 2,
                         "chapter_title" => "The Broken Village",
                         "page_number" => 2,
-                        "image" => "...",
+                        "image" => "<BASE_URL>/app/Storage/...",
                         "created_at" => "...",
                         "updated_at" => "..."
                     ]
@@ -658,12 +698,15 @@ class ApiDocumentation
                 "pages" => [
                     [
                         "page_number" => 1,
-                        "image" => "...",
                     ],
                     [
                         "page_number" => 2,
-                        "image" => "...",
                     ]
+                ],
+                "files" => [
+                    "image_0" => "image file",
+                    "image_1" => "image file",
+                    "..."
                 ]
             ],
 
@@ -675,12 +718,12 @@ class ApiDocumentation
                         [
                             "id" => 59,
                             "page_number" => 1,
-                            "image" => "...",
+                            "image" => "<BASE_URL>/app/Storage/..."
                         ],
                         [
                             "id" => 60,
                             "page_number" => 2,
-                            "image" => "...",
+                            "image" => "<BASE_URL>/app/Storage/..."
                         ]
                     ]
                 ],
@@ -699,7 +742,9 @@ class ApiDocumentation
                 "page" => [
                     "id" => 59,
                     "page_number" => 3,
-                    "image" => "...",
+                ],
+                "files" => [
+                    "image" => "[optional]"
                 ]
             ],
 

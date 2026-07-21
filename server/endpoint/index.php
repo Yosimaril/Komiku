@@ -72,6 +72,7 @@ Router::dispatch($action);
     <?= ApiDocumentation::card(Action::INSERT_COMIC->value); ?>
     <?= ApiDocumentation::card(Action::UPDATE_COMIC->value); ?>
     <?= ApiDocumentation::card(Action::DELETE_COMIC->value); ?>
+    <?= ApiDocumentation::card(Action::ADD_COMIC_VIEW->value); ?>
 
     <?= ApiDocumentation::section("chapter", "Chapter"); ?>
     <?= ApiDocumentation::card(Action::GET_COMIC_CHAPTERS->value); ?>

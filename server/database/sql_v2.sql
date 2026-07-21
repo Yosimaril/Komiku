@@ -33,6 +33,7 @@ CREATE TABLE IF NOT EXISTS `komiku`.`comics` (
   `id` BIGINT NOT NULL AUTO_INCREMENT,
   `creator_id` BIGINT NOT NULL,
   `title` VARCHAR(255) NOT NULL,
+  `views` INT NOT NULL DEFAULT 0,
   `poster` VARCHAR(255) NULL,
   `description` TEXT NULL,
   `created_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,

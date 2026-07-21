@@ -1,0 +1,42 @@
+services:
+  komiku-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    ports:
+      - "8080:80"
+
+    depends_on:
+      - mysql
+
+    volumes:
+      - ./endpoint:/var/www/html
+
+    environment:
+      DB_HOST: mysql
+      DB_DATABASE: komiku
+      DB_USERNAME: komiku
+      DB_PASSWORD: password
+
+  mysql:
+    image: mysql:8.4
+
+    restart: always
+
+    environment:
+      MYSQL_DATABASE: komiku
+      MYSQL_USER: komiku
+      MYSQL_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: 1234567890
+
+    ports:
+      - "3306:3306"
+
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./database/sql_v2.sql:/docker-entrypoint-initdb.d/1.sql
+      - ./database/dummy_data_v2.sql:/docker-entrypoint-initdb.d/2.sql
+
+volumes:
+  mysql-data:
