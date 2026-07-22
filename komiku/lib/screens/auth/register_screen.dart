@@ -106,6 +106,21 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 key: _formKey,
                 child: Column(
                   children: [
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(16),
+                      child: Image.asset(
+                        "assets/icon/icon_komiku.png",
+                        width: 100,
+                        height: 100,
+                        fit: BoxFit.contain,
+                        alignment: Alignment.center,
+                        errorBuilder: (context, error, stackTrace) =>
+                        const Icon(Icons.error),
+                      ),
+                    ),
+
+                    const SizedBox(height: 16),
+
                     Text(
                       "Create Account",
                       style: Theme.of(context).textTheme.headlineMedium,

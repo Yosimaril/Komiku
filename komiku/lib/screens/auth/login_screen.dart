@@ -96,7 +96,18 @@ class _LoginScreenState extends State<LoginScreen> {
                 key: _formKey,
                 child: Column(
                   children: [
-                    const Icon(Icons.menu_book_rounded, size: 72),
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(16),
+                      child: Image.asset(
+                        "assets/icon/icon_komiku.png",
+                        width: 100,
+                        height: 100,
+                        fit: BoxFit.contain,
+                        alignment: Alignment.center,
+                        errorBuilder: (context, error, stackTrace) =>
+                        const Icon(Icons.error),
+                      ),
+                    ),
                     const SizedBox(height: 16),
                     Text(
                       "Welcome Back",
