@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'dart:typed_data';
 
-
 import 'package:komiku/models/api.dart';
 import 'package:komiku/models/category.dart';
 import 'package:komiku/models/chapter.dart';
@@ -99,7 +98,7 @@ class ApiService {
         },
       },
       files: {
-        if (poster != null) 'poster': poster,
+        'poster': ?poster,
         if (posterBytes != null)
           'poster': {
             'bytes': posterBytes,
@@ -109,7 +108,6 @@ class ApiService {
     );
   }
 
-
   static Future<Map<String, dynamic>> updateComic(
     Comic comic, {
     File? poster,
@@ -117,7 +115,6 @@ class ApiService {
     String? posterFilename,
   }) {
     return _api.postMultipartAuthenticated(
-
       action: RequestAction.updateComic,
       body: {
         'comic': {
@@ -128,7 +125,7 @@ class ApiService {
         },
       },
       files: {
-        if (poster != null) 'poster': poster,
+        'poster': ?poster,
         if (posterBytes != null)
           'poster': {
             'bytes': posterBytes,
@@ -137,7 +134,6 @@ class ApiService {
       },
     );
   }
-
 
   static Future<Map<String, dynamic>> deleteComic(int id) {
     return _api.postAuthenticated(
@@ -191,16 +187,6 @@ class ApiService {
     );
   }
 
-  // Helper: get full image URL (Week 8 - Web Service)
-  static String getImageUrl(String relativePath) {
-    if (relativePath.startsWith('http://') || relativePath.startsWith('https://')) {
-      return relativePath; // Already absolute URL
-    }
-    // Remove leading slash if any, then prepend base URL
-    final cleanPath = relativePath.startsWith('/') ? relativePath.substring(1) : relativePath;
-    return 'https://ubaya.cloud/flutter/160423120/$cleanPath';
-  }
-
   // Chapter Page ====================================================================================================
   static Future<Map<String, dynamic>> getComicChapterPages(int chapterId) {
     return _api.post(
@@ -222,38 +208,27 @@ class ApiService {
       for (int i = 0; i < pagesBytesWeb.length; i++) {
         final pageNumber = pageNumberOffset + i + 1;
         final key = 'image_$i';
-        pages.add({
-          'page_number': pageNumber,
-          'image': key,
-        });
+        pages.add({'page_number': pageNumber, 'image': key});
         files[key] = {
           'bytes': pagesBytesWeb[i],
-          'filename': 'page_${pageNumber}.png',
+          'filename': 'page_$pageNumber.png',
         };
       }
     } else {
       for (int i = 0; i < imageFiles.length; i++) {
         final pageNumber = pageNumberOffset + i + 1;
         final key = 'image_$i';
-        pages.add({
-          'page_number': pageNumber,
-          'image': key,
-        });
+        pages.add({'page_number': pageNumber, 'image': key});
         files[key] = imageFiles[i];
       }
     }
 
     return _api.postMultipartAuthenticated(
       action: RequestAction.insertComicChapterPages,
-      body: {
-        'chapter_id': chapterId,
-        'pages': pages,
-      },
+      body: {'chapter_id': chapterId, 'pages': pages},
       files: files,
     );
   }
-
-
 
   static Future<Map<String, dynamic>> updateComicChapterPage(ChapterPage page) {
     return _api.postAuthenticated(

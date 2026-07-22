@@ -76,7 +76,7 @@ class MyApp extends StatelessWidget {
           appBar: AppBar(title: const Text('Comics')),
           body: ListComicScreen(
             // Web sometimes sends null/undefined arguments; avoid hard-casting.
-            categoryId: (ModalRoute.of(context)?.settings.arguments as int?) ?? null,
+            categoryId: (ModalRoute.of(context)?.settings.arguments as int?),
           ),
         ),
 
@@ -96,13 +96,14 @@ class MyApp extends StatelessWidget {
           comicId: (ModalRoute.of(context)?.settings.arguments as int?) ?? 0,
         ),
 
-        NavigationRoute.chapterDetailScreen.name: (context) => ChapterDetailScreen(
-          chapterId: ModalRoute.of(context)?.settings.arguments as int,
-        ),
+        NavigationRoute.chapterDetailScreen.name: (context) =>
+            ChapterDetailScreen(
+              chapterId: ModalRoute.of(context)?.settings.arguments as int,
+            ),
         NavigationRoute.updateComicChapterScreen.name: (context) =>
             UpdateComicChapterScreen(
-          chapterId: ModalRoute.of(context)?.settings.arguments as int,
-        ),
+              chapterId: ModalRoute.of(context)?.settings.arguments as int,
+            ),
         NavigationRoute.settingScreen.name: (context) => Scaffold(
           appBar: AppBar(title: const Text('Settings')),
           body: const SettingScreen(),

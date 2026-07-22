@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:komiku/models/chapter_page.dart';
 import 'package:komiku/services/api_service.dart';
-import 'package:komiku/static/error_messages.dart';
+import 'package:komiku/static/error_message.dart';
 
 class ChapterDetailScreen extends StatefulWidget {
   final int chapterId;
@@ -24,12 +24,9 @@ class _ChapterDetailScreenState extends State<ChapterDetailScreen> {
   Future<List<ChapterPage>> _loadPages(int id) async {
     final response = await ApiService.getComicChapterPages(id);
 
-    return (response['data'] as List).map((e) => ChapterPage.fromJson(e)).toList();
-  }
-
-  /// Convert relative image path to full URL using ApiService helper (Week 8 - Web Service)
-  String _getFullImageUrl(String imagePath) {
-    return ApiService.getImageUrl(imagePath);
+    return (response['data'] as List)
+        .map((e) => ChapterPage.fromJson(e))
+        .toList();
   }
 
   @override
@@ -47,7 +44,11 @@ class _ChapterDetailScreenState extends State<ChapterDetailScreen> {
         if (snapshot.hasError) {
           return Scaffold(
             appBar: AppBar(title: const Text("Chapter")),
-            body: Center(child: Text('${ErrorMessage.loadChapterPageError}: ${snapshot.error}')),
+            body: Center(
+              child: Text(
+                '${ErrorMessage.loadChapterPageError}: ${snapshot.error}',
+              ),
+            ),
           );
         }
 
@@ -65,7 +66,7 @@ class _ChapterDetailScreenState extends State<ChapterDetailScreen> {
             itemCount: pages.length,
             itemBuilder: (context, index) {
               final page = pages[index];
-              final fullImageUrl = _getFullImageUrl(page.image);
+              final fullImageUrl = page.image;
 
               return Image.network(
                 fullImageUrl,
@@ -75,11 +76,21 @@ class _ChapterDetailScreenState extends State<ChapterDetailScreen> {
                   if (loadingProgress == null) return child;
                   return SizedBox(
                     height: 300,
-                    child: Center(child: CircularProgressIndicator(value: loadingProgress.expectedTotalBytes != null ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes! : null)),
+                    child: Center(
+                      child: CircularProgressIndicator(
+                        value: loadingProgress.expectedTotalBytes != null
+                            ? loadingProgress.cumulativeBytesLoaded /
+                                  loadingProgress.expectedTotalBytes!
+                            : null,
+                      ),
+                    ),
                   );
                 },
-                errorBuilder: (_, __, ___) {
-                  return const SizedBox(height: 400, child: Icon(Icons.broken_image, size: 160));
+                errorBuilder: (_, _, _) {
+                  return const SizedBox(
+                    height: 400,
+                    child: Icon(Icons.broken_image, size: 160),
+                  );
                 },
               );
             },

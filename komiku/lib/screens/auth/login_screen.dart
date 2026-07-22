@@ -38,7 +38,12 @@ class _LoginScreenState extends State<LoginScreen> {
     });
 
     try {
-      final response = await ApiService.login(User(username: _usernameController.text, password: _passwordController.text));
+      final response = await ApiService.login(
+        User(
+          username: _usernameController.text,
+          password: _passwordController.text,
+        ),
+      );
 
       final success = response['status'] == 'SUCCESS';
 
@@ -54,13 +59,20 @@ class _LoginScreenState extends State<LoginScreen> {
           }
 
           if (mounted) {
-            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const HomeScreen()));
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => const HomeScreen()),
+            );
           }
         }
       } else if (mounted) {
         final errorMessages = response['error_messages'] as List?;
-        final message = errorMessages != null && errorMessages.isNotEmpty ? errorMessages.join(", ") : 'Login failed';
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+        final message = errorMessages != null && errorMessages.isNotEmpty
+            ? errorMessages.join(", ")
+            : 'Login failed';
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(message)));
       }
     } catch (e) {
       debugPrint(e.toString());
@@ -86,14 +98,23 @@ class _LoginScreenState extends State<LoginScreen> {
                   children: [
                     const Icon(Icons.menu_book_rounded, size: 72),
                     const SizedBox(height: 16),
-                    Text("Welcome Back", style: Theme.of(context).textTheme.headlineMedium),
+                    Text(
+                      "Welcome Back",
+                      style: Theme.of(context).textTheme.headlineMedium,
+                    ),
                     const SizedBox(height: 8),
-                    Text("Sign in to continue reading.", style: Theme.of(context).textTheme.bodyMedium),
+                    Text(
+                      "Sign in to continue reading.",
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
                     const SizedBox(height: 40),
 
                     TextFormField(
                       controller: _usernameController,
-                      decoration: const InputDecoration(labelText: "Username", prefixIcon: Icon(Icons.person)),
+                      decoration: const InputDecoration(
+                        labelText: "Username",
+                        prefixIcon: Icon(Icons.person),
+                      ),
                       validator: (value) {
                         if (value == null || value.trim().isEmpty) {
                           return "Username is required";
@@ -116,7 +137,11 @@ class _LoginScreenState extends State<LoginScreen> {
                               _hidePassword = !_hidePassword;
                             });
                           },
-                          icon: Icon(_hidePassword ? Icons.visibility : Icons.visibility_off),
+                          icon: Icon(
+                            _hidePassword
+                                ? Icons.visibility
+                                : Icons.visibility_off,
+                          ),
                         ),
                       ),
                       validator: (value) {
@@ -133,7 +158,15 @@ class _LoginScreenState extends State<LoginScreen> {
                       width: double.infinity,
                       child: FilledButton(
                         onPressed: _isLoading ? null : _login,
-                        child: _isLoading ? const SizedBox(height: 22, width: 22, child: CircularProgressIndicator(strokeWidth: 2)) : const Text("Login"),
+                        child: _isLoading
+                            ? const SizedBox(
+                                height: 22,
+                                width: 22,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                ),
+                              )
+                            : const Text("Login"),
                       ),
                     ),
 
@@ -141,7 +174,10 @@ class _LoginScreenState extends State<LoginScreen> {
 
                     TextButton(
                       onPressed: () {
-                        Navigator.pushReplacementNamed(context, NavigationRoute.registerScreen.name);
+                        Navigator.pushReplacementNamed(
+                          context,
+                          NavigationRoute.registerScreen.name,
+                        );
                       },
                       child: const Text("Create an account"),
                     ),

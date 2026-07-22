@@ -6,13 +6,13 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:komiku/models/chapter.dart';
 import 'package:komiku/services/api_service.dart';
-import 'package:komiku/static/error_messages.dart';
+import 'package:komiku/static/error_message.dart';
 
 class ChapterInput {
   final TextEditingController titleController = TextEditingController();
   final TextEditingController numberController = TextEditingController();
   List<File> pages = [];
-  List<Uint8List> pagesBytesWeb = []; // For web preview (Week 3 - Image Widget)
+  List<Uint8List> pagesBytesWeb = [];
 
   ChapterInput({int? nextNumber}) {
     if (nextNumber != null) {
@@ -30,7 +30,8 @@ class CreateComicChapterScreen extends StatefulWidget {
   const CreateComicChapterScreen({super.key});
 
   @override
-  State<CreateComicChapterScreen> createState() => _CreateComicChapterScreenState();
+  State<CreateComicChapterScreen> createState() =>
+      _CreateComicChapterScreenState();
 }
 
 class _CreateComicChapterScreenState extends State<CreateComicChapterScreen> {
@@ -57,7 +58,9 @@ class _CreateComicChapterScreenState extends State<CreateComicChapterScreen> {
 
   void _addChapterField() {
     setState(() {
-      int nextNum = _chapters.isEmpty ? 1 : (int.tryParse(_chapters.last.numberController.text) ?? 0) + 1;
+      int nextNum = _chapters.isEmpty
+          ? 1
+          : (int.tryParse(_chapters.last.numberController.text) ?? 0) + 1;
       _chapters.add(ChapterInput(nextNumber: nextNum));
     });
   }
@@ -72,11 +75,13 @@ class _CreateComicChapterScreenState extends State<CreateComicChapterScreen> {
 
   Future<void> _pickImages(int chapterIndex) async {
     final picker = ImagePicker();
-    final pickedFiles = await picker.pickMultiImage(imageQuality: 80, maxWidth: 1000);
+    final pickedFiles = await picker.pickMultiImage(
+      imageQuality: 80,
+      maxWidth: 1000,
+    );
 
     if (pickedFiles.isNotEmpty) {
       if (kIsWeb) {
-        // Web: read each file as bytes for preview (Week 3 - Image Widget)
         for (final pickedFile in pickedFiles) {
           final bytes = await pickedFile.readAsBytes();
           setState(() {
@@ -85,9 +90,10 @@ class _CreateComicChapterScreenState extends State<CreateComicChapterScreen> {
           });
         }
       } else {
-        // Mobile/Desktop: use File directly
         setState(() {
-          _chapters[chapterIndex].pages.addAll(pickedFiles.map((e) => File(e.path)));
+          _chapters[chapterIndex].pages.addAll(
+            pickedFiles.map((e) => File(e.path)),
+          );
         });
       }
     }
@@ -103,14 +109,24 @@ class _CreateComicChapterScreenState extends State<CreateComicChapterScreen> {
   }
 
   Future<void> _submit() async {
-    // Validation
     for (var chapter in _chapters) {
-      if (chapter.titleController.text.trim().isEmpty || chapter.numberController.text.trim().isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Please fill all chapter titles and numbers")));
+      if (chapter.titleController.text.trim().isEmpty ||
+          chapter.numberController.text.trim().isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Please fill all chapter titles and numbers"),
+          ),
+        );
         return;
       }
       if (chapter.pages.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Chapter ${chapter.numberController.text} has no pages")));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              "Chapter ${chapter.numberController.text} has no pages",
+            ),
+          ),
+        );
         return;
       }
     }
@@ -120,21 +136,30 @@ class _CreateComicChapterScreenState extends State<CreateComicChapterScreen> {
     });
 
     try {
-      // 1. Insert Chapters
-      final chaptersToInsert = _chapters.map((c) => Chapter(chapterNumber: int.parse(c.numberController.text), title: c.titleController.text)).toList();
+      final chaptersToInsert = _chapters
+          .map(
+            (c) => Chapter(
+              chapterNumber: int.parse(c.numberController.text),
+              title: c.titleController.text,
+            ),
+          )
+          .toList();
 
-      final response = await ApiService.insertComicChapters(_comicId, chaptersToInsert);
+      final response = await ApiService.insertComicChapters(
+        _comicId,
+        chaptersToInsert,
+      );
 
       if (response['status'] == 'SUCCESS') {
         final List createdChapters = response['data']['chapters'];
-
-        // 2. Insert Pages for each chapter
         bool allPagesSuccess = true;
         for (int i = 0; i < createdChapters.length; i++) {
           final chapterId = createdChapters[i]['id'];
-          // For web, ApiService expects bytes payload (pagesBytesWeb).
-          final pagesResponse = await ApiService.insertComicChapterPages(chapterId, _chapters[i].pages, pagesBytesWeb: kIsWeb ? _chapters[i].pagesBytesWeb : null);
-
+          final pagesResponse = await ApiService.insertComicChapterPages(
+            chapterId,
+            _chapters[i].pages,
+            pagesBytesWeb: kIsWeb ? _chapters[i].pagesBytesWeb : null,
+          );
           if (pagesResponse['status'] != 'SUCCESS') {
             allPagesSuccess = false;
             break;
@@ -143,17 +168,32 @@ class _CreateComicChapterScreenState extends State<CreateComicChapterScreen> {
 
         if (allPagesSuccess && mounted) {
           Navigator.pop(context, true);
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Chapters and pages uploaded successfully")));
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text("Chapters and pages uploaded successfully"),
+            ),
+          );
         } else if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Some pages failed to upload")));
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("Some pages failed to upload")),
+          );
         }
       } else if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(response['error_messages']?.toString() ?? "Failed to create chapters")));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              response['error_messages']?.toString() ??
+                  "Failed to create chapters",
+            ),
+          ),
+        );
       }
     } catch (e) {
       debugPrint("Error: $e");
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text(ErrorMessage.networkError)));
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text(ErrorMessage.networkError)),
+        );
       }
     } finally {
       if (mounted) {
@@ -185,11 +225,20 @@ class _CreateComicChapterScreenState extends State<CreateComicChapterScreen> {
                       children: [
                         Row(
                           children: [
-                            Text("Chapter ${index + 1}", style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+                            Text(
+                              "Chapter ${index + 1}",
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18,
+                              ),
+                            ),
                             const Spacer(),
                             if (_chapters.length > 1)
                               IconButton(
-                                icon: const Icon(Icons.remove_circle, color: Colors.red),
+                                icon: const Icon(
+                                  Icons.remove_circle,
+                                  color: Colors.red,
+                                ),
                                 onPressed: () => _removeChapterField(index),
                               ),
                           ],
@@ -201,7 +250,10 @@ class _CreateComicChapterScreenState extends State<CreateComicChapterScreen> {
                               width: 80,
                               child: TextFormField(
                                 controller: chapter.numberController,
-                                decoration: const InputDecoration(labelText: "No.", border: OutlineInputBorder()),
+                                decoration: const InputDecoration(
+                                  labelText: "No.",
+                                  border: OutlineInputBorder(),
+                                ),
                                 keyboardType: TextInputType.number,
                               ),
                             ),
@@ -209,13 +261,19 @@ class _CreateComicChapterScreenState extends State<CreateComicChapterScreen> {
                             Expanded(
                               child: TextFormField(
                                 controller: chapter.titleController,
-                                decoration: const InputDecoration(labelText: "Title", border: OutlineInputBorder()),
+                                decoration: const InputDecoration(
+                                  labelText: "Title",
+                                  border: OutlineInputBorder(),
+                                ),
                               ),
                             ),
                           ],
                         ),
                         const SizedBox(height: 20),
-                        const Text("Pages", style: TextStyle(fontWeight: FontWeight.bold)),
+                        const Text(
+                          "Pages",
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
                         const SizedBox(height: 8),
                         SizedBox(
                           height: 120,
@@ -232,9 +290,14 @@ class _CreateComicChapterScreenState extends State<CreateComicChapterScreen> {
                                     decoration: BoxDecoration(
                                       color: Colors.grey.shade200,
                                       borderRadius: BorderRadius.circular(8),
-                                      border: Border.all(color: Colors.grey.shade400),
+                                      border: Border.all(
+                                        color: Colors.grey.shade400,
+                                      ),
                                     ),
-                                    child: const Icon(Icons.add_a_photo, color: Colors.grey),
+                                    child: const Icon(
+                                      Icons.add_a_photo,
+                                      color: Colors.grey,
+                                    ),
                                   ),
                                 );
                               }
@@ -246,7 +309,18 @@ class _CreateComicChapterScreenState extends State<CreateComicChapterScreen> {
                                     margin: const EdgeInsets.only(right: 8),
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(8),
-                                      image: DecorationImage(image: kIsWeb && pIndex < chapter.pagesBytesWeb.length ? MemoryImage(chapter.pagesBytesWeb[pIndex]) : FileImage(chapter.pages[pIndex]) as ImageProvider, fit: BoxFit.cover),
+                                      image: DecorationImage(
+                                        image:
+                                            kIsWeb &&
+                                                pIndex <
+                                                    chapter.pagesBytesWeb.length
+                                            ? MemoryImage(
+                                                chapter.pagesBytesWeb[pIndex],
+                                              )
+                                            : FileImage(chapter.pages[pIndex])
+                                                  as ImageProvider,
+                                        fit: BoxFit.cover,
+                                      ),
                                     ),
                                   ),
                                   Positioned(
@@ -255,9 +329,16 @@ class _CreateComicChapterScreenState extends State<CreateComicChapterScreen> {
                                     child: GestureDetector(
                                       onTap: () => _removePage(index, pIndex),
                                       child: Container(
-                                        decoration: const BoxDecoration(color: Colors.red, shape: BoxShape.circle),
+                                        decoration: const BoxDecoration(
+                                          color: Colors.red,
+                                          shape: BoxShape.circle,
+                                        ),
                                         padding: const EdgeInsets.all(4),
-                                        child: const Icon(Icons.close, size: 14, color: Colors.white),
+                                        child: const Icon(
+                                          Icons.close,
+                                          size: 14,
+                                          color: Colors.white,
+                                        ),
                                       ),
                                     ),
                                   ),
@@ -265,9 +346,21 @@ class _CreateComicChapterScreenState extends State<CreateComicChapterScreen> {
                                     left: 4,
                                     bottom: 4,
                                     child: Container(
-                                      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-                                      decoration: BoxDecoration(color: Colors.black54, borderRadius: BorderRadius.circular(4)),
-                                      child: Text("${pIndex + 1}", style: const TextStyle(color: Colors.white, fontSize: 10)),
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 4,
+                                        vertical: 2,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: Colors.black54,
+                                        borderRadius: BorderRadius.circular(4),
+                                      ),
+                                      child: Text(
+                                        "${pIndex + 1}",
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 10,
+                                        ),
+                                      ),
                                     ),
                                   ),
                                 ],
@@ -287,12 +380,20 @@ class _CreateComicChapterScreenState extends State<CreateComicChapterScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                OutlinedButton.icon(onPressed: _addChapterField, icon: const Icon(Icons.add), label: const Text("Add Another Chapter")),
+                OutlinedButton.icon(
+                  onPressed: _addChapterField,
+                  icon: const Icon(Icons.add),
+                  label: const Text("Add Another Chapter"),
+                ),
                 const SizedBox(height: 12),
                 ElevatedButton(
                   onPressed: _isSubmitting ? null : _submit,
-                  style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 16)),
-                  child: _isSubmitting ? const CircularProgressIndicator() : const Text("Upload Chapters & Pages"),
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                  ),
+                  child: _isSubmitting
+                      ? const CircularProgressIndicator()
+                      : const Text("Upload Chapters & Pages"),
                 ),
               ],
             ),

@@ -9,10 +9,7 @@ class SecureStorageService {
   const SecureStorageService(this._storage);
 
   Future<void> saveToken(String token) async {
-    await _storage.write(
-      key: _keyToken,
-      value: token,
-    );
+    await _storage.write(key: _keyToken, value: token);
   }
 
   Future<String?> getToken() async {
@@ -24,10 +21,7 @@ class SecureStorageService {
   }
 
   Future<void> saveUser(String userJson) async {
-    await _storage.write(
-      key: _keyUser,
-      value: userJson,
-    );
+    await _storage.write(key: _keyUser, value: userJson);
   }
 
   Future<String?> getUser() async {

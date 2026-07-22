@@ -51,19 +51,20 @@ class ComicCard extends StatelessWidget {
                                   ),
                                 );
                               },
-                              loadingBuilder: (context, child, loadingProgress) {
-                                if (loadingProgress == null) {
-                                  return child;
-                                }
-                                return Container(
-                                  color: Colors.grey.shade100,
-                                  child: const Center(
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                    ),
-                                  ),
-                                );
-                              },
+                              loadingBuilder:
+                                  (context, child, loadingProgress) {
+                                    if (loadingProgress == null) {
+                                      return child;
+                                    }
+                                    return Container(
+                                      color: Colors.grey.shade100,
+                                      child: const Center(
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                        ),
+                                      ),
+                                    );
+                                  },
                             )
                           : Container(
                               color: Colors.grey.shade200,

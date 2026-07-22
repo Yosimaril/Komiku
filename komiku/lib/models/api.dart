@@ -9,16 +9,13 @@ import 'package:komiku/services/secure_storage_service.dart';
 import 'package:komiku/static/request_action.dart';
 
 class Api {
-  static const String _baseUrl = 'https://ubaya.cloud/flutter/160423120/';
+  static const String _baseUrl = 'https://komiku-api.up.railway.app/';
 
   final SecureStorageService _secureStorageService;
 
   Api(this._secureStorageService);
 
-  /// Helper untuk parse response JSON + error handling
   Map<String, dynamic> _parseResponse(http.Response response) {
-    // Server bisa mengirim 201 (Created) saat insert sukses.
-    // Jadi anggap sukses untuk 2xx, selain itu baru lempar error.
     if (response.statusCode < 200 || response.statusCode >= 300) {
       throw Exception(
         'Server returned status ${response.statusCode}: ${response.body}',
@@ -70,7 +67,6 @@ class Api {
 
     final request = http.MultipartRequest('POST', Uri.parse(_baseUrl));
 
-
     request.headers.addAll({
       'Accept': 'application/json',
       'Authorization': 'Bearer $token',
@@ -83,13 +79,12 @@ class Api {
     });
 
     for (final entry in files.entries) {
-      // For web, `files` should contain bytes + filename.
-      // For mobile/desktop, it can contain `dart:io` File.
       final value = entry.value;
 
       if (kIsWeb) {
-        // Expecting value shape: {"bytes": Uint8List, "filename": String}
-        if (value is Map && value['bytes'] is Uint8List && value['filename'] is String) {
+        if (value is Map &&
+            value['bytes'] is Uint8List &&
+            value['filename'] is String) {
           request.files.add(
             http.MultipartFile.fromBytes(
               entry.key,
@@ -98,21 +93,22 @@ class Api {
             ),
           );
         } else {
-          throw Exception('Unsupported web multipart file payload for key ${entry.key}');
+          throw Exception(
+            'Unsupported web multipart file payload for key ${entry.key}',
+          );
         }
       } else {
-
-        // Mobile/Desktop: expect File
         if (value is File) {
           request.files.add(
             await http.MultipartFile.fromPath(entry.key, value.path),
           );
         } else {
-          throw Exception('Unsupported non-web multipart file payload for key ${entry.key}');
+          throw Exception(
+            'Unsupported non-web multipart file payload for key ${entry.key}',
+          );
         }
       }
     }
-
 
     final streamedResponse = await request.send();
     final response = await http.Response.fromStream(streamedResponse);

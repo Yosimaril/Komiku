@@ -7,7 +7,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:komiku/models/category.dart';
 import 'package:komiku/models/comic.dart';
 import 'package:komiku/services/api_service.dart';
-import 'package:komiku/static/error_messages.dart';
+import 'package:komiku/static/error_message.dart';
 import 'package:komiku/static/success_message.dart';
 
 class CreateComicScreen extends StatefulWidget {
@@ -66,7 +66,12 @@ class _CreateComicScreenState extends State<CreateComicScreen> {
 
   Future<void> _pickPosterImage() async {
     final picker = ImagePicker();
-    final pickedFile = await picker.pickImage(source: ImageSource.gallery, imageQuality: 80, maxWidth: 600, maxHeight: 800);
+    final pickedFile = await picker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 80,
+      maxWidth: 600,
+      maxHeight: 800,
+    );
 
     if (pickedFile != null) {
       if (kIsWeb) {
@@ -81,7 +86,11 @@ class _CreateComicScreenState extends State<CreateComicScreen> {
           final path = pickedFile.path;
           final name = path.split('/').last;
           final lower = name.toLowerCase();
-          final hasAllowedExt = lower.endsWith('.jpg') || lower.endsWith('.jpeg') || lower.endsWith('.png') || lower.endsWith('.webp');
+          final hasAllowedExt =
+              lower.endsWith('.jpg') ||
+              lower.endsWith('.jpeg') ||
+              lower.endsWith('.png') ||
+              lower.endsWith('.webp');
           _posterFilenameWeb = hasAllowedExt ? name : 'poster.jpg';
         });
       } else {
@@ -101,18 +110,38 @@ class _CreateComicScreenState extends State<CreateComicScreen> {
     });
 
     try {
-      final comic = Comic(title: _titleController.text, description: _descriptionController.text, categories: _allCategories.where((c) => _selectedCategoryIds.contains(c.id)).toList());
+      final comic = Comic(
+        title: _titleController.text,
+        description: _descriptionController.text,
+        categories: _allCategories
+            .where((c) => _selectedCategoryIds.contains(c.id))
+            .toList(),
+      );
 
-      final response = await ApiService.insertComic(comic, poster: kIsWeb ? null : _posterImage, posterBytes: kIsWeb ? _posterBytesWeb : null, posterFilename: kIsWeb ? _posterFilenameWeb : null);
+      final response = await ApiService.insertComic(
+        comic,
+        poster: kIsWeb ? null : _posterImage,
+        posterBytes: kIsWeb ? _posterBytesWeb : null,
+        posterFilename: kIsWeb ? _posterFilenameWeb : null,
+      );
 
       if (response['status'] == 'SUCCESS') {
         if (mounted) {
           Navigator.pop(context, true);
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text(SuccessMessage.addComic)));
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text(SuccessMessage.addComic)),
+          );
         }
       } else {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(response['error_messages']?.toString() ?? "Failed to create comic")));
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                response['error_messages']?.toString() ??
+                    "Failed to create comic",
+              ),
+            ),
+          );
         }
       }
     } catch (e) {
@@ -120,7 +149,8 @@ class _CreateComicScreenState extends State<CreateComicScreen> {
       if (mounted) {
         String errorMsg = e.toString();
         // Ambil pesan error yang lebih user-friendly
-        if (errorMsg.contains("status 401") || errorMsg.contains("status 403")) {
+        if (errorMsg.contains("status 401") ||
+            errorMsg.contains("status 403")) {
           errorMsg = "Please login first to create a comic";
         } else if (errorMsg.contains("status 500")) {
           errorMsg = "Server error. Check if API is deployed correctly";
@@ -129,7 +159,9 @@ class _CreateComicScreenState extends State<CreateComicScreen> {
         } else {
           errorMsg = ErrorMessage.networkError;
         }
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(errorMsg)));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(errorMsg)));
       }
     } finally {
       if (mounted) {
@@ -155,7 +187,10 @@ class _CreateComicScreenState extends State<CreateComicScreen> {
                   children: [
                     TextFormField(
                       controller: _titleController,
-                      decoration: const InputDecoration(labelText: "Title", border: OutlineInputBorder()),
+                      decoration: const InputDecoration(
+                        labelText: "Title",
+                        border: OutlineInputBorder(),
+                      ),
                       validator: (value) {
                         if (value == null || value.trim().isEmpty) {
                           return "Title is required";
@@ -166,11 +201,17 @@ class _CreateComicScreenState extends State<CreateComicScreen> {
                     const SizedBox(height: 16),
                     TextFormField(
                       controller: _descriptionController,
-                      decoration: const InputDecoration(labelText: "Description (Optional)", border: OutlineInputBorder()),
+                      decoration: const InputDecoration(
+                        labelText: "Description (Optional)",
+                        border: OutlineInputBorder(),
+                      ),
                       maxLines: 3,
                     ),
                     const SizedBox(height: 24),
-                    const Text("Poster Image (Optional)", style: TextStyle(fontWeight: FontWeight.bold)),
+                    const Text(
+                      "Poster Image (Optional)",
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
                     const SizedBox(height: 8),
                     GestureDetector(
                       onTap: _pickPosterImage,
@@ -184,19 +225,41 @@ class _CreateComicScreenState extends State<CreateComicScreen> {
                         child: _posterImage != null
                             ? ClipRRect(
                                 borderRadius: BorderRadius.circular(8),
-                                child: kIsWeb && _posterBytesWeb != null ? Image.memory(_posterBytesWeb!, fit: BoxFit.cover, width: double.infinity) : Image.file(_posterImage!, fit: BoxFit.cover, width: double.infinity),
+                                child: kIsWeb && _posterBytesWeb != null
+                                    ? Image.memory(
+                                        _posterBytesWeb!,
+                                        fit: BoxFit.cover,
+                                        width: double.infinity,
+                                      )
+                                    : Image.file(
+                                        _posterImage!,
+                                        fit: BoxFit.cover,
+                                        width: double.infinity,
+                                      ),
                               )
-                            : const Column(mainAxisAlignment: MainAxisAlignment.center, children: [Icon(Icons.add_a_photo, size: 48), SizedBox(height: 8), Text("Tap to select poster")]),
+                            : const Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(Icons.add_a_photo, size: 48),
+                                  SizedBox(height: 8),
+                                  Text("Tap to select poster"),
+                                ],
+                              ),
                       ),
                     ),
                     const SizedBox(height: 24),
-                    const Text("Categories (Optional)", style: TextStyle(fontWeight: FontWeight.bold)),
+                    const Text(
+                      "Categories (Optional)",
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
                     const SizedBox(height: 8),
                     Wrap(
                       spacing: 8,
                       runSpacing: 8,
                       children: _allCategories.map((category) {
-                        final isSelected = _selectedCategoryIds.contains(category.id);
+                        final isSelected = _selectedCategoryIds.contains(
+                          category.id,
+                        );
                         return FilterChip(
                           label: Text(category.name),
                           selected: isSelected,
@@ -215,8 +278,12 @@ class _CreateComicScreenState extends State<CreateComicScreen> {
                     const SizedBox(height: 32),
                     ElevatedButton(
                       onPressed: _isSubmitting ? null : _submit,
-                      style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 16)),
-                      child: _isSubmitting ? const CircularProgressIndicator() : const Text("Create Comic"),
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                      ),
+                      child: _isSubmitting
+                          ? const CircularProgressIndicator()
+                          : const Text("Create Comic"),
                     ),
                   ],
                 ),

@@ -37,7 +37,9 @@ class _AppDrawerState extends State<AppDrawer> {
             accountName: Text(_currentUser?.username ?? "Komiku User"),
             accountEmail: const Text("Komiku Reader"),
             currentAccountPicture: const CircleAvatar(
-              backgroundImage: NetworkImage('https://i.pinimg.com/236x/b3/63/1f/b3631f46018f8ddafae3e07b0bf9ea42.jpg'),
+              backgroundImage: NetworkImage(
+                'https://i.pinimg.com/236x/b3/63/1f/b3631f46018f8ddafae3e07b0bf9ea42.jpg',
+              ),
             ),
           ),
           ListTile(
@@ -102,10 +104,8 @@ class _AppDrawerState extends State<AppDrawer> {
 }
 
 class AppDrawer extends StatefulWidget {
-  
   const AppDrawer({super.key});
 
   @override
   State<AppDrawer> createState() => _AppDrawerState();
 }
-

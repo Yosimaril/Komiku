@@ -8,7 +8,7 @@ import 'package:komiku/models/comic.dart';
 import 'package:komiku/models/user.dart';
 import 'package:komiku/services/api_service.dart';
 import 'package:komiku/services/secure_storage_service.dart';
-import 'package:komiku/static/error_messages.dart';
+import 'package:komiku/static/error_message.dart';
 import 'package:komiku/static/success_message.dart';
 import 'package:komiku/static/navigation_route.dart';
 import 'package:provider/provider.dart';
@@ -57,24 +57,35 @@ class _ListComicScreenState extends State<ListComicScreen> {
     final comicsResponse = await ApiService.getComics();
     final categoriesResponse = await ApiService.getCategories();
 
+    if (!mounted) return;
     final secureStorage = context.read<SecureStorageService>();
     final userJson = await secureStorage.getUser();
     if (userJson != null) {
       _currentUser = User.fromJson(jsonDecode(userJson));
     }
 
-    _allComics = (comicsResponse['data'] as List).map((e) => Comic.fromJson(e)).toList();
+    _allComics = (comicsResponse['data'] as List)
+        .map((e) => Comic.fromJson(e))
+        .toList();
 
-    _categories = (categoriesResponse['data'] as List).map((e) => Category.fromJson(e)).toList();
+    _categories = (categoriesResponse['data'] as List)
+        .map((e) => Category.fromJson(e))
+        .toList();
 
     _applyFilter();
   }
 
   void _applyFilter() {
     _filteredComics = _allComics.where((comic) {
-      final keywordMatch = _keyword.isEmpty || comic.title.toLowerCase().contains(_keyword.toLowerCase());
+      final keywordMatch =
+          _keyword.isEmpty ||
+          comic.title.toLowerCase().contains(_keyword.toLowerCase());
 
-      final categoryMatch = _selectedCategoryIds.isEmpty || comic.categories.any((category) => _selectedCategoryIds.contains(category.id));
+      final categoryMatch =
+          _selectedCategoryIds.isEmpty ||
+          comic.categories.any(
+            (category) => _selectedCategoryIds.contains(category.id),
+          );
 
       return keywordMatch && categoryMatch;
     }).toList();
@@ -87,9 +98,14 @@ class _ListComicScreenState extends State<ListComicScreen> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Delete Comic?'),
-        content: const Text('Are you sure you want to delete this comic? This will remove all chapters and comments.'),
+        content: const Text(
+          'Are you sure you want to delete this comic? This will remove all chapters and comments.',
+        ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
             child: const Text('Delete', style: TextStyle(color: Colors.red)),
@@ -103,11 +119,20 @@ class _ListComicScreenState extends State<ListComicScreen> {
       if (response['status'] == 'SUCCESS') {
         _loadData(); // Refresh list
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text(SuccessMessage.deleteComic)));
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text(SuccessMessage.deleteComic)),
+          );
         }
       } else {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(response['error_messages']?.toString() ?? 'Failed to delete comic')));
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                response['error_messages']?.toString() ??
+                    'Failed to delete comic',
+              ),
+            ),
+          );
         }
       }
     }
@@ -123,7 +148,9 @@ class _ListComicScreenState extends State<ListComicScreen> {
         }
 
         if (snapshot.hasError) {
-          return Center(child: Text('${ErrorMessage.loadComicError}: ${snapshot.error}'));
+          return Center(
+            child: Text('${ErrorMessage.loadComicError}: ${snapshot.error}'),
+          );
         }
 
         return Column(
@@ -190,7 +217,11 @@ class _ListComicScreenState extends State<ListComicScreen> {
                 onComicTap: (id) async {
                   await ApiService.addComicView(id);
                   if (mounted) {
-                    Navigator.pushNamed(context, NavigationRoute.comicDetailScreen.name, arguments: id);
+                    Navigator.pushNamed(
+                      context,
+                      NavigationRoute.comicDetailScreen.name,
+                      arguments: id,
+                    );
                   }
                 },
               ),
@@ -203,7 +234,14 @@ class _ListComicScreenState extends State<ListComicScreen> {
 }
 
 class ListComicWidget extends StatelessWidget {
-  const ListComicWidget({super.key, required this.comics, this.currentUser, this.onDelete, this.onUpdate, this.onComicTap});
+  const ListComicWidget({
+    super.key,
+    required this.comics,
+    this.currentUser,
+    this.onDelete,
+    this.onUpdate,
+    this.onComicTap,
+  });
 
   final List<Comic> comics;
   final User? currentUser;
@@ -233,7 +271,11 @@ class ListComicWidget extends StatelessWidget {
             }
           },
           onUpdate: () async {
-            final refresh = await Navigator.pushNamed(context, NavigationRoute.updateComicScreen.name, arguments: comic.id);
+            final refresh = await Navigator.pushNamed(
+              context,
+              NavigationRoute.updateComicScreen.name,
+              arguments: comic.id,
+            );
             if (refresh == true && onUpdate != null) {
               onUpdate!();
             }

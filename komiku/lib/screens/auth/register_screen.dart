@@ -42,7 +42,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
     });
 
     try {
-      final response = await ApiService.register(User(username: _usernameController.text, password: _passwordController.text));
+      final response = await ApiService.register(
+        User(
+          username: _usernameController.text,
+          password: _passwordController.text,
+        ),
+      );
 
       final success = response['status'] == 'SUCCESS';
 
@@ -58,15 +63,25 @@ class _RegisterScreenState extends State<RegisterScreen> {
           }
 
           if (mounted) {
-            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const HomeScreen()));
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => const HomeScreen()),
+            );
           }
         } else {
-          Navigator.pushReplacementNamed(context, NavigationRoute.loginScreen.name);
+          Navigator.pushReplacementNamed(
+            context,
+            NavigationRoute.loginScreen.name,
+          );
         }
       } else if (mounted) {
         final errorMessages = response['error_messages'] as List?;
-        final message = errorMessages != null && errorMessages.isNotEmpty ? errorMessages.join(", ") : 'Registration failed';
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+        final message = errorMessages != null && errorMessages.isNotEmpty
+            ? errorMessages.join(", ")
+            : 'Registration failed';
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(message)));
       }
     } catch (e) {
       debugPrint(e.toString());
@@ -91,13 +106,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 key: _formKey,
                 child: Column(
                   children: [
-                    Text("Create Account", style: Theme.of(context).textTheme.headlineMedium),
+                    Text(
+                      "Create Account",
+                      style: Theme.of(context).textTheme.headlineMedium,
+                    ),
 
                     const SizedBox(height: 32),
 
                     TextFormField(
                       controller: _usernameController,
-                      decoration: const InputDecoration(labelText: "Username", prefixIcon: Icon(Icons.person)),
+                      decoration: const InputDecoration(
+                        labelText: "Username",
+                        prefixIcon: Icon(Icons.person),
+                      ),
                       validator: (value) {
                         if (value == null || value.trim().isEmpty) {
                           return "Username is required";
@@ -120,7 +141,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               _hidePassword = !_hidePassword;
                             });
                           },
-                          icon: Icon(_hidePassword ? Icons.visibility : Icons.visibility_off),
+                          icon: Icon(
+                            _hidePassword
+                                ? Icons.visibility
+                                : Icons.visibility_off,
+                          ),
                         ),
                       ),
                       validator: (value) {
@@ -145,7 +170,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               _hideConfirmPassword = !_hideConfirmPassword;
                             });
                           },
-                          icon: Icon(_hideConfirmPassword ? Icons.visibility : Icons.visibility_off),
+                          icon: Icon(
+                            _hideConfirmPassword
+                                ? Icons.visibility
+                                : Icons.visibility_off,
+                          ),
                         ),
                       ),
                       validator: (value) {
@@ -162,7 +191,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       width: double.infinity,
                       child: FilledButton(
                         onPressed: _isLoading ? null : _register,
-                        child: _isLoading ? const SizedBox(height: 22, width: 22, child: CircularProgressIndicator(strokeWidth: 2)) : const Text("Register"),
+                        child: _isLoading
+                            ? const SizedBox(
+                                height: 22,
+                                width: 22,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                ),
+                              )
+                            : const Text("Register"),
                       ),
                     ),
 
@@ -170,7 +207,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
                     TextButton(
                       onPressed: () {
-                        Navigator.pushReplacementNamed(context, NavigationRoute.loginScreen.name);
+                        Navigator.pushReplacementNamed(
+                          context,
+                          NavigationRoute.loginScreen.name,
+                        );
                       },
                       child: const Text("Already have an account? Login"),
                     ),

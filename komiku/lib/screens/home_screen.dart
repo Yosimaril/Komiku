@@ -28,9 +28,7 @@ class _HomeScreenState extends State<HomeScreen> {
     };
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(title),
-      ),
+      appBar: AppBar(title: Text(title)),
       drawer: const AppDrawer(),
       body: switch (navProvider.indexBottomNavBar) {
         0 => ListComicScreen(key: _comicListKey),

@@ -47,9 +47,9 @@ class _SettingScreenState extends State<SettingScreen> {
                 leading: const Icon(Icons.logout, color: Colors.red),
                 title: Text(
                   "Logout",
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Colors.red,
-                      ),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.bodyMedium?.copyWith(color: Colors.red),
                 ),
                 onTap: () async {
                   final secureStorage = context.read<SecureStorageService>();
