@@ -9,7 +9,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:komiku/models/category.dart';
 import 'package:komiku/models/comic.dart';
 import 'package:komiku/services/api_service.dart';
-import 'package:komiku/static/error_message.dart';
+import 'package:komiku/static/error_messages.dart';
 import 'package:komiku/static/success_message.dart';
 
 class UpdateComicScreen extends StatefulWidget {
@@ -64,23 +64,17 @@ class _UpdateComicScreenState extends State<UpdateComicScreen> {
           _titleController.text = comic.title;
           _descriptionController.text = comic.description ?? '';
           _existingPosterUrl = comic.poster;
-          
+
           _allCategories.addAll(categoryData.map((e) => Category.fromJson(e)));
-          _selectedCategoryIds.addAll(
-            comic.categories
-                .where((e) => e.id != null)
-                .map((e) => e.id!),
-          );
-          
+          _selectedCategoryIds.addAll(comic.categories.where((e) => e.id != null).map((e) => e.id!));
+
           _isLoading = false;
         });
       }
     } catch (e) {
       debugPrint("Error loading data: $e");
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text(ErrorMessage.loadComicDetailError)),
-        );
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text(ErrorMessage.loadComicDetailError)));
         Navigator.pop(context);
       }
     }
@@ -88,12 +82,7 @@ class _UpdateComicScreenState extends State<UpdateComicScreen> {
 
   Future<void> _pickPosterImage() async {
     final picker = ImagePicker();
-    final pickedFile = await picker.pickImage(
-      source: ImageSource.gallery,
-      imageQuality: 80,
-      maxWidth: 600,
-      maxHeight: 800,
-    );
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery, imageQuality: 80, maxWidth: 600, maxHeight: 800);
 
     if (pickedFile == null) return;
 
@@ -111,10 +100,7 @@ class _UpdateComicScreenState extends State<UpdateComicScreen> {
       final path = pickedFile.path;
       final name = path.split('/').last;
       final lower = name.toLowerCase();
-      final hasAllowedExt = lower.endsWith('.jpg') ||
-          lower.endsWith('.jpeg') ||
-          lower.endsWith('.png') ||
-          lower.endsWith('.webp');
+      final hasAllowedExt = lower.endsWith('.jpg') || lower.endsWith('.jpeg') || lower.endsWith('.png') || lower.endsWith('.webp');
       final filename = hasAllowedExt ? name : 'poster.jpg';
 
       setState(() {
@@ -125,10 +111,7 @@ class _UpdateComicScreenState extends State<UpdateComicScreen> {
     }
   }
 
-
-
   Future<void> _submit() async {
-
     if (!_formKey.currentState!.validate()) return;
 
     setState(() {
@@ -136,47 +119,24 @@ class _UpdateComicScreenState extends State<UpdateComicScreen> {
     });
 
     try {
-      final comic = Comic(
-        id: widget.comicId,
-        title: _titleController.text,
-        description: _descriptionController.text,
-        categories: _allCategories
-            .where((c) => _selectedCategoryIds.contains(c.id))
-            .toList(),
-      );
+      final comic = Comic(id: widget.comicId, title: _titleController.text, description: _descriptionController.text, categories: _allCategories.where((c) => _selectedCategoryIds.contains(c.id)).toList());
 
-      final response = await ApiService.updateComic(
-        comic,
-        poster: kIsWeb ? null : _posterImage,
-        posterBytes: kIsWeb ? _posterBytesWeb : null,
-        posterFilename: kIsWeb ? _posterFilenameWeb : null,
-      );
-
+      final response = await ApiService.updateComic(comic, poster: kIsWeb ? null : _posterImage, posterBytes: kIsWeb ? _posterBytesWeb : null, posterFilename: kIsWeb ? _posterFilenameWeb : null);
 
       if (response['status'] == 'SUCCESS') {
         if (mounted) {
           Navigator.pop(context, true);
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text(SuccessMessage.updateComic)),
-          );
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text(SuccessMessage.updateComic)));
         }
       } else {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                response['error_message']?.toString() ?? "Failed to update comic",
-              ),
-            ),
-          );
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(response['error_messages']?.toString() ?? "Failed to update comic")));
         }
       }
     } catch (e) {
       debugPrint("Error updating comic: $e");
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text(ErrorMessage.networkError)),
-        );
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text(ErrorMessage.networkError)));
       }
     } finally {
       if (mounted) {
@@ -190,9 +150,7 @@ class _UpdateComicScreenState extends State<UpdateComicScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Update Comic"),
-      ),
+      appBar: AppBar(title: const Text("Update Comic")),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
@@ -204,10 +162,7 @@ class _UpdateComicScreenState extends State<UpdateComicScreen> {
                   children: [
                     TextFormField(
                       controller: _titleController,
-                      decoration: const InputDecoration(
-                        labelText: "Title",
-                        border: OutlineInputBorder(),
-                      ),
+                      decoration: const InputDecoration(labelText: "Title", border: OutlineInputBorder()),
                       validator: (value) {
                         if (value == null || value.trim().isEmpty) {
                           return "Title is required";
@@ -218,17 +173,11 @@ class _UpdateComicScreenState extends State<UpdateComicScreen> {
                     const SizedBox(height: 16),
                     TextFormField(
                       controller: _descriptionController,
-                      decoration: const InputDecoration(
-                        labelText: "Description (Optional)",
-                        border: OutlineInputBorder(),
-                      ),
+                      decoration: const InputDecoration(labelText: "Description (Optional)", border: OutlineInputBorder()),
                       maxLines: 3,
                     ),
                     const SizedBox(height: 24),
-                    const Text(
-                      "Poster Image (Optional)",
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
+                    const Text("Poster Image (Optional)", style: TextStyle(fontWeight: FontWeight.bold)),
                     const SizedBox(height: 8),
                     GestureDetector(
                       onTap: _pickPosterImage,
@@ -241,88 +190,39 @@ class _UpdateComicScreenState extends State<UpdateComicScreen> {
                         ),
                         child: kIsWeb
                             ? (_posterBytesWeb != null
-                                ? ClipRRect(
-                                    borderRadius: BorderRadius.circular(8),
-                                    child: Image.memory(
-                                      _posterBytesWeb!,
-                                      fit: BoxFit.cover,
-                                      width: double.infinity,
-                                    ),
-                                  )
-                                : (_existingPosterUrl != null
-                                    ? ClipRRect(
-                                        borderRadius:
-                                            BorderRadius.circular(8),
-                                        child: Image.network(
-                                          _existingPosterUrl!,
-                                          fit: BoxFit.cover,
-                                          width: double.infinity,
-                                          errorBuilder: (_, __, ___) =>
-                                              const Icon(
-                                            Icons.broken_image,
-                                          ),
-                                        ),
-                                      )
-                                    : const Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          Icon(Icons.add_a_photo, size: 48),
-                                          SizedBox(height: 8),
-                                          Text("Tap to change poster"),
-                                        ],
-                                      )))
+                                  ? ClipRRect(
+                                      borderRadius: BorderRadius.circular(8),
+                                      child: Image.memory(_posterBytesWeb!, fit: BoxFit.cover, width: double.infinity),
+                                    )
+                                  : (_existingPosterUrl != null
+                                        ? ClipRRect(
+                                            borderRadius: BorderRadius.circular(8),
+                                            child: Image.network(_existingPosterUrl!, fit: BoxFit.cover, width: double.infinity, errorBuilder: (_, __, ___) => const Icon(Icons.broken_image)),
+                                          )
+                                        : const Column(mainAxisAlignment: MainAxisAlignment.center, children: [Icon(Icons.add_a_photo, size: 48), SizedBox(height: 8), Text("Tap to change poster")])))
                             : _posterImage != null
-                                ? kIsWeb
-                                    ? const SizedBox.shrink()
-                                    : ClipRRect(
-                                        borderRadius:
-                                            BorderRadius.circular(8),
-                                        child: Image.file(
-                                          _posterImage!,
-                                          fit: BoxFit.cover,
-                                          width: double.infinity,
-                                        ),
-                                      )
-                                : _existingPosterUrl != null
-
-                                    ? ClipRRect(
-                                        borderRadius:
-                                            BorderRadius.circular(8),
-                                        child: Image.network(
-                                          _existingPosterUrl!,
-                                          fit: BoxFit.cover,
-                                          width: double.infinity,
-                                          errorBuilder:
-                                              (_, __, ___) => const Icon(
-                                                  Icons.broken_image),
-                                        ),
-                                      )
-                                    : const Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          Icon(Icons.add_a_photo,
-                                              size: 48),
-                                          SizedBox(height: 8),
-                                          Text("Tap to change poster"),
-                                        ],
-                                      ),
+                            ? kIsWeb
+                                  ? const SizedBox.shrink()
+                                  : ClipRRect(
+                                      borderRadius: BorderRadius.circular(8),
+                                      child: Image.file(_posterImage!, fit: BoxFit.cover, width: double.infinity),
+                                    )
+                            : _existingPosterUrl != null
+                            ? ClipRRect(
+                                borderRadius: BorderRadius.circular(8),
+                                child: Image.network(_existingPosterUrl!, fit: BoxFit.cover, width: double.infinity, errorBuilder: (_, __, ___) => const Icon(Icons.broken_image)),
+                              )
+                            : const Column(mainAxisAlignment: MainAxisAlignment.center, children: [Icon(Icons.add_a_photo, size: 48), SizedBox(height: 8), Text("Tap to change poster")]),
                       ),
-
                     ),
                     const SizedBox(height: 24),
-                    const Text(
-                      "Categories (Optional)",
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
+                    const Text("Categories (Optional)", style: TextStyle(fontWeight: FontWeight.bold)),
                     const SizedBox(height: 8),
                     Wrap(
                       spacing: 8,
                       runSpacing: 8,
                       children: _allCategories.map((category) {
-                        final isSelected =
-                            _selectedCategoryIds.contains(category.id);
+                        final isSelected = _selectedCategoryIds.contains(category.id);
                         return FilterChip(
                           label: Text(category.name),
                           selected: isSelected,
@@ -341,12 +241,8 @@ class _UpdateComicScreenState extends State<UpdateComicScreen> {
                     const SizedBox(height: 32),
                     ElevatedButton(
                       onPressed: _isSubmitting ? null : _submit,
-                      style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                      ),
-                      child: _isSubmitting
-                          ? const CircularProgressIndicator()
-                          : const Text("Update Comic"),
+                      style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 16)),
+                      child: _isSubmitting ? const CircularProgressIndicator() : const Text("Update Comic"),
                     ),
                   ],
                 ),

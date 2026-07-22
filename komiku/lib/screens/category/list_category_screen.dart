@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:komiku/models/category.dart';
 import 'package:komiku/screens/comic/list_comic_screen.dart';
 import 'package:komiku/services/api_service.dart';
-import 'package:komiku/static/error_message.dart';
+import 'package:komiku/static/error_messages.dart';
 import 'package:komiku/static/navigation_route.dart';
 
 class ListCategoryScreen extends StatefulWidget {
@@ -36,9 +36,7 @@ class _ListCategoryScreenState extends State<ListCategoryScreen> {
         }
 
         if (snapshot.hasError) {
-          return Center(
-            child: Text('${ErrorMessage.loadCategoryError}: ${snapshot.error}'),
-          );
+          return Center(child: Text('${ErrorMessage.loadCategoryError}: ${snapshot.error}'));
         }
 
         final categories = snapshot.data ?? const [];
@@ -50,28 +48,17 @@ class _ListCategoryScreenState extends State<ListCategoryScreen> {
           padding: const EdgeInsets.all(12),
           child: GridView.builder(
             itemCount: categories.length,
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              crossAxisSpacing: 12,
-              mainAxisSpacing: 12,
-              childAspectRatio: 1.1,
-            ),
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, crossAxisSpacing: 12, mainAxisSpacing: 12, childAspectRatio: 1.1),
             itemBuilder: (context, index) {
               final c = categories[index];
               return Card(
                 elevation: 1,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 clipBehavior: Clip.antiAlias,
                 child: InkWell(
                   borderRadius: BorderRadius.circular(12),
                   onTap: () {
-                    Navigator.pushNamed(
-                      context,
-                      NavigationRoute.listComicScreen.name,
-                      arguments: c.id,
-                    );
+                    Navigator.pushNamed(context, NavigationRoute.listComicScreen.name, arguments: c.id);
                   },
                   child: Padding(
                     padding: const EdgeInsets.all(12),
@@ -86,21 +73,8 @@ class _ListCategoryScreenState extends State<ListCategoryScreen> {
                           overflow: TextOverflow.ellipsis,
                         ),
                         const SizedBox(height: 6),
-                        Row(
-                          children: [
-                            const Icon(Icons.library_books, size: 16),
-                            const SizedBox(width: 4),
-                            Text('${c.comicCount} comics'),
-                          ],
-                        ),
-                        if (c.description?.isNotEmpty ?? false) ...[
-                          const SizedBox(height: 6),
-                          Text(
-                            c.description!,
-                            maxLines: 4,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ],
+                        Row(children: [const Icon(Icons.library_books, size: 16), const SizedBox(width: 4), Text('${c.comicCount} comics')]),
+                        if (c.description?.isNotEmpty ?? false) ...[const SizedBox(height: 6), Text(c.description!, maxLines: 4, overflow: TextOverflow.ellipsis)],
                       ],
                     ),
                   ),

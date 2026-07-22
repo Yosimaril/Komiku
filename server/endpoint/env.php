@@ -2,10 +2,11 @@
 
 define("APP_NAME", getenv("APP_NAME") ?: "Komiku");
 define("BASE_URL", getenv("BASE_URL") ?: "http://localhost:8080/");
-define("DB_HOST", getenv("DB_HOST") ?: "mysql");
-define("DB_DATABASE", getenv("DB_DATABASE") ?: "komiku");
-define("DB_USERNAME", getenv("DB_USERNAME") ?: "komiku");
-define("DB_PASSWORD", getenv("DB_PASSWORD") ?: "password");
+define("DB_HOST", getenv("MYSQLHOST") ?: getenv("DB_HOST") ?: "mysql");
+define("DB_DATABASE", getenv("MYSQLDATABASE") ?: getenv("DB_DATABASE") ?: "komiku");
+define("DB_USERNAME", getenv("MYSQLUSER") ?: getenv("DB_USERNAME") ?: "komiku");
+define("DB_PASSWORD", getenv("MYSQLPASSWORD") ?: getenv("DB_PASSWORD") ?: "password");
+define("DB_PORT", getenv("MYSQLPORT") ?: getenv("DB_PORT") ?: 3306);
 define("JWT_SECRET", getenv("JWT_SECRET") ?: "1234567890");
 define("DISPLAY_ERRORS", getenv("DISPLAY_ERRORS") ?: false);
 define("LOG_ERRORS", getenv("LOG_ERRORS") ?: true);

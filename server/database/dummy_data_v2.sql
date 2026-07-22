@@ -1,5 +1,5 @@
 -- Users
-INSERT INTO `komiku`.`users` (`username`, `password`)
+INSERT INTO `users` (`username`, `password`)
 VALUES ('Patrick', '$2y$10$OCSZl6EL/zaLLMO0Ps6d9ufOohrqolThByZsV.wnCz09gtPwzy.O.'),
        ('Yosua', '$2y$10$27RuC9fivcEc.5wFxwQWN.ilYabrcScL1BMdSLmjYVvrNXyG3m8B6'),
        ('Michael', '$2y$10$.QfPU2CfxFcDckbDGJ5X8.eB8PIvs.lKBi3H9OBenxZCkA28sMn5y'),
@@ -12,7 +12,7 @@ VALUES ('Patrick', '$2y$10$OCSZl6EL/zaLLMO0Ps6d9ufOohrqolThByZsV.wnCz09gtPwzy.O.
        ('Spongebob', '$2y$10$fVNhVT5R1bBTLzzqUtdeUeXhl7ppstVw.8mwveaB0ENvWYEftrDF.');
 
 -- Categories
-INSERT INTO `komiku`.`categories` (`name`, `description`)
+INSERT INTO `categories` (`name`, `description`)
 VALUES ('Action', 'Stories featuring intense battles, combat, and fast-paced adventures.'),
        ('Adventure', 'Characters embark on exciting journeys to explore new places or achieve a goal.'),
        ('Comedy', 'Focuses on humor, funny situations, and entertaining characters.'),
@@ -62,7 +62,7 @@ VALUES ('Action', 'Stories featuring intense battles, combat, and fast-paced adv
        ('Manhua', 'Comics originating from China.');
 
 -- Comics
-INSERT INTO `komiku`.`comics`
+INSERT INTO `comics`
     (`creator_id`, `title`, `poster`, `description`)
 VALUES (1,
         'Shadow Blade',
@@ -86,7 +86,7 @@ VALUES (1,
         'A fantasy adventure about a young girl who discovers an ancient spirit protecting a magical forest.');
 
 -- Category-Comic
-INSERT INTO `komiku`.`category_comic` (`comic_id`, `category_id`)
+INSERT INTO `category_comic` (`comic_id`, `category_id`)
 VALUES (1, 1),
        (1, 17),
        (1, 13),
@@ -104,7 +104,7 @@ VALUES (1, 1),
        (5, 7);
 
 -- Chapters
-INSERT INTO `komiku`.`chapters`
+INSERT INTO `chapters`
     (`comic_id`, `chapter_number`, `title`)
 VALUES (1, 1, 'The Broken Village'),
        (1, 2, 'First Blood'),
@@ -118,7 +118,7 @@ VALUES (1, 1, 'The Broken Village'),
        (5, 2, 'Spirit of the Grove');
 
 -- Chapter Pages
-INSERT INTO `komiku`.`chapter_pages`
+INSERT INTO `chapter_pages`
     (`chapter_id`, `page_number`, `image`)
 VALUES (1, 1, 'shadow_blade/c1/p1.jpg'),
        (1, 2, 'shadow_blade/c1/p2.jpg'),
@@ -151,7 +151,7 @@ VALUES (1, 1, 'shadow_blade/c1/p1.jpg'),
        (10, 2, 'whispers_forest/c2/p2.jpg');
 
 -- Comment and Replies
-INSERT INTO `komiku`.`comments`
+INSERT INTO `comments`
     (`comic_id`, `user_id`, `parent_comment_id`, `content`)
 VALUES (1, 1, NULL, 'This comic is insane 🔥 the fight scenes are so clean!'),
        (1, 2, NULL, 'I love the main character development so far.'),
@@ -180,7 +180,7 @@ VALUES (1, 1, NULL, 'This comic is insane 🔥 the fight scenes are so clean!'),
        (5, 4, 18, 'Feels like a Studio Ghibli vibe.');
 
 -- Ratings
-INSERT INTO `komiku`.`comic_rated_by_user`
+INSERT INTO `comic_rated_by_user`
     (`comic_id`, `user_id`, `rating`)
 VALUES (1, 1, 5),
        (2, 1, 4),

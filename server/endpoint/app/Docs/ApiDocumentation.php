@@ -23,7 +23,7 @@ class ApiDocumentation
             "response" => [
                 "status" => "SUCCESS",
                 "data" => "DATA",
-                "error_message" => "ERROR_MESSAGE"
+                "error_messages" => "..."
             ]
         ],
         ...self::USER_API,
@@ -62,7 +62,7 @@ class ApiDocumentation
                     ],
                     "token" => "..."
                 ],
-                "error_message" => []
+                "error_messages" => []
             ]
         ],
 
@@ -89,7 +89,7 @@ class ApiDocumentation
                     ],
                     "token" => "..."
                 ],
-                "error_message" => []
+                "error_messages" => []
             ]
         ],
 
@@ -112,7 +112,7 @@ class ApiDocumentation
                 "data" => [
                     "updated" => true
                 ],
-                "error_message" => []
+                "error_messages" => []
             ]
         ],
 
@@ -134,7 +134,7 @@ class ApiDocumentation
                 "data" => [
                     "deleted" => true
                 ],
-                "error_message" => []
+                "error_messages" => []
             ]
         ]
     ];
@@ -171,7 +171,7 @@ class ApiDocumentation
                         "comic_count" => 3
                     ]
                 ],
-                "error_message" => []
+                "error_messages" => []
             ]
         ],
 
@@ -198,7 +198,7 @@ class ApiDocumentation
                         "description" => "null"
                     ]
                 ],
-                "error_message" => []
+                "error_messages" => []
             ]
         ],
 
@@ -222,7 +222,7 @@ class ApiDocumentation
                 "data" => [
                     "updated" => true
                 ],
-                "error_message" => []
+                "error_messages" => []
             ]
         ],
 
@@ -242,7 +242,7 @@ class ApiDocumentation
                 "data" => [
                     "deleted" => true
                 ],
-                "error_message" => []
+                "error_messages" => []
             ]
         ],
     ];
@@ -307,7 +307,7 @@ class ApiDocumentation
                         "updated_at" => "..."
                     ]
                 ],
-                "error_message" => []
+                "error_messages" => []
             ]
         ],
 
@@ -411,7 +411,7 @@ class ApiDocumentation
                         ]
                     ]
                 ],
-                "error_message" => []
+                "error_messages" => []
             ]
         ],
 
@@ -449,7 +449,7 @@ class ApiDocumentation
                         "categories" => []
                     ]
                 ],
-                "error_message" => []
+                "error_messages" => []
             ]
         ],
 
@@ -481,7 +481,7 @@ class ApiDocumentation
                 "data" => [
                     "updated" => true
                 ],
-                "error_message" => []
+                "error_messages" => []
             ]
         ],
 
@@ -501,7 +501,7 @@ class ApiDocumentation
                 "data" => [
                     "deleted" => true
                 ],
-                "error_message" => []
+                "error_messages" => []
             ]
         ],
 
@@ -521,7 +521,7 @@ class ApiDocumentation
                 "data" => [
                     "updated" => true
                 ],
-                "error_message" => []
+                "error_messages" => []
             ]
         ]
     ];
@@ -559,7 +559,7 @@ class ApiDocumentation
                         "updated_at" => "..."
                     ]
                 ],
-                "error_message" => []
+                "error_messages" => []
             ]
         ],
 
@@ -601,7 +601,7 @@ class ApiDocumentation
                         ]
                     ]
                 ],
-                "error_message" => []
+                "error_messages" => []
             ]
         ],
 
@@ -625,7 +625,7 @@ class ApiDocumentation
                 "data" => [
                     "updated" => true
                 ],
-                "error_message" => []
+                "error_messages" => []
             ]
         ],
 
@@ -645,7 +645,7 @@ class ApiDocumentation
                 "data" => [
                     "deleted" => true
                 ],
-                "error_message" => []
+                "error_messages" => []
             ]
         ],
     ];
@@ -682,7 +682,7 @@ class ApiDocumentation
                         "updated_at" => "..."
                     ]
                 ],
-                "error_message" => []
+                "error_messages" => []
             ]
         ],
 
@@ -726,7 +726,7 @@ class ApiDocumentation
                         ]
                     ]
                 ],
-                "error_message" => []
+                "error_messages" => []
             ]
         ],
 
@@ -752,7 +752,7 @@ class ApiDocumentation
                 "data" => [
                     "updated" => true
                 ],
-                "error_message" => []
+                "error_messages" => []
             ]
         ],
 
@@ -772,7 +772,7 @@ class ApiDocumentation
                 "data" => [
                     "deleted" => true
                 ],
-                "error_message" => []
+                "error_messages" => []
             ]
         ],
     ];
@@ -809,7 +809,7 @@ class ApiDocumentation
                         "username" => "Jane"
                     ]
                 ],
-                "error_message" => []
+                "error_messages" => []
             ]
         ],
 
@@ -837,7 +837,7 @@ class ApiDocumentation
                         "content" => "Hello"
                     ]
                 ],
-                "error_message" => []
+                "error_messages" => []
             ]
         ],
 
@@ -860,7 +860,7 @@ class ApiDocumentation
                 "data" => [
                     "updated" => true
                 ],
-                "error_message" => []
+                "error_messages" => []
             ]
         ],
 
@@ -880,7 +880,7 @@ class ApiDocumentation
                 "data" => [
                     "deleted" => true
                 ],
-                "error_message" => []
+                "error_messages" => []
             ]
         ],
     ];
@@ -917,7 +917,7 @@ class ApiDocumentation
                         "username" => "Squidward"
                     ]
                 ],
-                "error_message" => []
+                "error_messages" => []
             ]
         ],
 
@@ -946,7 +946,7 @@ class ApiDocumentation
                         "content" => "Hello, what's your name?"
                     ]
                 ],
-                "error_message" => []
+                "error_messages" => []
             ]
         ],
 
@@ -969,7 +969,7 @@ class ApiDocumentation
                 "data" => [
                     "updated" => true
                 ],
-                "error_message" => []
+                "error_messages" => []
             ]
         ],
 
@@ -989,7 +989,7 @@ class ApiDocumentation
                 "data" => [
                     "deleted" => true
                 ],
-                "error_message" => []
+                "error_messages" => []
             ]
         ],
     ];
@@ -1015,7 +1015,7 @@ class ApiDocumentation
                         "rating" => 5
                     ]
                 ],
-                "error_message" => []
+                "error_messages" => []
             ]
         ],
 
@@ -1042,7 +1042,7 @@ class ApiDocumentation
                         "rating" => 5
                     ]
                 ],
-                "error_message" => []
+                "error_messages" => []
             ]
         ],
 
@@ -1062,7 +1062,7 @@ class ApiDocumentation
                 "data" => [
                     "deleted" => true
                 ],
-                "error_message" => []
+                "error_messages" => []
             ]
         ],
     ];

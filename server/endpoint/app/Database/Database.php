@@ -22,7 +22,8 @@ class Database
                 DB_HOST,
                 DB_USERNAME,
                 DB_PASSWORD,
-                DB_DATABASE
+                DB_DATABASE,
+                (int) DB_PORT
             );
 
             if (self::$connection->connect_errno) {

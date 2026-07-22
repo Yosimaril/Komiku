@@ -14,7 +14,7 @@ class Response
         echo json_encode([
             "status" => "SUCCESS",
             "data" => $data,
-            "error_message" => []
+            "error_messages" => []
         ]);
 
         exit();
@@ -30,7 +30,7 @@ class Response
         echo json_encode([
             "status" => "ERROR",
             "data" => [],
-            "error_message" => $errors
+            "error_messages" => $errors
         ]);
 
         exit();

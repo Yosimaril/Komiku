@@ -9,7 +9,7 @@ import 'package:komiku/models/reply.dart';
 import 'package:komiku/models/user.dart';
 import 'package:komiku/services/api_service.dart';
 import 'package:komiku/services/secure_storage_service.dart';
-import 'package:komiku/static/error_message.dart';
+import 'package:komiku/static/error_messages.dart';
 import 'package:komiku/static/success_message.dart';
 import 'package:komiku/static/navigation_route.dart';
 import 'package:provider/provider.dart';
@@ -62,8 +62,7 @@ class _ComicDetailScreenState extends State<ComicDetailScreen> {
     // Check for existing rating
     try {
       final ratingResponse = await ApiService.getRating(id);
-      if (ratingResponse['status'] == 'SUCCESS' &&
-          ratingResponse['data'] != null) {
+      if (ratingResponse['status'] == 'SUCCESS' && ratingResponse['data'] != null) {
         final ratingData = ratingResponse['data']['rating'];
         if (ratingData != null) {
           _userRating = int.tryParse(ratingData['rating'].toString());
@@ -76,9 +75,7 @@ class _ComicDetailScreenState extends State<ComicDetailScreen> {
     try {
       final commentsResponse = await ApiService.getComments(id);
       if (commentsResponse['status'] == 'SUCCESS') {
-        List<Comment> comments = (commentsResponse['data'] as List)
-            .map((e) => Comment.fromJson(e))
-            .toList();
+        List<Comment> comments = (commentsResponse['data'] as List).map((e) => Comment.fromJson(e)).toList();
 
         // Fetch replies for each comment in parallel
         await Future.wait(
@@ -87,9 +84,7 @@ class _ComicDetailScreenState extends State<ComicDetailScreen> {
             final comment = entry.value;
             final repliesResponse = await ApiService.getReplies(comment.id!);
             if (repliesResponse['status'] == 'SUCCESS') {
-              List<Reply> replies = (repliesResponse['data'] as List)
-                  .map((e) => Reply.fromJson(e))
-                  .toList();
+              List<Reply> replies = (repliesResponse['data'] as List).map((e) => Reply.fromJson(e)).toList();
               comments[commentIndex] = comment.copyWith(replies: replies);
             }
           }),
@@ -114,26 +109,16 @@ class _ComicDetailScreenState extends State<ComicDetailScreen> {
   Future<void> _submitComment() async {
     if (_commentController.text.trim().isEmpty) return;
 
-    final response = await ApiService.insertComment(
-      Comment(comicId: widget.comicId, content: _commentController.text),
-    );
+    final response = await ApiService.insertComment(Comment(comicId: widget.comicId, content: _commentController.text));
 
     if (response['status'] == 'SUCCESS') {
       _commentController.clear();
       _refreshData();
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text(SuccessMessage.addCommentComic)),
-        );
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text(SuccessMessage.addCommentComic)));
       }
     } else if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            response['error_message']?.toString() ?? 'Failed to post comment',
-          ),
-        ),
-      );
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(response['error_messages']?.toString() ?? 'Failed to post comment')));
     }
   }
 
@@ -144,10 +129,7 @@ class _ComicDetailScreenState extends State<ComicDetailScreen> {
         title: const Text('Delete Comment?'),
         content: const Text('Are you sure you want to delete this comment?'),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
-          ),
+          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
             child: const Text('Delete', style: TextStyle(color: Colors.red)),
@@ -161,9 +143,7 @@ class _ComicDetailScreenState extends State<ComicDetailScreen> {
       if (response['status'] == 'SUCCESS') {
         _refreshData();
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text(SuccessMessage.deleteCommentComic)),
-          );
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text(SuccessMessage.deleteCommentComic)));
         }
       }
     }
@@ -181,30 +161,18 @@ class _ComicDetailScreenState extends State<ComicDetailScreen> {
           decoration: const InputDecoration(hintText: 'Update your comment'),
         ),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(context, controller.text),
-            child: const Text('Save'),
-          ),
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
+          TextButton(onPressed: () => Navigator.pop(context, controller.text), child: const Text('Save')),
         ],
       ),
     );
 
-    if (newContent != null &&
-        newContent.trim().isNotEmpty &&
-        newContent != comment.content) {
-      final response = await ApiService.updateComment(
-        comment.copyWith(content: newContent),
-      );
+    if (newContent != null && newContent.trim().isNotEmpty && newContent != comment.content) {
+      final response = await ApiService.updateComment(comment.copyWith(content: newContent));
       if (response['status'] == 'SUCCESS') {
         _refreshData();
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text(SuccessMessage.updateCommentComic)),
-          );
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text(SuccessMessage.updateCommentComic)));
         }
       }
     }
@@ -222,29 +190,19 @@ class _ComicDetailScreenState extends State<ComicDetailScreen> {
           decoration: const InputDecoration(hintText: 'Enter your reply'),
         ),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(context, controller.text),
-            child: const Text('Post'),
-          ),
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
+          TextButton(onPressed: () => Navigator.pop(context, controller.text), child: const Text('Post')),
         ],
       ),
     );
 
     if (content != null && content.trim().isNotEmpty) {
-      final response = await ApiService.insertReply(
-        Reply(parentCommentId: parentCommentId, content: content),
-      );
+      final response = await ApiService.insertReply(Reply(parentCommentId: parentCommentId, content: content));
 
       if (response['status'] == 'SUCCESS') {
         _refreshData();
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text(SuccessMessage.addReplyComic)),
-          );
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text(SuccessMessage.addReplyComic)));
         }
       }
     }
@@ -257,10 +215,7 @@ class _ComicDetailScreenState extends State<ComicDetailScreen> {
         title: const Text('Delete Reply?'),
         content: const Text('Are you sure you want to delete this reply?'),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
-          ),
+          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
             child: const Text('Delete', style: TextStyle(color: Colors.red)),
@@ -274,9 +229,7 @@ class _ComicDetailScreenState extends State<ComicDetailScreen> {
       if (response['status'] == 'SUCCESS') {
         _refreshData();
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text(SuccessMessage.deleteReplyComic)),
-          );
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text(SuccessMessage.deleteReplyComic)));
         }
       }
     }
@@ -287,14 +240,9 @@ class _ComicDetailScreenState extends State<ComicDetailScreen> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Delete Chapter?'),
-        content: const Text(
-          'Are you sure you want to delete this chapter? This will remove all its pages.',
-        ),
+        content: const Text('Are you sure you want to delete this chapter? This will remove all its pages.'),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
-          ),
+          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
             child: const Text('Delete', style: TextStyle(color: Colors.red)),
@@ -323,39 +271,25 @@ class _ComicDetailScreenState extends State<ComicDetailScreen> {
           decoration: const InputDecoration(hintText: 'Update your reply'),
         ),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(context, controller.text),
-            child: const Text('Save'),
-          ),
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
+          TextButton(onPressed: () => Navigator.pop(context, controller.text), child: const Text('Save')),
         ],
       ),
     );
 
-    if (newContent != null &&
-        newContent.trim().isNotEmpty &&
-        newContent != reply.content) {
-      final response = await ApiService.updateReply(
-        reply.copyWith(content: newContent),
-      );
+    if (newContent != null && newContent.trim().isNotEmpty && newContent != reply.content) {
+      final response = await ApiService.updateReply(reply.copyWith(content: newContent));
       if (response['status'] == 'SUCCESS') {
         _refreshData();
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text(SuccessMessage.updateReplyComic)),
-          );
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text(SuccessMessage.updateReplyComic)));
         }
       }
     }
   }
 
   Future<void> _saveRating(int rating) async {
-    final response = await ApiService.saveRating(
-      Rating(comicId: widget.comicId, rating: rating),
-    );
+    final response = await ApiService.saveRating(Rating(comicId: widget.comicId, rating: rating));
 
     if (response['status'] == 'SUCCESS') {
       setState(() {
@@ -363,18 +297,10 @@ class _ComicDetailScreenState extends State<ComicDetailScreen> {
       });
       _refreshData();
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text(SuccessMessage.addRateComic)),
-        );
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text(SuccessMessage.addRateComic)));
       }
     } else if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            response['error_message']?.toString() ?? 'Failed to save rating',
-          ),
-        ),
-      );
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(response['error_messages']?.toString() ?? 'Failed to save rating')));
     }
   }
 
@@ -387,18 +313,10 @@ class _ComicDetailScreenState extends State<ComicDetailScreen> {
       });
       _refreshData();
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text(SuccessMessage.deleteRateComic)),
-        );
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text(SuccessMessage.deleteRateComic)));
       }
     } else if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            response['error_message']?.toString() ?? 'Failed to delete rating',
-          ),
-        ),
-      );
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(response['error_messages']?.toString() ?? 'Failed to delete rating')));
     }
   }
 
@@ -407,14 +325,9 @@ class _ComicDetailScreenState extends State<ComicDetailScreen> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Delete Comic?'),
-        content: const Text(
-          'Are you sure you want to delete this comic? This will remove all chapters and comments.',
-        ),
+        content: const Text('Are you sure you want to delete this comic? This will remove all chapters and comments.'),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
-          ),
+          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
             child: const Text('Delete', style: TextStyle(color: Colors.red)),
@@ -430,13 +343,7 @@ class _ComicDetailScreenState extends State<ComicDetailScreen> {
           Navigator.pop(context, true); // Go back to list and signal refresh
         }
       } else if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              response['error_message']?.toString() ?? 'Failed to delete comic',
-            ),
-          ),
-        );
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(response['error_messages']?.toString() ?? 'Failed to delete comic')));
       }
     }
   }
@@ -447,33 +354,20 @@ class _ComicDetailScreenState extends State<ComicDetailScreen> {
       future: _futureComic,
       builder: (context, snapshot) {
         if (snapshot.connectionState != ConnectionState.done) {
-          return const Scaffold(
-            body: Center(child: CircularProgressIndicator()),
-          );
+          return const Scaffold(body: Center(child: CircularProgressIndicator()));
         }
 
         if (snapshot.hasError) {
-          return Scaffold(
-            body: Center(
-              child: Text(
-                '${ErrorMessage.loadComicDetailError}: ${snapshot.error}',
-              ),
-            ),
-          );
+          return Scaffold(body: Center(child: Text('${ErrorMessage.loadComicDetailError}: ${snapshot.error}')));
         }
 
         final comic = snapshot.data;
         if (comic == null) {
-          return const Scaffold(
-            body: Center(child: Text(ErrorMessage.loadComicDetailEmpty)),
-          );
+          return const Scaffold(body: Center(child: Text(ErrorMessage.loadComicDetailEmpty)));
         }
 
         final commentCount = comic.comments.length;
-        final replyCount = comic.comments.fold<int>(
-          0,
-          (sum, comment) => sum + comment.replies.length,
-        );
+        final replyCount = comic.comments.fold<int>(0, (sum, comment) => sum + comment.replies.length);
 
         return Scaffold(
           appBar: AppBar(
@@ -483,11 +377,7 @@ class _ComicDetailScreenState extends State<ComicDetailScreen> {
                 IconButton(
                   icon: const Icon(Icons.edit),
                   onPressed: () async {
-                    final refresh = await Navigator.pushNamed(
-                      context,
-                      NavigationRoute.updateComicScreen.name,
-                      arguments: comic.id,
-                    );
+                    final refresh = await Navigator.pushNamed(context, NavigationRoute.updateComicScreen.name, arguments: comic.id);
                     if (refresh == true) {
                       _refreshData();
                     }
@@ -515,30 +405,17 @@ class _ComicDetailScreenState extends State<ComicDetailScreen> {
                         comic.poster!,
                         height: 220,
                         fit: BoxFit.cover,
-                        errorBuilder: (_, __, ___) => Container(
-                          height: 220,
-                          color: Colors.grey.shade300,
-                          child: const Icon(Icons.broken_image, size: 48),
-                        ),
+                        errorBuilder: (_, __, ___) => Container(height: 220, color: Colors.grey.shade300, child: const Icon(Icons.broken_image, size: 48)),
                       ),
                     ),
                   ),
 
                 Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 6,
-                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        comic.title,
-                        style: const TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
+                      Text(comic.title, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
                       const SizedBox(height: 8),
 
                       Row(
@@ -553,10 +430,7 @@ class _ComicDetailScreenState extends State<ComicDetailScreen> {
 
                       const SizedBox(height: 8),
 
-                      Text(
-                        comic.description ?? '-',
-                        style: TextStyle(color: Colors.grey.shade700),
-                      ),
+                      Text(comic.description ?? '-', style: TextStyle(color: Colors.grey.shade700)),
                     ],
                   ),
                 ),
@@ -564,31 +438,20 @@ class _ComicDetailScreenState extends State<ComicDetailScreen> {
                 const Divider(),
 
                 Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 8,
-                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        'Your Rating',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
+                      const Text('Your Rating', style: TextStyle(fontWeight: FontWeight.bold)),
                       Row(
                         children: [
                           ...List.generate(5, (index) {
                             final ratingValue = index + 1;
-                            final isSelected =
-                                _userRating != null &&
-                                _userRating! >= ratingValue;
+                            final isSelected = _userRating != null && _userRating! >= ratingValue;
                             return IconButton(
                               padding: EdgeInsets.zero,
                               constraints: const BoxConstraints(),
-                              icon: Icon(
-                                isSelected ? Icons.star : Icons.star_border,
-                                color: Colors.amber,
-                              ),
+                              icon: Icon(isSelected ? Icons.star : Icons.star_border, color: Colors.amber),
                               onPressed: () => _saveRating(ratingValue),
                             );
                           }),
@@ -601,10 +464,7 @@ class _ComicDetailScreenState extends State<ComicDetailScreen> {
                                   _userRating = null;
                                 });
                               },
-                              child: const Text(
-                                'Clear',
-                                style: TextStyle(color: Colors.red),
-                              ),
+                              child: const Text('Clear', style: TextStyle(color: Colors.red)),
                             ),
                         ],
                       ),
@@ -613,25 +473,15 @@ class _ComicDetailScreenState extends State<ComicDetailScreen> {
                 ),
 
                 Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 10,
-                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text(
-                        'Chapters',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
+                      const Text('Chapters', style: TextStyle(fontWeight: FontWeight.bold)),
                       if (_currentUser?.id == comic.creator?.id)
                         TextButton.icon(
                           onPressed: () async {
-                            final refresh = await Navigator.pushNamed(
-                              context,
-                              NavigationRoute.createComicChapterScreen.name,
-                              arguments: comic.id,
-                            );
+                            final refresh = await Navigator.pushNamed(context, NavigationRoute.createComicChapterScreen.name, arguments: comic.id);
                             if (refresh == true) {
                               _refreshData();
                             }
@@ -653,36 +503,22 @@ class _ComicDetailScreenState extends State<ComicDetailScreen> {
                       final chapter = comic.chapters[index];
 
                       return ListTile(
-                        title: Text(
-                          'Chapter ${chapter.chapterNumber}: ${chapter.title}',
-                        ),
+                        title: Text('Chapter ${chapter.chapterNumber}: ${chapter.title}'),
                         trailing: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             if (_currentUser?.id == comic.creator?.id) ...[
                               IconButton(
-                                icon: const Icon(
-                                  Icons.edit,
-                                  color: Colors.blue,
-                                  size: 20,
-                                ),
+                                icon: const Icon(Icons.edit, color: Colors.blue, size: 20),
                                 onPressed: () async {
-                                  final refresh = await Navigator.pushNamed(
-                                    context,
-                                    NavigationRoute.updateComicChapterScreen.name,
-                                    arguments: chapter.id,
-                                  );
+                                  final refresh = await Navigator.pushNamed(context, NavigationRoute.updateComicChapterScreen.name, arguments: chapter.id);
                                   if (refresh == true) {
                                     _refreshData();
                                   }
                                 },
                               ),
                               IconButton(
-                                icon: const Icon(
-                                  Icons.delete,
-                                  color: Colors.red,
-                                  size: 20,
-                                ),
+                                icon: const Icon(Icons.delete, color: Colors.red, size: 20),
                                 onPressed: () => _deleteChapter(chapter.id!),
                               ),
                             ],
@@ -690,11 +526,7 @@ class _ComicDetailScreenState extends State<ComicDetailScreen> {
                           ],
                         ),
                         onTap: () {
-                          Navigator.pushNamed(
-                            context,
-                            NavigationRoute.chapterDetailScreen.name,
-                            arguments: chapter.id,
-                          );
+                          Navigator.pushNamed(context, NavigationRoute.chapterDetailScreen.name, arguments: chapter.id);
                         },
                       );
                     },
@@ -703,10 +535,7 @@ class _ComicDetailScreenState extends State<ComicDetailScreen> {
 
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                  child: Text(
-                    'Comments ($commentCount) | Replies ($replyCount)',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
+                  child: Text('Comments ($commentCount) | Replies ($replyCount)', style: TextStyle(fontWeight: FontWeight.bold)),
                 ),
 
                 Padding(
@@ -716,19 +545,13 @@ class _ComicDetailScreenState extends State<ComicDetailScreen> {
                       Expanded(
                         child: TextField(
                           controller: _commentController,
-                          decoration: const InputDecoration(
-                            border: OutlineInputBorder(),
-                            hintText: 'Add Comment',
-                          ),
+                          decoration: const InputDecoration(border: OutlineInputBorder(), hintText: 'Add Comment'),
                         ),
                       ),
 
                       const SizedBox(width: 8),
 
-                      ElevatedButton(
-                        onPressed: _submitComment,
-                        child: const Text('Submit'),
-                      ),
+                      ElevatedButton(onPressed: _submitComment, child: const Text('Submit')),
                     ],
                   ),
                 ),
@@ -758,35 +581,17 @@ class _ComicDetailScreenState extends State<ComicDetailScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Text(
-                                    comment.username ?? 'Unknown',
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
+                                  Text(comment.username ?? 'Unknown', style: const TextStyle(fontWeight: FontWeight.bold)),
                                   if (isOwner)
                                     Row(
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
+                                        IconButton(icon: const Icon(Icons.edit, size: 18), onPressed: () => _editComment(comment)),
                                         IconButton(
-                                          icon: const Icon(
-                                            Icons.edit,
-                                            size: 18,
-                                          ),
-                                          onPressed: () =>
-                                              _editComment(comment),
-                                        ),
-                                        IconButton(
-                                          icon: const Icon(
-                                            Icons.delete,
-                                            size: 18,
-                                            color: Colors.red,
-                                          ),
-                                          onPressed: () =>
-                                              _deleteComment(comment.id!),
+                                          icon: const Icon(Icons.delete, size: 18, color: Colors.red),
+                                          onPressed: () => _deleteComment(comment.id!),
                                         ),
                                       ],
                                     ),
@@ -799,11 +604,7 @@ class _ComicDetailScreenState extends State<ComicDetailScreen> {
 
                               const SizedBox(height: 8),
 
-                              TextButton.icon(
-                                icon: const Icon(Icons.reply, size: 16),
-                                label: const Text('Reply'),
-                                onPressed: () => _submitReply(comment.id!),
-                              ),
+                              TextButton.icon(icon: const Icon(Icons.reply, size: 16), label: const Text('Reply'), onPressed: () => _submitReply(comment.id!)),
 
                               if (comment.replies.isNotEmpty) ...[
                                 const Divider(),
@@ -811,81 +612,40 @@ class _ComicDetailScreenState extends State<ComicDetailScreen> {
                                   padding: const EdgeInsets.only(left: 16),
                                   child: ListView.builder(
                                     shrinkWrap: true,
-                                    physics:
-                                        const NeverScrollableScrollPhysics(),
+                                    physics: const NeverScrollableScrollPhysics(),
                                     itemCount: comment.replies.length,
                                     itemBuilder: (context, rIndex) {
                                       final reply = comment.replies[rIndex];
-                                      final isReplyOwner =
-                                          _currentUser?.id == reply.userId;
+                                      final isReplyOwner = _currentUser?.id == reply.userId;
 
                                       return Container(
-                                        padding: const EdgeInsets.symmetric(
-                                          vertical: 8,
-                                        ),
+                                        padding: const EdgeInsets.symmetric(vertical: 8),
                                         decoration: BoxDecoration(
-                                          border: Border(
-                                            left: BorderSide(
-                                              color: Colors.grey.shade300,
-                                              width: 2,
-                                            ),
-                                          ),
+                                          border: Border(left: BorderSide(color: Colors.grey.shade300, width: 2)),
                                         ),
                                         child: Padding(
-                                          padding: const EdgeInsets.only(
-                                            left: 12,
-                                          ),
+                                          padding: const EdgeInsets.only(left: 12),
                                           child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
+                                            crossAxisAlignment: CrossAxisAlignment.start,
                                             children: [
                                               Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
+                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                 children: [
-                                                  Text(
-                                                    reply.username ?? 'Unknown',
-                                                    style: const TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                      fontSize: 13,
-                                                    ),
-                                                  ),
+                                                  Text(reply.username ?? 'Unknown', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
                                                   if (isReplyOwner)
                                                     Row(
-                                                      mainAxisSize:
-                                                          MainAxisSize.min,
+                                                      mainAxisSize: MainAxisSize.min,
                                                       children: [
+                                                        IconButton(icon: const Icon(Icons.edit, size: 16), onPressed: () => _editReply(reply)),
                                                         IconButton(
-                                                          icon: const Icon(
-                                                            Icons.edit,
-                                                            size: 16,
-                                                          ),
-                                                          onPressed: () =>
-                                                              _editReply(reply),
-                                                        ),
-                                                        IconButton(
-                                                          icon: const Icon(
-                                                            Icons.delete,
-                                                            size: 16,
-                                                            color: Colors.red,
-                                                          ),
-                                                          onPressed: () =>
-                                                              _deleteReply(
-                                                                reply.id!,
-                                                              ),
+                                                          icon: const Icon(Icons.delete, size: 16, color: Colors.red),
+                                                          onPressed: () => _deleteReply(reply.id!),
                                                         ),
                                                       ],
                                                     ),
                                                 ],
                                               ),
-                                              Text(
-                                                reply.content,
-                                                style: const TextStyle(
-                                                  fontSize: 14,
-                                                ),
-                                              ),
+                                              Text(reply.content, style: const TextStyle(fontSize: 14)),
                                             ],
                                           ),
                                         ),

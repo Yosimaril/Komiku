@@ -14,9 +14,9 @@ CREATE SCHEMA IF NOT EXISTS `komiku` DEFAULT CHARACTER SET utf8 ;
 USE `komiku` ;
 
 -- -----------------------------------------------------
--- Table `komiku`.`users`
+-- Table `users`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `komiku`.`users` (
+CREATE TABLE IF NOT EXISTS `users` (
   `id` BIGINT NOT NULL AUTO_INCREMENT,
   `username` VARCHAR(255) NOT NULL,
   `password` VARCHAR(255) NOT NULL,
@@ -27,9 +27,9 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `komiku`.`comics`
+-- Table `comics`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `komiku`.`comics` (
+CREATE TABLE IF NOT EXISTS `comics` (
   `id` BIGINT NOT NULL AUTO_INCREMENT,
   `creator_id` BIGINT NOT NULL,
   `title` VARCHAR(255) NOT NULL,
@@ -43,16 +43,16 @@ CREATE TABLE IF NOT EXISTS `komiku`.`comics` (
   INDEX `title_INDEX` (`title` ASC),
   CONSTRAINT `fk_comics_users1`
     FOREIGN KEY (`creator_id`)
-    REFERENCES `komiku`.`users` (`id`)
+    REFERENCES `users` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE)
 ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `komiku`.`categories`
+-- Table `categories`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `komiku`.`categories` (
+CREATE TABLE IF NOT EXISTS `categories` (
   `id` BIGINT NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(255) NOT NULL,
   `description` TEXT NULL,
@@ -64,9 +64,9 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `komiku`.`chapters`
+-- Table `chapters`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `komiku`.`chapters` (
+CREATE TABLE IF NOT EXISTS `chapters` (
   `id` BIGINT NOT NULL AUTO_INCREMENT,
   `comic_id` BIGINT NOT NULL,
   `chapter_number` INT NOT NULL,
@@ -78,16 +78,16 @@ CREATE TABLE IF NOT EXISTS `komiku`.`chapters` (
   UNIQUE INDEX `uq_comic_chapter` (`comic_id` ASC, `chapter_number` ASC),
   CONSTRAINT `fk_chapters_comics1`
     FOREIGN KEY (`comic_id`)
-    REFERENCES `komiku`.`comics` (`id`)
+    REFERENCES `comics` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE)
 ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `komiku`.`category_comic`
+-- Table `category_comic`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `komiku`.`category_comic` (
+CREATE TABLE IF NOT EXISTS `category_comic` (
   `comic_id` BIGINT NOT NULL,
   `category_id` BIGINT NOT NULL,
   PRIMARY KEY (`comic_id`, `category_id`),
@@ -95,21 +95,21 @@ CREATE TABLE IF NOT EXISTS `komiku`.`category_comic` (
   INDEX `fk_comics_has_categories_comics1_idx` (`comic_id` ASC),
   CONSTRAINT `fk_comics_has_categories_comics1`
     FOREIGN KEY (`comic_id`)
-    REFERENCES `komiku`.`comics` (`id`)
+    REFERENCES `comics` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
   CONSTRAINT `fk_comics_has_categories_categories1`
     FOREIGN KEY (`category_id`)
-    REFERENCES `komiku`.`categories` (`id`)
+    REFERENCES `categories` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE)
 ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `komiku`.`comments`
+-- Table `comments`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `komiku`.`comments` (
+CREATE TABLE IF NOT EXISTS `comments` (
   `id` BIGINT NOT NULL AUTO_INCREMENT,
   `comic_id` BIGINT NOT NULL,
   `user_id` BIGINT NULL,
@@ -123,26 +123,26 @@ CREATE TABLE IF NOT EXISTS `komiku`.`comments` (
   INDEX `fk_comments_comments1_idx` (`parent_comment_id` ASC),
   CONSTRAINT `fk_ratings_users1`
     FOREIGN KEY (`user_id`)
-    REFERENCES `komiku`.`users` (`id`)
+    REFERENCES `users` (`id`)
     ON DELETE SET NULL
     ON UPDATE CASCADE,
   CONSTRAINT `fk_ratings_comics1`
     FOREIGN KEY (`comic_id`)
-    REFERENCES `komiku`.`comics` (`id`)
+    REFERENCES `comics` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
   CONSTRAINT `fk_comments_comments1`
     FOREIGN KEY (`parent_comment_id`)
-    REFERENCES `komiku`.`comments` (`id`)
+    REFERENCES `comments` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE)
 ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `komiku`.`comic_rated_by_user`
+-- Table `comic_rated_by_user`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `komiku`.`comic_rated_by_user` (
+CREATE TABLE IF NOT EXISTS `comic_rated_by_user` (
   `comic_id` BIGINT NOT NULL,
   `user_id` BIGINT NOT NULL,
   `rating` TINYINT NOT NULL,
@@ -151,21 +151,21 @@ CREATE TABLE IF NOT EXISTS `komiku`.`comic_rated_by_user` (
   INDEX `fk_comics_has_users_comics1_idx` (`comic_id` ASC),
   CONSTRAINT `fk_comics_has_users_comics1`
     FOREIGN KEY (`comic_id`)
-    REFERENCES `komiku`.`comics` (`id`)
+    REFERENCES `comics` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
   CONSTRAINT `fk_comics_has_users_users1`
     FOREIGN KEY (`user_id`)
-    REFERENCES `komiku`.`users` (`id`)
+    REFERENCES `users` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE)
 ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `komiku`.`chapter_pages`
+-- Table `chapter_pages`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `komiku`.`chapter_pages` (
+CREATE TABLE IF NOT EXISTS `chapter_pages` (
   `id` BIGINT NOT NULL AUTO_INCREMENT,
   `chapter_id` BIGINT NOT NULL,
   `page_number` INT NOT NULL,
@@ -177,7 +177,7 @@ CREATE TABLE IF NOT EXISTS `komiku`.`chapter_pages` (
   UNIQUE INDEX `uq_chapter_page` (`chapter_id` ASC, `page_number` ASC),
   CONSTRAINT `fk_chapter_pages_chapters1`
     FOREIGN KEY (`chapter_id`)
-    REFERENCES `komiku`.`chapters` (`id`)
+    REFERENCES `chapters` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE)
 ENGINE = InnoDB;
